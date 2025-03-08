@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.0.12",
     "@tanstack/react-query": "^5.67.1",
     "axios": "^1.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-query": "^3.39.3",
+    "tailwindcss": "^4.0.12",
     "zod": "^3.24.2"
   },
   "devDependencies": {
