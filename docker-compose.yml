@@ -1,21 +1,31 @@
-version: "3.8"
 services:
   db:
     image: postgres:13
+    restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: newpassword
       POSTGRES_DB: inventory
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: ./backend
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://user:password@db:5432/inventory
+      DATABASE_URL: postgresql://postgres:newpassword@db:5432/inventory
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
   frontend:
     build: ./frontend
     ports:
@@ -23,4 +33,5 @@ services:
     depends_on:
       - backend
 
-Run the following command to start the services: "docker-compose up --build"
+volumes:
+  postgres_data:

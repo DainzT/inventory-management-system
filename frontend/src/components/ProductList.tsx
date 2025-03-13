@@ -1,6 +1,6 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import apiClient from "../api/client";
+// import { useQuery } from "@tanstack/react-query";
+// import apiClient from "../api/client";
 
 const ProductList: React.FC = () => {
   //   const { data, isLoading, error } = useQuery(["products"], async () => {

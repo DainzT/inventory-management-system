@@ -20,7 +20,7 @@
 1. cd backend
    - Create a ".env" file
    - Add the environment variables to the .env file:
-     - DATABASE_URL="postgresql://user:password@db:5432/inventory"
+     - DATABASE_URL="postgresql://postgres:newpassword@db:5432/inventory"
      - PORT=3000
 2. cd frontend
    - Create a ".env" file
@@ -32,19 +32,23 @@
 2. cd frontend
    - npm install
 
-## Setup Database
-
-- Open the root terminal and type "docker-compose up --build"
-- cd backend
-  - npx prisma migrate dev --name init
-
 ## Running
 
-1. cd backend
-   - npm run dev or npm start (http://localhost:3000)
+1. cd {root}
+   - docker-compose up --build
+2. cd backend
+   - npm start (http://localhost:3000)
    - for testing:
      - npm test
-2. cd frontend
-   - npm run dev (http://localhost:5173)
+3. cd frontend
+
+   - (http://localhost:5173)
    - for testing:
+
      - npx playwright test
+
+   - #### Running the seed
+   - npx prisma db seed
+
+   - #### Adding More Fields
+   - npx prisma migrate dev --name add_new_feature
