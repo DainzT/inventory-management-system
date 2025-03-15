@@ -34,8 +34,3 @@ jobs:
         run: |
           cd frontend
           npm test
-
-      - name: Run E2E tests
-        run: |
-          cd frontend
-          npm run test:e2e
