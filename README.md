@@ -28,27 +28,29 @@
 ## Install Dependencies
 
 1. cd backend
-   - npm install
+   - **npm install**
 2. cd frontend
-   - npm install
+   - **npm install**
 
 ## Running
 
 1. cd {root}
-   - docker-compose up --build
+   - **docker-compose up**
 2. cd backend
-   - npm start (http://localhost:3000)
+   - **npm start** (http://localhost:3000)
    - for testing:
-     - npm test
+     - **npm test**
 3. cd frontend
 
-   - (http://localhost:5173)
+   - **npm run dev** (http://localhost:5173)
    - for testing:
 
-     - npx playwright test
+     - **npm test** (for unit testing)
+     - **npx playwright test** (for e2e testing)
+     - **npm run storybook** (for component testing)
 
    - #### Running the seed
-   - npx prisma db seed
+   - **npx prisma db seed**
 
    - #### Adding More Fields
-   - npx prisma migrate dev --name add_new_feature
+   - **npx prisma migrate dev --name add_new_feature**

@@ -1,10 +1,25 @@
-name: CI
-on: [push, pull_request]
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
       - name: Install backend dependencies
         run: |
           cd backend
@@ -13,3 +28,12 @@ jobs:
         run: |
           cd frontend
           npm install
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Run API tests
+        run: npm run test:api

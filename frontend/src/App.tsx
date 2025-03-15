@@ -1,12 +1,24 @@
 import React from "react";
-import ProductList from "./components/ProductList";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import Inventory from "./pages/InventoryPage";
+import Orders from "./pages/OrderPage";
+import Summary from "./pages/SummaryPage";
 
 const App: React.FC = () => {
   return (
-    <div>
-      <h1>Inventory System</h1>
-      <ProductList />
-    </div>
+    <Router>
+      <div className="flex h-screen">
+        <Sidebar />
+        <main className="flex-1 p-4 bg-[#F4F4F4] h-full">
+          <Routes>
+            <Route path="/" element={<Inventory />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/summary" element={<Summary />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 };
 
