@@ -24,16 +24,23 @@ jobs:
         run: |
           cd backend
           npm install
+
+      - name: Run backend unit tests
+        run: |
+          cd backend
+          npm test
+
       - name: Install frontend dependencies
         run: |
           cd frontend
           npm install
 
-      - name: Run unit tests
-        run: npm test
+      - name: Run frontend unit tests
+        run: |
+          cd frontend
+          npm test
 
       - name: Run E2E tests
-        run: npm run test:e2e
-
-      - name: Run API tests
-        run: npm run test:api
+        run: |
+          cd frontend
+          npm run test:e2e
