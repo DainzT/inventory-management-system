@@ -28,7 +28,7 @@ const AddProductForm = ({
         productName: "",
         note: "",
         quantity: "",
-        selectUnit: "",
+        selectUnit: "Unit",
         unitPrice: "",
         unitSize: "",
         total: "",

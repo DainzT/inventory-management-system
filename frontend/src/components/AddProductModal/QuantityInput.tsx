@@ -41,7 +41,7 @@ export const QuantityInput = ({
      <div>
       <label className="text-[16px] font-bold inter-font">
         <span>Quantity </span>
-        <span className="text-[#FF5757]">*</span>
+        {required && <span className="text-[#FF5757]">*</span>}
       </label>
       <div className="flex items-center gap-2 mt-2">
         <button

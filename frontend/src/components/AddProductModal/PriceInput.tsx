@@ -56,7 +56,7 @@ export const PriceInput = ({
     <div>
         <label className="text-[16px] font-bold inter-font">
           <span>{label} </span>
-          {!readonly && <span className="text-[#FF5757]">*</span>}
+          {(!readonly && required) && <span className="text-[#FF5757]">*</span>}
         </label>
         <div className="relative mt-2">
           <span className="absolute left-4 top-[8px] text-[#666] inter-font">₱</span>
