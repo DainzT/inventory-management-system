@@ -9,6 +9,10 @@ interface PriceInputProps {
   required?: boolean;
   unit?: string;
   quantity?: number | "";
+  error?: {
+    unitPrice?: string;
+    unitSize?: string;
+  };
 }
 
 export const PriceInput = ({
@@ -21,6 +25,7 @@ export const PriceInput = ({
   required = false,
   unit,
   quantity,
+  error,
 }: PriceInputProps) => {
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,12 +73,11 @@ export const PriceInput = ({
             min="0"
             step="0.01"
             readOnly={readonly}
-            className={`w-[140px] h-[40px] pl-8 rounded-[8px] border-[1px] inter-font ${
-              readonly
+            className={`w-[140px] h-[40px] pl-8 rounded-[8px] border-[1px] inter-font
+              ${error?.unitPrice ? "border-red-500" : readonly 
                 ? "border-[#F8F8F8] bg-[rgba(244,241,241,0.77)] text-[#666] cursor-default pointer-events-none"
                 : "border-[#0FE3FF] bg-[#F4F1F1]"
             }`}
-            required={required}
           />
           {required && (
             <>
@@ -87,13 +91,15 @@ export const PriceInput = ({
                 min="0"
                 step="0.01"
                 readOnly={readonly}
-                className={`w-[70px] h-[40px] pl-3 rounded-[8px] border-[1px] inter-font border-[#0FE3FF] bg-[#F4F1F1]`}
-                required={required}
+                className={`w-[70px] h-[40px] pl-3 rounded-[8px] border-[1px] inter-font ${error?.unitSize ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
+                required={(typeof unitSize === "number" && typeof quantity === "number" && unitSize > quantity)}
               />
+              {error && <span className="absolute text-red-600 text-sm -translate-17 translate-y-10">{error.unitSize}</span>}
               <span className="ml-2 inter-font">{unit?.trim() || "unit"}</span>
             </>
           )}
         </div>
+        {error && <p className="absolute text-red-600 text-sm">{error.unitPrice}</p>}
     </div>
   );
 };

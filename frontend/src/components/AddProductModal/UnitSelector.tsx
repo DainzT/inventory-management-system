@@ -3,11 +3,13 @@ import { useState, useRef, useEffect } from "react";
 interface UnitSelectorProps {
   value: string;
   onChange: (value: string) => void;
+  error?: string;
 }
 
 export const UnitSelector = ({
   value,
   onChange,
+  error,
 }: UnitSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [customUnit, setCustomUnit] = useState("");
@@ -70,7 +72,7 @@ export const UnitSelector = ({
       </label>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className="mt-2 w-[140px] h-[32px] px-4 flex items-center justify-between rounded-[8px] border-[1px] border-[#0FE3FF] bg-[#F4F1F1] cursor-pointer"
+        className={`mt-2 w-[140px] h-[32px] px-4 flex items-center justify-between rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1] cursor-pointer`}
       >
         <span className={value ? "inter-font" : "text-[#999] inter-font"}>{value || "Unit"}</span>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">  
@@ -135,6 +137,7 @@ export const UnitSelector = ({
           </div>
         </div>
       )}
+      {error && <p className="absolute text-red-600 text-sm">{error}</p>}
     </div>
   );
 };
