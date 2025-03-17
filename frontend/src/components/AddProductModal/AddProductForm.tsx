@@ -4,16 +4,7 @@ import { InputField } from "./InputField";
 import { PriceInput } from "./PriceInput";
 import { QuantityInput } from "./QuantityInput";
 import { UnitSelector } from "./UnitSelector";
-
-interface ProductFormData {
-    productName: string;
-    note: string;
-    quantity: number | "";
-    unitPrice: number | "";
-    selectUnit: string;
-    unitSize: number | "";
-    total: number | "";
-  }
+import { ProductFormData } from "@/types";
 
 interface ProductFormProps {
     onCancel: () => void;

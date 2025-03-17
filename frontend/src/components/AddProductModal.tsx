@@ -1,14 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import AddProductForm from "./AddProductModal/AddProductForm";
-
-interface ProductFormData {
-    productName: string;
-    note: string;
-    quantity: number | "";
-    unitPrice: number | "";
-    selectUnit: string;
-    total: number | "";
-  }
+import { ProductFormData } from "@/types";
 
 interface AddProductModalProps {
     isOpen: boolean;
