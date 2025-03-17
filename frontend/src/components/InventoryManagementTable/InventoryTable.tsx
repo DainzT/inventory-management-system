@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { TableHeader } from "./TableHeader";
 import { TableRow } from "./TableRow";
 
-export interface InventoryItemsProps {
+interface InventoryItemsProps {
   id: number;
   productName: string;
   note: string;
@@ -13,36 +12,19 @@ export interface InventoryItemsProps {
   total?: number | "";
 }
 
-export const InventoryTable = () => {
-  const [inventoryItems, setInventoryItems] = useState<InventoryItemsProps[]>([
-    {
-      id: 1,
-      productName: "Fishing Reel",
-      note: "Spinning reel, corrosion-resistant",
-      quantity: 8,
-      unitPrice: 60.0,
-      selectUnit: "piece",
-      unitSize: 1,
-    },
-    {
-      id: 2,
-      productName: "Nylon Fishing Line",
-      note: "500m, high-tensile strength",
-      quantity: 25,
-      unitPrice: 150.5,
-      selectUnit: "roll",
-      unitSize: 1,
-    },
-  ]);
+interface InventoryTableProps {
+  items?: InventoryItemsProps[]; 
+  onOut?: () => void;
+  onEdit?: () => void;
+}
 
-  const handleOut = (id: number) => {
-    console.log(`Out clicked for item ${id}`);
-  };
-
-  const handleEdit = (id: number) => {
-    console.log(`Edit clicked for item ${id}`);
-  };
-
+export const InventoryTable = ({ 
+  items = [],
+  onOut,
+  onEdit, 
+}: InventoryTableProps) => {
+  const inventoryItems: InventoryItemsProps[] = items;
+  
   return (
     <section>
       <TableHeader />
@@ -51,8 +33,8 @@ export const InventoryTable = () => {
           <TableRow
             key={item.id}
             {...item}
-            onOut={() => handleOut(item.id)}
-            onEdit={() => handleEdit(item.id)}
+            onOut={onOut}
+            onEdit={onEdit}
           />
         ))}
       </div>

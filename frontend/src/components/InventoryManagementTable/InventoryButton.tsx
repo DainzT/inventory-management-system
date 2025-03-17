@@ -1,4 +1,4 @@
-interface ButtonProps {
+interface InventoryButtonProps {
     variant?: "actions" | "add";
     onAdd?: () => void; 
     onOut?: () => void;
@@ -12,7 +12,7 @@ export const InventoryButton = ({
   onOut,
   onEdit,
   type = "button",
-}: ButtonProps) => {
+}: InventoryButtonProps) => {
 
   if (variant === "add") {
     return (

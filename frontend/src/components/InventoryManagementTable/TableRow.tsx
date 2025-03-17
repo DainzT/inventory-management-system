@@ -44,7 +44,8 @@ interface TableRowProps {
         <div className="flex-1">
           <InventoryButton 
             variant="actions" 
-            onOut={onOut} onEdit={onEdit} />
+            onOut={onOut} onEdit={onEdit} 
+          />
         </div>
       </div>
     );
