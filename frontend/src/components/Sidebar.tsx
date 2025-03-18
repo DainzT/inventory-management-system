@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
             <li key={index} className="mb-2 w-64 flex justify-center">
               <Link
                 to={link.path}
-                className="flex items-center py-2 px-4 w-full hover:bg-[#1B626E] hover:text-[#F4F4F4] rounded inter-font"
+                className="flex items-center py-2 px-4 w-full pl-14 hover:bg-[#1B626E] hover:text-[#F4F4F4] rounded inter-font"
               >
                 {link.icon && <span className="mr-2">{link.icon}</span>}
                 {link.label}
