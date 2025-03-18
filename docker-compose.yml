@@ -1,37 +1,13 @@
 services:
-  db:
-    image: postgres:13
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: newpassword
-      POSTGRES_DB: inventory
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build: ./backend
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://postgres:newpassword@db:5432/inventory
-    depends_on:
-      db:
-        condition: service_healthy
-
+      DATABASE_URL: "postgresql://postgres:mc7cMSKpYr5UpNcy@nlnppwumehcddtkcbqck.supabase.co:5432/postgres"
   frontend:
     build: ./frontend
     ports:
       - "5173:5173"
     depends_on:
       - backend
-
-volumes:
-  postgres_data:
