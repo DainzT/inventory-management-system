@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, Minus, Plus, CheckSquare, X } from 'lucide-react';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 interface ModifyModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ const ModifyModal: React.FC<ModifyModalProps> = ({
   const [quantity, setQuantity] = useState(7);
   const [fleet, setFleet] = useState("F/B DONYA DONYA 2x");
   const [boat, setBoat] = useState("F/B Lady Rachelle");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
   const originalPrice = 60.00;
   const currentStock = 8;
@@ -60,6 +62,10 @@ const ModifyModal: React.FC<ModifyModalProps> = ({
     onConfirm(quantity, fleet, boat);
     onClose();
   };
+
+  const handleRemoveClick = () => {
+    setIsDeleteModalOpen(true);
+  };
   
   if (!isOpen) return null;
   
@@ -67,109 +73,123 @@ const ModifyModal: React.FC<ModifyModalProps> = ({
   const remainingStock = currentStock - quantity;
   
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 overflow-hidden">
-        <div className="p-6 flex flex-col gap-5">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-medium text-teal-700">Modify Item</h2>
-            <button 
-              onClick={onRemove}
-              className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded flex items-center gap-1.5"
-            >
-              <Trash2 size={16} />
-              <span>Remove Item</span>
-            </button>
-          </div>
-          
-          <div className="bg-gray-50 rounded-md p-4">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="text-lg font-medium">Fishing Reel</h3>
-              <span className="text-teal-600 font-medium">₱60.00</span>
-            </div>
-            <p className="text-gray-600 mb-4">Spinning reel, corrosion-resistant</p>
+    <>
+      <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 overflow-hidden">
+          <div className="p-6 flex flex-col gap-5">
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Stock Available:</span>
-              <span className="font-medium">{currentStock}</span>
-            </div>
-          </div>
-          
-          <div>
-            <label className="block font-medium mb-2">Quantity</label>
-            <div className="flex">
+              <h2 className="text-2xl font-medium text-teal-700">Modify Item</h2>
               <button 
-                onClick={handleDecrement}
-                className="bg-gray-200 hover:bg-gray-300 rounded-l-md w-10 h-10 flex items-center justify-center"
+                onClick={handleRemoveClick}
+                className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded flex items-center gap-1.5"
               >
-                <Minus size={20} />
+                <Trash2 size={16} />
+                <span>Remove Item</span>
               </button>
-              <div className="bg-gray-100 w-12 h-10 flex items-center justify-center">
-                {quantity}
+            </div>
+            
+            <div className="bg-gray-50 rounded-md p-4">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="text-lg font-medium">Fishing Reel</h3>
+                <span className="text-teal-600 font-medium">₱60.00</span>
               </div>
-              <button 
-                onClick={handleIncrement}
-                className="bg-gray-200 hover:bg-gray-300 rounded-r-md w-10 h-10 flex items-center justify-center"
+              <p className="text-gray-600 mb-4">Spinning reel, corrosion-resistant</p>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Stock Available:</span>
+                <span className="font-medium">{currentStock}</span>
+              </div>
+            </div>
+            
+            <div>
+              <label className="block font-medium mb-2">Quantity</label>
+              <div className="flex">
+                <button 
+                  onClick={handleDecrement}
+                  className="bg-gray-200 hover:bg-gray-300 rounded-l-md w-10 h-10 flex items-center justify-center"
+                >
+                  <Minus size={20} />
+                </button>
+                <div className="bg-gray-100 w-12 h-10 flex items-center justify-center">
+                  {quantity}
+                </div>
+                <button 
+                  onClick={handleIncrement}
+                  className="bg-gray-200 hover:bg-gray-300 rounded-r-md w-10 h-10 flex items-center justify-center"
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <label className="block font-medium mb-2">Fleet Assignment</label>
+              <select
+                value={fleet}
+                onChange={(e) => handleFleetChange(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
               >
-                <Plus size={20} />
+                {Object.keys(fleets).map((fleetName) => (
+                  <option key={fleetName} value={fleetName}>{fleetName}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block font-medium mb-2">Boat Assignment</label>
+              <select
+                value={boat}
+                onChange={(e) => setBoat(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
+              >
+                {fleets[fleet as keyof typeof fleets]?.map((boatName) => (
+                  <option key={boatName} value={boatName}>{boatName}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-medium">Total</h3>
+                <span className="text-teal-600 font-medium">₱{totalPrice.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Remaining Stock</span>
+                <span className="font-medium">{remainingStock}</span>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-2">
+              <button 
+                onClick={onClose}
+                className="flex-1 bg-sky-200 hover:bg-sky-300 text-sky-700 font-medium py-2 px-4 rounded flex items-center justify-center gap-2"
+              >
+                <X size={18} />
+                <span>Cancel</span>
+              </button>
+              <button 
+                onClick={handleConfirm}
+                className="flex-1 bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-4 rounded flex items-center justify-center gap-2"
+              >
+                <CheckSquare size={18} />
+                <span>Confirm Changes</span>
               </button>
             </div>
-          </div>
-          
-          <div>
-            <label className="block font-medium mb-2">Fleet Assignment</label>
-            <select
-              value={fleet}
-              onChange={(e) => handleFleetChange(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
-            >
-              {Object.keys(fleets).map((fleetName) => (
-                <option key={fleetName} value={fleetName}>{fleetName}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block font-medium mb-2">Boat Assignment</label>
-            <select
-              value={boat}
-              onChange={(e) => setBoat(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
-            >
-              {fleets[fleet as keyof typeof fleets]?.map((boatName) => (
-                <option key={boatName} value={boatName}>{boatName}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-medium">Total</h3>
-              <span className="text-teal-600 font-medium">₱{totalPrice.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Remaining Stock</span>
-              <span className="font-medium">{remainingStock}</span>
-            </div>
-          </div>
-          
-          <div className="flex gap-3 mt-2">
-            <button 
-              onClick={onClose}
-              className="flex-1 bg-sky-200 hover:bg-sky-300 text-sky-700 font-medium py-2 px-4 rounded flex items-center justify-center gap-2"
-            >
-              <X size={18} />
-              <span>Cancel</span>
-            </button>
-            <button 
-              onClick={handleConfirm}
-              className="flex-1 bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-4 rounded flex items-center justify-center gap-2"
-            >
-              <CheckSquare size={18} />
-              <span>Confirm Changes</span>
-            </button>
           </div>
         </div>
       </div>
-    </div>
+
+      <DeleteConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => {
+          setIsDeleteModalOpen(false);
+          onRemove();
+        }}
+        title="Remove this item?"
+        message="This action cannot be undone. This item will be permanently removed from your orders."
+        confirmButtonText="Remove Item"
+      />
+    </>
   );
 };
 
