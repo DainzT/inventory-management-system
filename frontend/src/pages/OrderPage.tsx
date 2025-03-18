@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import {MainContent}  from "@/components/OrderFleetDisplay/MainContent";
 
 const Orders: React.FC = () => {
+  const [activeFleet, setActiveFleet] = useState("All Fleets");
+
   return (
     <div className="p-4 bg-[#F4F4F4] h-full">
-      <h1 className="text-2xl font-bold">Orders</h1>
+      <MainContent activeFleet={activeFleet} onFleetSelect={setActiveFleet} />
     </div>
   );
 };
