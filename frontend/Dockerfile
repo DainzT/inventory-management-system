@@ -4,4 +4,4 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
-CMD ["npm", "preview"]
+CMD ["npm", "run", "preview"]
