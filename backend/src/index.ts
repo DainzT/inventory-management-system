@@ -1,18 +1,13 @@
+import "dotenv/config";
 import express from "express";
-import { PrismaClient } from "@prisma/client";
+import { createClient } from "@supabase/supabase-js";
+import cors from "cors";
 
-const prisma = new PrismaClient();
+const supabaseUrl = process.env.DATABASE_URL!;
+const supabaseKey = process.env.DATABASE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 const app = express();
+
+app.use(cors());
 app.use(express.json());
-
-app.get("/products", async (req, res) => {
-  const products = await prisma.product.findMany();
-  res.json(products);
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
-
-export default app;

@@ -9,6 +9,7 @@ export interface NavigationItemProps {
   export interface FleetCardProps {
     title: string;
     backgroundColor: string;
+    isActive?: boolean;
     onClick?: () => void;
   }
   
@@ -21,5 +22,10 @@ export interface NavigationItemProps {
     fleet: string;
     dateOut: string;
     onModify?: (id: number) => void;
+  }
+
+  export interface FleetListProps {
+    activeFleet?: string;
+    onFleetSelect?: (fleet: string) => void;
   }
   

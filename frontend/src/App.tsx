@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Inventory from "./pages/InventoryPage";
 import Orders from "./pages/OrderPage";
@@ -9,6 +10,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="flex h-screen">
+        <Header />
         <Sidebar />
         <main className="flex-1 p-4 bg-[#F4F4F4] h-full">
           <Routes>

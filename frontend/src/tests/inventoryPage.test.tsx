@@ -4,7 +4,7 @@ import Inventory from "../pages/InventoryPage";
 describe("Inventory Component", () => {
   it("renders the inventory title", () => {
     render(<Inventory />);
-    const titleElement = screen.getByText(/General Stock/i);
+    const titleElement = screen.getByText(/Main Inventory/i);
     expect(titleElement).toBeInTheDocument();
   });
 });

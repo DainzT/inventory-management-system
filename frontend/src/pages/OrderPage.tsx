@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { FleetCard } from "@/components/OrderFleetDisplay/FleetCard";
+import { FleetCard} from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
 import { OrderItemProps } from "@/types/FleetsOrder";
 
@@ -43,7 +43,6 @@ const Orders: React.FC = () => {
   };
 
   const filteredOrders = orders.filter((order) => {
-    // Convert all fields to strings and make them lowercase for case-insensitive search
     const searchableFields = [
       order.productName.toLowerCase(),
       order.description.toLowerCase(),
@@ -53,12 +52,10 @@ const Orders: React.FC = () => {
       order.dateOut.toLowerCase(),
     ];
 
-    // Check if any field includes the search query
     const matchesSearch = searchableFields.some((field) =>
       field.includes(searchQuery.toLowerCase())
     );
 
-    // Filter by selected fleet
     const matchesFleet =
       filterValue === "All" || order.fleet === filterValue;
 
@@ -70,25 +67,28 @@ const Orders: React.FC = () => {
       <main className="flex-1 p-10">
         <h1 className="text-6xl font-bold text-cyan-800">Orders</h1>
 
-        <div className="flex gap-3 mt-12">
-          <FleetCard
+        <div className="flex gap-8 mt-12 h-[260px]">
+        <FleetCard
             title="All Fleets"
             backgroundColor="bg-emerald-800"
+            isActive={activeFleet === "All Fleets"}
             onClick={() => setActiveFleet("All Fleets")}
           />
           <FleetCard
-            title="Fleet 1"
+            title="F/B Donya Donya"
             backgroundColor="bg-cyan-800"
-            onClick={() => setActiveFleet("Fleet 1")}
+            isActive={activeFleet === "F/B Donya Donya"}
+            onClick={() => setActiveFleet("F/B Donya Donya")}
           />
           <FleetCard
-            title="Fleet 2"
+            title="F/B Doña Librada"
             backgroundColor="bg-red-800"
-            onClick={() => setActiveFleet("Fleet 2")}
+            isActive={activeFleet === "F/B Doña Librada"}
+            onClick={() => setActiveFleet("F/B Doña Librada")}
           />
         </div>
 
-        <h2 className="mt-24 text-6xl font-bold text-cyan-800">
+        <h2 className="mt-15 text-5xl font-bold text-cyan-800">
           Orders for {activeFleet}
         </h2>
 

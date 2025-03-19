@@ -1,17 +1,23 @@
 import React from "react";
-import { FleetCardProps } from "@/types/FleetsOrder";
+import { FleetCardProps, FleetListProps } from "@/types/FleetsOrder";
 
+// Combined component
 export const FleetCard: React.FC<FleetCardProps> = ({
   title,
   backgroundColor,
+  isActive,
   onClick,
 }) => {
   return (
     <article
-      className={`relative p-12 ${backgroundColor} rounded-xl h-[260px] w-[360px] cursor-pointer`}
+      className={`relative p-12 ${backgroundColor} rounded-xl ${
+        isActive ? "h-[240px] w-[330px]" : "h-[200px] w-[300px]"
+      } cursor-pointer transition-all duration-300 ease-in-out shadow-lg ${
+        isActive ? "shadow-2xl" : "shadow-md"
+      }`}
       onClick={onClick}
     >
-      <h2 className="text-5xl font-bold text-white">{title}</h2>
+      <h2 className="text-3xl font-bold text-white">{title}</h2>
 
       <div className="absolute bottom-[14px] right-[14px] opacity-[0.3]">
         <svg
@@ -47,3 +53,27 @@ export const FleetCard: React.FC<FleetCardProps> = ({
     </article>
   );
 };
+
+export const FleetList: React.FC<FleetListProps> = ({
+  activeFleet,
+  onFleetSelect,
+}) => {
+  const fleets = ["All Fleets", "F/B DONYA DONYA", "F/B Doña Librada"];
+
+  return (
+    <nav className="flex relative flex-col gap-4 pl-24 mt-5">
+      <div className="absolute w-0.5 bg-stone-300 h-[136px] left-[58px]" />
+      {fleets.map((fleet) => (
+        <button
+          key={fleet}
+          className="text-xl text-black hover:text-cyan-800 text-left"
+          onClick={() => onFleetSelect && onFleetSelect(fleet)}
+          aria-current={activeFleet === fleet ? "page" : undefined}
+        >
+          {fleet}
+        </button>
+      ))}
+    </nav>
+  );
+};
+
