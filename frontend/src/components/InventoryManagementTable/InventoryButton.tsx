@@ -19,7 +19,13 @@ export const InventoryButton = ({
         <button 
           type={type}
           onClick={onAdd}
-          className= "flex items-center gap-[10px] h-[51px] px-[16px] rounded-[12px] bg-[#295C65] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.10)]"
+          className="
+            flex items-center gap-[10px] h-[51px] px-[16px] 
+            rounded-[12px] bg-[#295C65] 
+            shadow-[0px_2px_4px_0px_rgba(0,0,0,0.10)]
+            transition-transform duration-200 ease-in-out 
+          hover:bg-[#357D8B] hover:scale-105
+          "
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path
@@ -39,7 +45,12 @@ export const InventoryButton = ({
       <div className="flex justify-center gap-[10px]">
         <button
           onClick={onOut}
-          className="flex items-center gap-[8px] h-[48px] px-[12px] rounded-[8px] bg-[#047857]"
+          className="
+            flex items-center gap-[8px] h-[48px] px-[12px] 
+            rounded-[8px] bg-[#047857]
+            transition-all duration-150 
+            hover:bg-[#065F46] active:scale-95
+          "
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path
@@ -54,7 +65,12 @@ export const InventoryButton = ({
         </button>
         <button
             onClick={onEdit}
-            className="flex items-center gap-[8px] h-[48px] px-[12px] rounded-[8px] bg-[#3B82F6]"
+            className="
+              flex items-center gap-[8px] h-[48px] px-[12px] 
+              rounded-[8px] bg-[#3B82F6] 
+              transition-all duration-150 
+            hover:bg-[#2563EB] active:scale-95
+            "
           >
             <svg width="15" height="16" viewBox="0 0 15 16" fill="none">
               <path

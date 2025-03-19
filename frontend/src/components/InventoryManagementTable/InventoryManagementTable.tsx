@@ -1,6 +1,6 @@
-import { SearchBar } from "./InventoryManagementTable/SearchBar";
-import { InventoryButton } from "./InventoryManagementTable/InventoryButton";
-import { InventoryTable } from "./InventoryManagementTable/InventoryTable";
+import { SearchBar } from "./SearchBar";
+import { InventoryButton } from "./InventoryButton";
+import { InventoryTable } from "./InventoryTable";
 import { useState } from "react";
 
 interface InventoryItemsProps {
