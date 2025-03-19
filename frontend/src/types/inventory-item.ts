@@ -7,5 +7,7 @@ export interface InventoryItem {
     selectUnit: string;
     unitSize: number | "";
     total?: number | "";
+    dateCreated?: Date;
+    lastUpdated?: Date;
   }
   
