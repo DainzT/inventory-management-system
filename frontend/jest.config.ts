@@ -2,7 +2,7 @@ import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
   preset: "ts-jest",
-  testEnvironment: "jsdom",
+  testEnvironment: "node",
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
@@ -13,6 +13,7 @@ const config: Config.InitialOptions = {
   ],
   testPathIgnorePatterns: ["/node_modules/", "/e2e/"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  watchPathIgnorePatterns: ["node_modules", "dist"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },

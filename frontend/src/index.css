@@ -9,6 +9,8 @@
 @theme {
   --color-white: #f4f4f4;
   --color-black: #333333;
+  --text-black: #333333;
+  --text-white: #f4f4f4;
   --color-accent: #1b626e;
   --color-white-light: #bbbbbb;
 }
