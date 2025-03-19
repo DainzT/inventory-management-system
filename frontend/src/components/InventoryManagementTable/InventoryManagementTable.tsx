@@ -25,6 +25,8 @@ const InventoryManagementTable = ({
       unitPrice: 60.0,
       selectUnit: "piece",
       unitSize: 1,
+      total: 100,
+      dateCreated: new Date(),
     },
     {
       id: 2,
@@ -34,11 +36,19 @@ const InventoryManagementTable = ({
       unitPrice: 150.5,
       selectUnit: "roll",
       unitSize: 1,
-    },
+      total: 120,
+      dateCreated: new Date(),
+    }, 
+
   ]);
+  const [expandedItem, setExpandedItem] = useState<number | null>(null);
+
+  const handleToggleExpand = (itemId: number) => {
+    setExpandedItem(expandedItem === itemId ? null : itemId);
+  };
 
   return (
-      <main className="p-[30px] max-lg:p-[15px]">
+      <main className="scale-90  p-[30px] max-lg:p-[15px]">
         <section className="w-full rounded-[12px] border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]">
             <div className="p-[24px] flex items-center gap-[10px]">
                 <SearchBar />
@@ -47,7 +57,12 @@ const InventoryManagementTable = ({
                     onAdd={() => setIsAddOpen(true)}
                 />
             </div>
-        <InventoryTable items={inventoryItems} onOut={() => setIsEditOpen(true)} onEdit={() => setIsOutOpen(true)}/>
+        <InventoryTable 
+          items={inventoryItems} 
+          expandedItem={expandedItem}
+          onToggleExpand={handleToggleExpand}
+          onOut={() => setIsEditOpen(true)} 
+          onEdit={() => setIsOutOpen(true)}/>
         </section>
       </main>
   );

@@ -6,7 +6,7 @@ export const TableHeader = () => {
         <div className="w-[286px]">Note</div>
         <div className="w-[130px]">Quantity</div>
         <div className="w-[162px]">Unit Price</div>
-        <div className="flex-1 text-center">Actions</div>
+        <div className="flex-[0.95] text-center">Actions</div>
       </div>
     );
 }

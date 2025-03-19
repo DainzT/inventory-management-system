@@ -4,27 +4,33 @@ import { InventoryItem } from "@/types";
 
 interface InventoryTableProps {
   items?: InventoryItem[]; 
+  expandedItem: number | null;
+  onToggleExpand: (id: number) => void;
   onOut?: () => void;
   onEdit?: () => void;
 }
 
 export const InventoryTable = ({ 
   items = [],
+  expandedItem,
+  onToggleExpand,
   onOut,
   onEdit, 
 }: InventoryTableProps) => {
   const inventoryItems: InventoryItem[] = items;
-  
+
   return (
     <section>
       <TableHeader />
-      <div className="p-[24px] flex flex-col gap-[24px]">
+      <div className="flex flex-col">
         {inventoryItems.map((item) => (
           <TableRow
             key={item.id}
-            {...item}
+            item={item}
             onOut={onOut}
             onEdit={onEdit}
+            isExpanded={expandedItem === item.id}
+            onToggle={onToggleExpand}
           />
         ))}
       </div>
