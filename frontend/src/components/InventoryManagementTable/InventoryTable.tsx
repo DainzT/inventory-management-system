@@ -1,19 +1,9 @@
 import { TableHeader } from "./TableHeader";
 import { TableRow } from "./TableRow";
-
-interface InventoryItemsProps {
-  id: number;
-  productName: string;
-  note: string;
-  quantity: number | "";
-  unitPrice: number | "";
-  selectUnit: string;
-  unitSize: number | "";
-  total?: number | "";
-}
+import { InventoryItem } from "@/types";
 
 interface InventoryTableProps {
-  items?: InventoryItemsProps[]; 
+  items?: InventoryItem[]; 
   onOut?: () => void;
   onEdit?: () => void;
 }
@@ -23,7 +13,7 @@ export const InventoryTable = ({
   onOut,
   onEdit, 
 }: InventoryTableProps) => {
-  const inventoryItems: InventoryItemsProps[] = items;
+  const inventoryItems: InventoryItem[] = items;
   
   return (
     <section>

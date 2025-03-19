@@ -2,17 +2,7 @@ import { SearchBar } from "./SearchBar";
 import { InventoryButton } from "./InventoryButton";
 import { InventoryTable } from "./InventoryTable";
 import { useState } from "react";
-
-interface InventoryItemsProps {
-  id: number;
-  productName: string;
-  note: string;
-  quantity: number | "";
-  unitPrice: number | "";
-  selectUnit: string;
-  unitSize: number | "";
-  total?: number | "";
-}
+import { InventoryItem } from "@/types";
 
 interface InventoryManagementTableProps {
   setIsAddOpen: (isOpen: boolean) => void;
@@ -26,7 +16,7 @@ const InventoryManagementTable = ({
   setIsOutOpen,
   setIsEditOpen,
 }: InventoryManagementTableProps) => {
-  const [inventoryItems, setInventoryItems] =useState<InventoryItemsProps[]>([
+  const [inventoryItems, setInventoryItems] =useState<InventoryItem[]>([
     {
       id: 1,
       productName: "Fishing Reel",
