@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
 import { Trash2, Minus, Plus, CheckSquare, X } from 'lucide-react';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import ProductItem, { ProductItemProps } from './ProductItemProps';
 
 interface ModifyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (quantity: number, fleet: string, boat: string) => void;
+  onConfirm: (quantity: number, fleet: string, boat: string, unit: string) => void;
   onRemove: () => void;
+  product: ProductItemProps;
 }
+
+// export interface ProductItemProps {
+//   name: string;
+//   price: number;
+//   description: string;
+//   stock: number;
+// }
 
 const fleets = {
   "F/B DONYA DONYA 2x": [
@@ -26,13 +35,26 @@ const fleets = {
   ]
 };
 
+const units = [
+  "piece",
+  "meter",
+  "kilogram",
+  "gram",
+  "roll",
+  "sack",
+  "box",
+  "liter"
+];
+
 const ModifyModal: React.FC<ModifyModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
   onRemove,
+  product,
 }) => {
   const [quantity, setQuantity] = useState(7);
+  const [unit, setUnit] = useState("piece");
   const [fleet, setFleet] = useState("F/B DONYA DONYA 2x");
   const [boat, setBoat] = useState("F/B Lady Rachelle");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -54,12 +76,11 @@ const ModifyModal: React.FC<ModifyModalProps> = ({
   
   const handleFleetChange = (newFleet: string) => {
     setFleet(newFleet);
-    // Update boat to the first boat in the selected fleet
     setBoat(fleets[newFleet as keyof typeof fleets][0]);
   };
   
   const handleConfirm = () => {
-    onConfirm(quantity, fleet, boat);
+    onConfirm(quantity, fleet, boat, unit);
     onClose();
   };
 
@@ -88,36 +109,42 @@ const ModifyModal: React.FC<ModifyModalProps> = ({
               </button>
             </div>
             
-            <div className="bg-gray-50 rounded-md p-4">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-medium">Fishing Reel</h3>
-                <span className="text-teal-600 font-medium">₱60.00</span>
-              </div>
-              <p className="text-gray-600 mb-4">Spinning reel, corrosion-resistant</p>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Stock Available:</span>
-                <span className="font-medium">{currentStock}</span>
-              </div>
-            </div>
+            <ProductItem
+              name={product.name}
+              price={product.price}
+              description={product.description}
+              stock={currentStock}
+            />
             
             <div>
               <label className="block font-medium mb-2">Quantity</label>
-              <div className="flex">
-                <button 
-                  onClick={handleDecrement}
-                  className="bg-gray-200 hover:bg-gray-300 rounded-l-md w-10 h-10 flex items-center justify-center"
-                >
-                  <Minus size={20} />
-                </button>
-                <div className="bg-gray-100 w-12 h-10 flex items-center justify-center">
-                  {quantity}
+              <div className="flex items-center gap-2">
+                <div className="flex">
+                  <button 
+                    onClick={handleDecrement}
+                    className="bg-gray-200 hover:bg-gray-300 rounded-l-md w-10 h-10 flex items-center justify-center"
+                  >
+                    <Minus size={20} />
+                  </button>
+                  <div className="bg-gray-100 w-12 h-10 flex items-center justify-center">
+                    {quantity}
+                  </div>
+                  <button 
+                    onClick={handleIncrement}
+                    className="bg-gray-200 hover:bg-gray-300 rounded-r-md w-10 h-10 flex items-center justify-center"
+                  >
+                    <Plus size={20} />
+                  </button>
                 </div>
-                <button 
-                  onClick={handleIncrement}
-                  className="bg-gray-200 hover:bg-gray-300 rounded-r-md w-10 h-10 flex items-center justify-center"
+                <select
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                  className="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
                 >
-                  <Plus size={20} />
-                </button>
+                  {units.map((unitOption) => (
+                    <option key={unitOption} value={unitOption}>{unitOption}</option>
+                  ))}
+                </select>
               </div>
             </div>
             
