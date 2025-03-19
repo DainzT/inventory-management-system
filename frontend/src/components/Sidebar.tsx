@@ -14,7 +14,7 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="w-64 bg-[#F4F4F4] text-[#333333] h-screen border-r border-[#bbbbbb] flex flex-col items-center justify-center">
+    <div className="w-64 bg-white text-black h-screen border-r border-white-light flex flex-col items-center justify-center">
       <nav className=" flex flex-col items-center w-full">
         <img src={logo} alt="Logo" className="w-48 h-48" />
         <ul>
@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
             <li key={index} className="mb-2 w-64 flex justify-center">
               <Link
                 to={link.path}
-                className="flex items-center py-2 px-4 w-full pl-14 hover:bg-[#1B626E] hover:text-[#F4F4F4] rounded inter-font"
+                className="flex items-center py-2 px-4 w-full pl-14 hover:bg-accent hover:text-white rounded inter-font"
               >
                 {link.icon && <span className="mr-2">{link.icon}</span>}
                 {link.label}
