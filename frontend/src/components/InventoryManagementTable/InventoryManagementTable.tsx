@@ -5,6 +5,7 @@ import { useState } from "react";
 import { InventoryItem } from "@/types";
 
 interface InventoryManagementTableProps {
+  inventoryItems: InventoryItem[];
   setIsAddOpen: (isOpen: boolean) => void;
   setIsOutOpen: (isOpen: boolean) => void;
   setIsEditOpen: (isOpen: boolean) => void;
@@ -12,35 +13,12 @@ interface InventoryManagementTableProps {
 
 
 const InventoryManagementTable = ({
+  inventoryItems,
   setIsAddOpen,
   setIsOutOpen,
   setIsEditOpen,
 }: InventoryManagementTableProps) => {
-  const [inventoryItems, setInventoryItems] =useState<InventoryItem[]>([
-    {
-      id: 1,
-      productName: "Fishing Reel",
-      note: "Spinning reel, corrosion-resistant",
-      quantity: 8,
-      unitPrice: 60.0,
-      selectUnit: "piece",
-      unitSize: 1,
-      total: 100,
-      dateCreated: new Date(),
-    },
-    {
-      id: 2,
-      productName: "Nylon Fishing Line",
-      note: "500m, high-tensile strength",
-      quantity: 25,
-      unitPrice: 150.5,
-      selectUnit: "roll",
-      unitSize: 1,
-      total: 120,
-      dateCreated: new Date(),
-    }, 
 
-  ]);
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
 
   const handleToggleExpand = (itemId: number) => {

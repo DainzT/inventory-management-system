@@ -5,18 +5,15 @@ import { ProductFormData } from "@/types";
 interface AddProductModalProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
+    onAddProduct: (product: ProductFormData) => void;
 }
 
 const AddProductModal = ({ 
     isOpen, 
-    setIsOpen 
+    setIsOpen,
+    onAddProduct, 
 }: AddProductModalProps) => {
     if (!isOpen) return null;
-
-    const handleSubmit = (data: ProductFormData) => {
-        console.log("Form submitted:", data);
-        setIsOpen(false);
-    };
 
     return (
         <section className="flex fixed inset-0 justify-center items-center">  
@@ -46,7 +43,7 @@ const AddProductModal = ({
                 <div className="h-[1px] bg-[#E0D8D8] my-1"/>
                     <AddProductForm
                         onCancel={() => setIsOpen(false)}
-                        onSubmit={handleSubmit}
+                        onSubmit={onAddProduct}
                 />
             </article>
             <div

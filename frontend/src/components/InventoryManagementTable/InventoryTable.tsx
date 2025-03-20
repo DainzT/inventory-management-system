@@ -3,7 +3,7 @@ import { TableRow } from "./TableRow";
 import { InventoryItem } from "@/types";
 
 interface InventoryTableProps {
-  items?: InventoryItem[]; 
+  items: InventoryItem[]; 
   expandedItem: number | null;
   onToggleExpand: (id: number) => void;
   onOut?: () => void;

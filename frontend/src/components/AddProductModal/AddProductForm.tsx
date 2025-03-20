@@ -23,6 +23,7 @@ const AddProductForm = ({
         unitPrice: "",
         unitSize: "",
         total: "",
+        dateCreated: new Date(),
     }); 
 
     const [errors, setErrors] = useState<{ [key in keyof ProductFormData]?: string }>({});
@@ -67,7 +68,7 @@ const AddProductForm = ({
 
     return (
         
-        <form onSubmit={handleFormSubmit}  className="flex flex-col gap-3">
+        <form onSubmit={handleFormSubmit}  className="flex flex-col gap-3.5">
             <InputField
                 label="Product Name"
                 required

@@ -6,4 +6,6 @@ export interface ProductFormData {
     selectUnit: string;
     unitSize: number | "";
     total: number | "";
+    dateCreated: Date;
+    lastUpdated: Date;
   }
