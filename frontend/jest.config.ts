@@ -13,6 +13,7 @@ const config: Config.InitialOptions = {
   ],
   testPathIgnorePatterns: ["/node_modules/", "/e2e/"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  watchPathIgnorePatterns: ["node_modules", "dist"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
