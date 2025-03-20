@@ -17,7 +17,7 @@ export const FleetCard: React.FC<FleetCardProps> = ({
       }`}
       onClick={onClick}
     >
-      <h2 className="text-3xl font-bold text-white">{title}</h2>
+      <h2 className="text-4xl font-bold text-white">{title}</h2>
 
       <div className="absolute bottom-[14px] right-[14px] opacity-[0.3]">
         <svg
@@ -58,7 +58,7 @@ export const FleetList: React.FC<FleetListProps> = ({
   activeFleet,
   onFleetSelect,
 }) => {
-  const fleets = ["All Fleets", "F/B DONYA DONYA", "F/B Doña Librada"];
+  const fleets = ["All Fleets", "DONYA DONYA", "Doña Librada"];
 
   return (
     <nav className="flex relative flex-col gap-4 pl-24 mt-5">

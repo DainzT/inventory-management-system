@@ -18,7 +18,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div className="relative flex-1">
-      <div className="flex gap-3 items-center pl-9 w-full h-14 bg-gray-50 rounded-xl border-2 border">
+      <div className="flex gap-3 items-center pl-9 w-full h-14 bg-gray-50 rounded-xl border-1 border">
         <span>
           <svg
             width="24"
@@ -38,7 +38,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         <input
           type="text"
           placeholder={placeholder}
-          className="flex-1 text-lg bg-transparent text-neutral-400 focus:outline-none"
+          className="flex-1 text-lg bg-transparent text-neutral-700 focus:outline-none"
           onChange={handleChange}
           aria-label={placeholder}
         />

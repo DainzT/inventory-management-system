@@ -17,19 +17,19 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   onModify,
 }) => {
   const filterOptions = [
-    "All",
-    "F/B DONYA DONYA",
+    "All Boats",
+    "F/B Donya Donya",
     "F/B Doña Librada",
-    "-F/B Lady Rachelle",
-    "-F/B Mariella",
-    "-F/B My Shield",
-    "-F/B Abigail",
-    "-F/B DC-9",
-    "-F/B Adomar",
-    "-F/B Prince of Peace",
-    "-F/B Ruth Gaily",
-    "-F/V Vadeo Scout",
-    "-F/B Mariene",
+    "F/B Lady Rachelle",
+    "F/B Mariella",
+    "F/B My Shield",
+    "F/B Abigail",
+    "F/B DC-9",
+    "F/B Adomar",
+    "F/B Prince of Peace",
+    "F/B Ruth Gaily",
+    "F/V Vadeo Scout",
+    "F/B Mariene",
   ];
 
   return (
