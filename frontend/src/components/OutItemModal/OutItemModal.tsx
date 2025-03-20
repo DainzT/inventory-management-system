@@ -1,15 +1,20 @@
-import React, { useState } from "react";
-import ItemDetails from "./OutItemModal/ItemDetails";
-import SelectField from "./OutItemModal/SelectField";
-import QuantitySelector from "./OutItemModal/QuantitySelector";
-import SummarySection from "./OutItemModal/SummarySection";
+/* eslint-disable react-hooks/rules-of-hooks */
+import React, { Dispatch, SetStateAction, useState } from "react";
+import ItemDetails from "./ItemDetails";
+import SelectField from "./SelectField";
+import QuantitySelector from "./QuantitySelector";
+import SummarySection from "./SummarySection";
 import { MdClose, MdAdd } from "react-icons/md";
 
 interface OutItemModalProps {
-  onClose: () => void;
+  isOpen: boolean, 
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const OutItemModal: React.FC<OutItemModalProps> = ({ onClose }) => {
+const OutItemModal: React.FC<OutItemModalProps> = ({ 
+  isOpen, 
+  setIsOpen, 
+  }) => {
   const [fleet, setFleet] = useState<string>("");
   const [boat, setBoat] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
@@ -31,14 +36,16 @@ const OutItemModal: React.FC<OutItemModalProps> = ({ onClose }) => {
 
   const totalPrice = quantity * itemDetails.price;
   const remainingStock = itemDetails.availableStock - quantity;
+  
+  if (!isOpen) return null;
 
   return (
-    <section className="flex fixed inset-0 justify-center items-center bg-black bg-opacity-50">
-      <article className="relative px-6 py-4 w-96 bg-white rounded-2xl border-2 shadow-sm border-zinc-300 h-[36rem]">
+    <section className="flex fixed inset-0 justify-center items-center">
+      <article className="relative z-50 px-6 py-4 w-96 bg-white rounded-2xl border-2 shadow-sm border-zinc-300 h-[36rem]">
         <header className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold text-cyan-800">Out Item</h1>
+          <h1 className="text-[24px] font-semibold text-cyan-800 inter-font">Out Item</h1>
           <button
-            onClick={onClose}
+            onClick={() => setIsOpen(false)}
             aria-label="Close"
             className="cursor-pointer"
           >
@@ -99,6 +106,10 @@ const OutItemModal: React.FC<OutItemModalProps> = ({ onClose }) => {
           <span>Assign</span>
         </button>
       </article>
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        aria-hidden="true"
+      />
     </section>
   );
 };

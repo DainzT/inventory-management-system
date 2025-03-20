@@ -61,8 +61,8 @@ const InventoryManagementTable = ({
           items={inventoryItems} 
           expandedItem={expandedItem}
           onToggleExpand={handleToggleExpand}
-          onOut={() => setIsEditOpen(true)} 
-          onEdit={() => setIsOutOpen(true)}/>
+          onOut={() => setIsOutOpen(true)} 
+          onEdit={() => setIsEditOpen(true)}/>
         </section>
       </main>
   );

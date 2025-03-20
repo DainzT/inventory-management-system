@@ -20,7 +20,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   return (
     <div>
       <div className="flex items-center mb-2">
-        <label className="text-base font-bold text-black">{label}</label>
+        <label className="text-base font-bold text-black inter-font">{label}</label>
         {required && <span className="ml-1 text-rose-500">*</span>}
       </div>
       <button
@@ -30,7 +30,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className="text-base text-black">{value || placeholder}</span>
+        <span className="text-base text-black inter-font">{value || placeholder}</span>
         <BsArrowDown />
       </button>
 
@@ -41,7 +41,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
               <li
                 key={option}
                 onClick={() => handleOptionClick(option)}
-                className="px-4 py-2 hover:bg-zinc-100 cursor-pointer"
+                className="px-4 py-2 hover:bg-zinc-100 cursor-pointer inter-font"
               >
                 {option}
               </li>

@@ -23,10 +23,10 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   return (
     <div>
       <div className="flex items-center mb-2">
-        <label htmlFor="quantity" className="text-base font-bold text-black">
+        <label htmlFor="quantity" className="text-base font-bold text-black inter-font">
           Quantity
         </label>
-        <span className="ml-1 text-rose-500">*</span>
+        <span className="ml-1 text-rose-500 inter-font">*</span>
       </div>
       <div className="flex gap-2 items-center">
         <button
@@ -39,7 +39,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
         </button>
         <div
           id="quantity"
-          className="flex justify-center items-center w-16 h-8 rounded-lg border border-red-100 border-solid bg-zinc-100 text-black"
+          className="flex justify-center items-center w-16 h-8 rounded-lg border border-red-100 border-solid bg-zinc-100 text-black inter-font"
           aria-live="polite"
         >
           {quantity} {unit.charAt(0)}
