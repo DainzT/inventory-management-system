@@ -67,7 +67,7 @@ const AddProductForm = ({
 
     return (
         
-        <form onSubmit={handleFormSubmit}  className="flex flex-col gap-6">
+        <form onSubmit={handleFormSubmit}  className="flex flex-col gap-3">
             <InputField
                 label="Product Name"
                 required
@@ -119,7 +119,7 @@ const AddProductForm = ({
                 readonly 
             />
             
-            <div className="flex justify-end gap-4 mt-6">
+            <div className="flex justify-end gap-4">
                 <Button 
                     variant="secondary" 
                     onClick={onCancel}

@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+
 import React, { Dispatch, SetStateAction, useState } from "react";
 import ItemDetails from "./ItemDetails";
 import SelectField from "./SelectField";
@@ -41,9 +41,9 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
 
   return (
     <section className="flex fixed inset-0 justify-center items-center">
-      <article className="relative z-50 px-6 py-4 w-96 bg-white rounded-2xl border-2 shadow-sm border-zinc-300 h-[36rem]">
+      <article className="relative z-50 px-6 py-4 w-96 bg-white rounded-[19px] border-[1px] border-[#E0D8D8] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] animate-[fadeIn_0.2s_ease-out] h-[36rem]">
         <header className="flex justify-between items-center mb-4">
-          <h1 className="text-[24px] font-semibold text-cyan-800 inter-font">Out Item</h1>
+          <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Out Item</h1>
           <button
             onClick={() => setIsOpen(false)}
             aria-label="Close"
