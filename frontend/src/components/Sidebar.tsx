@@ -1,22 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/image/logo.svg";
-import { MdOutlineInventory2 } from "react-icons/md";
-import { BsBoxSeam } from "react-icons/bs";
-import { CiBoxList } from "react-icons/ci";
 import { SidebarContents } from "@/types/sidebar-contents";
 
-const Sidebar: React.FC = () => {
-  const sidebarLinks: SidebarContents[] = [
-    { path: "/", label: "General Stock", icon: <MdOutlineInventory2 /> },
-    { path: "/orders", label: "Orders", icon: <BsBoxSeam /> },
-    { path: "/summary", label: "Monthly Summary", icon: <CiBoxList /> },
-  ];
+interface SidebarProps {
+  sidebarLinks: SidebarContents[];
+  showLogo: boolean;
+}
 
+const Sidebar: React.FC<SidebarProps> = ({ sidebarLinks, showLogo }) => {
   return (
     <div className="w-64 bg-white text-black h-screen border-r border-white-light flex flex-col items-center justify-center">
       <nav className=" flex flex-col items-center w-full">
-        <img src={logo} alt="Logo" className="w-48 h-48" />
+        {showLogo && logo && (
+          <img src={logo} alt="Logo" className="w-48 h-48" />
+        )}
         <ul>
           {sidebarLinks.map((link, index) => (
             <li key={index} className="mb-2 w-64 flex justify-center">
