@@ -22,12 +22,12 @@ const fleetBoats = {
   ],
 };
 
-
 const Orders: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
+
   const orders: OrderItemProps[] = [
     {
       id: 1,
@@ -66,8 +66,8 @@ const Orders: React.FC = () => {
       dateOut: "Jan 30, 2024",
     },
   ];
-  
-   const handleModify = (id: number) => {
+
+  const handleModify = (id: number) => {
     console.log(`Modify order with ID: ${id}`);
   };
 
@@ -85,7 +85,7 @@ const Orders: React.FC = () => {
 
   const product: ProductItemProps = {
     name: "Fishing Line",
-    price: 60.00,
+    price: 60.0,
     description: "For catching fish",
     stock: 10,
   };
@@ -98,15 +98,21 @@ const Orders: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleConfirmChanges = (quantity: number, fleet: string, boat: string, unit: string) => {
-    console.log('Changes confirmed:', { quantity, fleet, boat, unit });
-    setIsModalOpen(false); 
+  const handleConfirmChanges = (
+    quantity: number,
+    fleet: string,
+    boat: string,
+    unit: string
+  ) => {
+    console.log("Changes confirmed:", { quantity, fleet, boat, unit });
+    setIsModalOpen(false);
   };
 
   const handleRemoveItem = () => {
-    console.log('Item removed');
+    console.log("Item removed");
     setIsModalOpen(false);
   };
+
   const filteredOrders = orders.filter((order) => {
     const matchesSearch = [
       order.productName.toLowerCase(),
@@ -122,17 +128,17 @@ const Orders: React.FC = () => {
 
     const matchesFleet =
       activeFleet === "All Fleets" ||
-      (fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(order.fleet)) ||
+      fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(order.fleet) ||
       order.fleet === activeFleet;
 
-      const matchesBoat = selectedBoat === "All Boats" || order.fleet === selectedBoat;
-
+    const matchesBoat =
+      selectedBoat === "All Boats" || order.fleet === selectedBoat;
 
     return matchesSearch && matchesFleet && matchesBoat;
   });
 
   return (
-     <div className="p-4 bg-[#F4F4F4] h-full">
+    <div className="p-4 bg-[#F4F4F4] h-full">
       <main className="flex-1 p-10">
         <h1 className="text-6xl font-bold text-cyan-800">Orders</h1>
 
@@ -166,19 +172,20 @@ const Orders: React.FC = () => {
             orders={filteredOrders}
             onSearch={handleSearch}
             onFilter={handleFilter}
-            onModify={handleModify}
+            onModify={isModalOpen ? undefined : handleModify}
+            isModifyOpen={handleOpenModal}
           />
-       
-      <ModifyModal 
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmChanges}
-        onRemove={handleRemoveItem}
-        product={product} // Pass the product data to the modal
-      />
-      
-     </div>
-    </main>
+        </div>
+
+        <ModifyModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmChanges}
+          onRemove={handleRemoveItem}
+          product={product}
+        />
+      </main>
+    </div>
   );
 };
 
