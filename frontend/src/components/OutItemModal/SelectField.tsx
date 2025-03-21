@@ -9,12 +9,15 @@ const SelectField: React.FC<SelectFieldProps> = ({
   onChange,
   options,
   required = false,
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleOptionClick = (option: string) => {
-    onChange(option);
-    setIsOpen(false);
+    if (!disabled) {
+      onChange(option);
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -29,6 +32,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         className="flex justify-between items-center px-4 w-full h-12 rounded-lg border border-red-100 border-solid cursor-pointer bg-zinc-100"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        disabled={disabled}
       >
         <span className="text-base text-black inter-font">{value || placeholder}</span>
         <BsArrowDown />

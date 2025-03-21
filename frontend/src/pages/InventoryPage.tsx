@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import InventoryManagementTable from "@/components/InventoryManagementTable/InventoryManagementTable";
 import AddProductModal from "@/components/AddProductModal/AddProductModal";
 import OutItemModal from "@/components/OutItemModal/OutItemModal";
-import { InventoryItem, ProductFormData } from "@/types";
+import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 
 const Inventory: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isOutOpen, setIsOutOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
     {
       id: 1,
-      productName: "Fishing Reel",
+      name: "Fishing Reel",
       note: "Spinning reel, corrosion-resistant",
       quantity: 8,
       unitPrice: 60.0,
@@ -22,8 +23,11 @@ const Inventory: React.FC = () => {
       lastUpdated: new Date(),
     },
   ]);
+  const [outItems, setOutItems] = useState<OrderItem[]>([]);
 
-  const handleAddProduct = (newProduct: ProductFormData) => {
+  console.log(outItems)
+
+  const handleAddProduct = (newProduct: ItemFormData) => {
     setInventoryItems((prevItems) => [
       ...prevItems,
       {
@@ -32,6 +36,14 @@ const Inventory: React.FC = () => {
       },
     ]);
     setIsAddOpen(false); 
+  };  
+
+  const handleOutItem = (updatedItem: InventoryItem, outItem: OrderItem) => {
+    setInventoryItems((prevItems) =>
+      prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
+
+    setOutItems((prevOutItems) => [...prevOutItems, outItem]);
   };
 
   return (
@@ -40,7 +52,10 @@ const Inventory: React.FC = () => {
       <InventoryManagementTable 
         setIsAddOpen={setIsAddOpen} 
         setIsEditOpen={setIsEditOpen} 
-        setIsOutOpen={setIsOutOpen}
+        setIsOutOpen={(isOpen, item) => {
+          setSelectedItem(item || null);
+          setIsOutOpen(isOpen);
+        }}
         inventoryItems={inventoryItems}
       />
       <AddProductModal 
@@ -48,7 +63,12 @@ const Inventory: React.FC = () => {
         setIsOpen={setIsAddOpen} 
         onAddItem={handleAddProduct}
       />
-      <OutItemModal isOpen={isOutOpen} setIsOpen={setIsOutOpen}/>
+      <OutItemModal 
+        isOpen={isOutOpen} 
+        setIsOpen={setIsOutOpen}
+        selectedItem={selectedItem}
+        onOutItem={handleOutItem}
+      />
     </div>
   );
 };

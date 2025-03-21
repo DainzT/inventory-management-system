@@ -6,7 +6,7 @@ interface InventoryTableProps {
   items: InventoryItem[]; 
   expandedItem: number | null;
   onToggleExpand: (id: number) => void;
-  onOut?: () => void;
+  onOut: (item: InventoryItem) => void;
   onEdit?: () => void;
 }
 
@@ -27,7 +27,7 @@ export const InventoryTable = ({
           <TableRow
             key={item.id}
             item={item}
-            onOut={onOut}
+            onOut={() => onOut(item)}
             onEdit={onEdit}
             isExpanded={expandedItem === item.id}
             onToggle={onToggleExpand}

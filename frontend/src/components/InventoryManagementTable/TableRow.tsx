@@ -25,7 +25,7 @@ interface TableRowProps {
             {item.id}
           </div>
           <div className="w-[192px] text-[18px] font-bold text-[#1F2937]">
-            {item.productName}
+            {item.note}
           </div>
           <div className="w-[286px] text-[18px] text-[#4B5563]">
             {item.note}

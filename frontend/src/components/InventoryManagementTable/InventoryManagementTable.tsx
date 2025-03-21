@@ -7,10 +7,9 @@ import { InventoryItem } from "@/types";
 interface InventoryManagementTableProps {
   inventoryItems: InventoryItem[];
   setIsAddOpen: (isOpen: boolean) => void;
-  setIsOutOpen: (isOpen: boolean) => void;
+  setIsOutOpen: (isOpen: boolean, item?: InventoryItem) => void;
   setIsEditOpen: (isOpen: boolean) => void;
 }
-
 
 const InventoryManagementTable = ({
   inventoryItems,
@@ -23,6 +22,10 @@ const InventoryManagementTable = ({
 
   const handleToggleExpand = (itemId: number) => {
     setExpandedItem(expandedItem === itemId ? null : itemId);
+  };
+
+  const handleOutItemClick = (item: InventoryItem) => {
+    setIsOutOpen(true, item);
   };
 
   return (
@@ -39,7 +42,7 @@ const InventoryManagementTable = ({
           items={inventoryItems} 
           expandedItem={expandedItem}
           onToggleExpand={handleToggleExpand}
-          onOut={() => setIsOutOpen(true)} 
+          onOut={(item) => handleOutItemClick(item)} 
           onEdit={() => setIsEditOpen(true)}/>
         </section>
       </main>

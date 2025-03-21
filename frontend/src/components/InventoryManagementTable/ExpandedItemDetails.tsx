@@ -1,4 +1,4 @@
-import { InventoryItem } from "@/types";
+import { Inve } from "@/types";
 
 interface ExpandedItemDetailsProps {
   item: InventoryItem;
