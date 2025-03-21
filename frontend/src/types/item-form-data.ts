@@ -1,5 +1,5 @@
-export interface ProductFormData {
-    productName: string;
+export interface ItemFormData {
+    name: string;
     note: string;
     quantity: number | "";
     unitPrice: number | "";
@@ -7,5 +7,5 @@ export interface ProductFormData {
     unitSize: number | "";
     total: number | "";
     dateCreated: Date;
-    lastUpdated: Date;
+    lastUpdated?: Date;
   }

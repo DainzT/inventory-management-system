@@ -46,7 +46,7 @@ const Inventory: React.FC = () => {
       <AddProductModal 
         isOpen={isAddOpen} 
         setIsOpen={setIsAddOpen} 
-        onAddProduct={handleAddProduct}
+        onAddItem={handleAddProduct}
       />
       <OutItemModal isOpen={isOutOpen} setIsOpen={setIsOutOpen}/>
     </div>

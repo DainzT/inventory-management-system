@@ -1,17 +1,17 @@
 import { Dispatch, SetStateAction } from "react";
 import AddProductForm from "./AddProductForm";
-import { ProductFormData } from "@/types";
+import { ItemFormData } from "@/types";
 
 interface AddProductModalProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
-    onAddProduct: (product: ProductFormData) => void;
+    onAddItem: (product: ItemFormData) => void;
 }
 
 const AddProductModal = ({ 
     isOpen, 
     setIsOpen,
-    onAddProduct, 
+    onAddItem, 
 }: AddProductModalProps) => {
     if (!isOpen) return null;
 
@@ -43,7 +43,7 @@ const AddProductModal = ({
                 <div className="h-[1px] bg-[#E0D8D8] my-1"/>
                     <AddProductForm
                         onCancel={() => setIsOpen(false)}
-                        onSubmit={onAddProduct}
+                        onSubmit={onAddItem}
                 />
             </article>
             <div
