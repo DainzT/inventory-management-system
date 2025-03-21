@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { OrderItemProps } from "@/types/FleetsOrder";
 import { SearchBar } from "./SearchBar";
 import { FilterDropdown } from "./FilterDropdown";
+import { ExpandedOrderDetails } from "./ExpandedOrderDetails";
+import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 
 interface OrdersTableProps {
   orders: OrderItemProps[];
@@ -16,6 +18,12 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   onFilter,
   onModify,
 }) => {
+  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+
+  const toggleExpand = (id: number) => {
+    setExpandedOrderId(expandedOrderId === id ? null : id);
+  };
+
   const filterOptions = [
     "All Boats",
     "F/B Donya Donya",
@@ -33,17 +41,13 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   ];
 
   return (
-    <section className="flex-1 bg-white rounded-xl border border shadow-sm">
+    <section className="flex-1 bg-white rounded-xl border shadow-sm">
       <div className="flex gap-5 p-8">
         <SearchBar onSearch={onSearch} />
-        <FilterDropdown
-          label="All Boats"
-          options={filterOptions}
-          onSelect={onFilter}
-        />
+        <FilterDropdown label="All Boats" options={filterOptions} onSelect={onFilter} />
       </div>
 
-      <div className="grid px-5 py-6 w-full text-base font-bold text-white bg-cyan-900 grid-cols-[80px_180px_190px_106px_132px_120px_120px_110px]">
+      <div className="grid px-5 py-6 w-full text-base font-bold text-white bg-cyan-900 grid-cols-[80px_180px_165px_125px_150px_120px_120px_110px]">
         <div>ID</div>
         <div>Product Name</div>
         <div>Note</div>
@@ -54,32 +58,39 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
         <div>Actions</div>
       </div>
 
-      <div className="p-5 ">
+      <div className="p-5">
         {orders.map((order) => (
-          <div
-            key={order.id}
-            className={`grid items-center py-4 grid-cols-[80px_180px_190px_106px_110px_120px_120px_108px]`}
-          >
-            <div className="text-lg text-gray-800">{order.id}</div>
-            <div className="text-lg font-bold text-gray-800">
-              {order.productName}
+          <article key={order.id}>
+            <div className="grid items-center py-4 grid-cols-[80px_170px_195px_108px_125px_135px_130px_110px] bg-white ">
+              <div className="text-lg text-gray-800">{order.id}</div>
+              <div className="text-lg font-bold text-gray-800">{order.productName}</div>
+              <div className="text-lg text-gray-600">{order.note}</div>
+              <div className="text-lg text-gray-800">{order.quantity}</div>
+              <div className="text-lg text-gray-800">₱{order.unitPrice.toFixed(2)}</div>
+              <div className="text-lg text-gray-600">{order.fleet}</div>
+              <div className="text-lg text-gray-600">{order.dateOut}</div>
+              <div className="flex items-center gap-2">
+                <button
+                  className="h-9 text-base text-white bg-emerald-700 rounded-lg w-[85px]"
+                  onClick={() => onModify && onModify(order.id)}
+                >
+                  Modify
+                </button>
+                <div className=" ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50" onClick={() => toggleExpand(order.id)}>
+                  <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                </div>
+              </div>
             </div>
-            <div className="text-lg text-gray-600">{order.description}</div>
-            <div className="text-lg text-gray-800">{order.quantity}</div>
-            <div className="text-lg text-gray-800">
-              ₱{order.unitPrice.toFixed(2)}
+            <div
+              className={`transition-all duration-300 ease-in-out ${
+                expandedOrderId === order.id
+                  ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                  : "scale-100 opacity-0 max-h-0 overflow-hidden"
+              }`}
+            >
+              {expandedOrderId === order.id && <ExpandedOrderDetails order={order} />}
             </div>
-            <div className="text-lg text-gray-600">{order.fleet}</div>
-            <div className="text-lg text-gray-600">{order.dateOut}</div>
-            <div>
-              <button
-                className="h-12 text-base text-white bg-emerald-700 rounded-lg w-[85px]"
-                onClick={() => onModify && onModify(order.id)}
-              >
-                Modify
-              </button>
-            </div>
-          </div>
+          </article>
         ))}
       </div>
     </section>

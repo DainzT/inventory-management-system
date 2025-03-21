@@ -16,9 +16,12 @@ export interface NavigationItemProps {
   export interface OrderItemProps {
     id: number;
     productName: string;
-    description: string;
-    quantity: number;
-    unitPrice: number;
+    note: string;
+    quantity: number | "";
+    unitPrice: number ;
+    selectUnit: string;
+    unitSize: number | "";
+    total?: number | "";
     fleet: string;
     dateOut: string;
     onModify?: (id: number) => void;
