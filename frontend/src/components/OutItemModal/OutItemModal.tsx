@@ -23,8 +23,31 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
   const [fleet, setFleet] = useState<string>("");
   const [boat, setBoat] = useState<string>("");
   const [quantity, setQuantity] = useState<number | "">("");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  console.log(selectedItem)
+  const clearError = (field: string) => {
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[field]; 
+      return newErrors;
+    });
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!fleet) newErrors.fleet = "Please select a fleet.";
+    if (fleet && !boat) newErrors.boat = "Please select a boat.";
+
+    if (quantity === "" || Number(quantity) <= 0) {
+      newErrors.quantity = "Please enter a valid quantity.";
+    } else if (selectedItem && Number(quantity) > Number(selectedItem.quantity)) {
+      newErrors.quantity = "Quantity cannot exceed available stock.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; 
+  };
 
   const getBoatOptions = (fleet: string) => {
     switch (fleet) {
@@ -54,22 +77,32 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
   const handleFleetChange = (selectedFleet: string) => {
     setFleet(selectedFleet);
     setBoat(""); 
+    clearError("fleet"); 
+    clearError("boat");
+  };
+
+  const handleBoatChange = (selectedBoat: string) => {
+    setBoat(selectedBoat);
+    clearError("boat"); 
+  };
+
+  const handleQuantityChange = (newValue: number | "") => {
+    setQuantity(newValue);
+    clearError("quantity");
   };
 
   const handleAssign = () => {
-    if (!selectedItem || quantity === "" || quantity <= 0) {
-      alert("Please select a valid quantity.");
-      return;
-    }
+
+    if (!validateForm()) return;
 
     const updatedItem: InventoryItem = {
-      ...selectedItem,
-      quantity: Number(selectedItem.quantity) - Number(quantity),
+      ...selectedItem!,
+      quantity: Number(selectedItem?.quantity) - Number(quantity),
       lastUpdated: new Date(),
     };
 
     const outItem: OrderItem = {
-      ...selectedItem,
+      ...selectedItem!,
       quantity: Number(quantity), 
       fleet, 
       boat, 
@@ -117,35 +150,39 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
         </header>
 
         {selectedItem && <ItemDetails item={selectedItem} />}
-
-        <div className="mb-2">
+        <div className="mb-3">
           <SelectField
             label="Choose a fleet"
             placeholder="Select a fleet"
             value={fleet}
             onChange={handleFleetChange}
             options={fleetOptions}
+            error={errors.fleet}
             required
           />
         </div>
 
-        <div className="mb-2">
-          <SelectField
-            label="Choose a baot"
-            placeholder="Select a boat"
-            value={boat}
-            onChange={setBoat}
-            options={boatOptions}
-            disabled={!fleet}
-          />
-        </div>
+        {fleet && (
+          <div className="mb-3">
+            <SelectField
+              label="Choose a boat"
+              placeholder="Select a boat"
+              value={boat}
+              onChange={handleBoatChange}
+              options={boatOptions}
+              error={errors.boat}
+              disabled={!fleet}
+            />
+          </div>
+        )}
 
-        <div className="mb-2">
+        <div className="mb-3">
           <QuantitySelector
             value={quantity}
-            onChange={(newValue) => setQuantity(newValue === "" ? "" : newValue)}
+            onChange={handleQuantityChange}
             maxQuantity={Number(selectedItem?.quantity)}
             unitSize={Number(selectedItem?.unitSize)}
+            error={errors.quantity}
           />
         </div>
 
@@ -157,7 +194,10 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
 
         <button
           onClick={handleAssign}
-          className="flex absolute right-6 bottom-6 gap-2 justify-center items-center h-10 text-white bg-accent rounded-md w-24"
+          className="
+            flex absolute right-6 bottom-6 gap-2 justify-center items-center h-10 text-white
+            bg-[#1B626E] rounded-md w-24 transition-colors hover:bg-[#297885] active:bg-[#145965]
+          "
         >
           <MdAdd />
           <span>Assign</span>

@@ -7,7 +7,7 @@ import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 const Inventory: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isOutOpen, setIsOutOpen] = useState(false);
+  const [isOutOpen, setIsOutOpen] = useState(false); 
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
     {
@@ -22,8 +22,8 @@ const Inventory: React.FC = () => {
       dateCreated: new Date(),
       lastUpdated: new Date(),
     },
-  ]);
-  const [outItems, setOutItems] = useState<OrderItem[]>([]);
+  ]); // Stores the items in the inventory
+  const [outItems, setOutItems] = useState<OrderItem[]>([]); // For when item is out, it creates a copy of the modified item from the inventory and stores it
 
   console.log(outItems)
 

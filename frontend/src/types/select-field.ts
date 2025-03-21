@@ -5,4 +5,6 @@ export interface SelectFieldProps {
   onChange: (value: string) => void;
   options: string[];
   required?: boolean;
+  disabled?: boolean;
+  error: string;
 }

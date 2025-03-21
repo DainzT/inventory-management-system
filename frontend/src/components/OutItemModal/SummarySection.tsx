@@ -7,7 +7,7 @@ const SummarySection: React.FC<SummarySectionProps> = ({
   unit,
 }) => {
   return (
-    <section className="p-4 mb-6 bg-gray-50 rounded-lg">
+    <section className="p-2 bg-gray-50 rounded-lg">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-base font-semibold text-black inter-font">Total</h3>
         <p className="text-base font-semibold text-cyan-800 inter-font">

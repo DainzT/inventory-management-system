@@ -6,6 +6,7 @@ interface QuantitySelectorProps {
   onChange: (quantity: number | "") => void;
   maxQuantity: number;
   unitSize: number;
+  error: string;
 }
 
 
@@ -13,7 +14,8 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   value,
   onChange,
   maxQuantity,
-  unitSize
+  unitSize,
+  error,
 }) => {
   const decrementQuantity = () => {
     if (Number(value) > 0) {
@@ -54,7 +56,10 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
       </div>
       <div className="flex gap-2 items-center">
         <button
-          className="flex justify-center items-center w-8 h-8 rounded-lg border border-red-100 border-solid bg-zinc-100"
+          className={`
+            flex justify-center items-center w-8 h-8 rounded-lg border  border-solid bg-zinc-100 
+            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+          `}
           onClick={decrementQuantity}
           aria-label="Decrease quantity"
           disabled={Number(value) <= 0}
@@ -68,12 +73,18 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           min="0"
           step="0.01"
           placeholder="0.00"
-          className="px-2 flex justify-center items-center w-16 h-8 rounded-lg border border-red-100 border-solid bg-zinc-100 text-black inter-font"
+          className={`
+            px-2 flex justify-center items-center w-16 h-8 rounded-lg border border-solid bg-zinc-100 text-black inter-font
+            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+          `}
           aria-live="polite"
         />
         
         <button
-          className="flex justify-center items-center w-8 h-8 rounded-lg border border-red-100 border-solid bg-zinc-100"
+          className={`
+            flex justify-center items-center w-8 h-8 rounded-lg border border-solid bg-zinc-100
+            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+          `}
           onClick={incrementQuantity}
           aria-label="Increase quantity"
           disabled={Number(value) >= maxQuantity}
@@ -81,6 +92,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           <BsFilePlus />
         </button>
       </div>
+      {error && <p className="absolute text-red-600 text-sm">{error}</p>}
     </div>
   );
 };

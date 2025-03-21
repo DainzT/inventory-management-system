@@ -10,6 +10,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   options,
   required = false,
   disabled = false,
+  error,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -29,7 +30,10 @@ const SelectField: React.FC<SelectFieldProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex justify-between items-center px-4 w-full h-12 rounded-lg border border-red-100 border-solid cursor-pointer bg-zinc-100"
+        className={`
+          flex justify-between items-center px-4 w-full h-12 rounded-lg border-[1px] 
+          bg-[#F4F1F1] inter-font ${error ? "border-red-500" : "border-[#0FE3FF]"}
+        `}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         disabled={disabled}
@@ -39,7 +43,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
       </button>
 
       {isOpen && (
-        <div className="mt-2 absolute w-80 rounded-lg border border-red-100 bg-white shadow-lg">
+        <div className="mt-2 absolute w-80 rounded-lg border border-red-100 bg-white shadow-lg z-50">
           <ul>
             {options.map((option) => (
               <li
@@ -53,6 +57,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
           </ul>
         </div>
       )}
+       {error && <p className="absolute text-red-600 text-sm">{error}</p>}
     </div>
   );
 };
