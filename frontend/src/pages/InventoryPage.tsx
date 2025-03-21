@@ -3,6 +3,7 @@ import InventoryManagementTable from "@/components/InventoryManagementTable/Inve
 import AddProductModal from "@/components/AddProductModal/AddProductModal";
 import OutItemModal from "@/components/OutItemModal/OutItemModal";
 import { InventoryItem, ItemFormData, OrderItem } from "@/types";
+import { PageTitle } from "@/components/PageTitle";
 
 const Inventory: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -21,7 +22,9 @@ const Inventory: React.FC = () => {
       total: 480.0,
       dateCreated: new Date(),
       lastUpdated: new Date(),
-    },
+    }, 
+    
+    
   ]); // Stores the items in the inventory
   const [outItems, setOutItems] = useState<OrderItem[]>([]); // For when item is out, it creates a copy of the modified item from the inventory and stores it
 
@@ -48,7 +51,7 @@ const Inventory: React.FC = () => {
 
   return (
     <div className="p-4 bg-[#F4F4F4] h-full">
-      <h1 className="text-2xl font-bold">Main Inventory</h1>
+      <PageTitle title="Main Inventory"/>
       <InventoryManagementTable 
         setIsAddOpen={setIsAddOpen} 
         setIsEditOpen={setIsEditOpen} 

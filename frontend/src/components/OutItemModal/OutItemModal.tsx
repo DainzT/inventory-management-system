@@ -95,9 +95,15 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
 
     if (!validateForm()) return;
 
+    const remainingStock = Number(selectedItem?.quantity) - Number(quantity);
+
+    const updatedTotalPrice =
+      Number(selectedItem?.unitPrice) * (remainingStock / Number(selectedItem?.unitSize));
+  
     const updatedItem: InventoryItem = {
       ...selectedItem!,
-      quantity: Number(selectedItem?.quantity) - Number(quantity),
+      quantity: remainingStock,
+      total: updatedTotalPrice,
       lastUpdated: new Date(),
     };
 
