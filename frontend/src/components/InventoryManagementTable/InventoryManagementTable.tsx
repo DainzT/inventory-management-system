@@ -29,7 +29,7 @@ const InventoryManagementTable = ({
   };
 
   return (
-      <main className="scale-90  p-[30px] max-lg:p-[15px]">
+      <main className="p-[30px] max-lg:p-[15px] h-[90%] overflow-auto">
         <section className="w-full rounded-[12px] border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]">
             <div className="p-[24px] flex items-center gap-[10px]">
                 <SearchBar />
