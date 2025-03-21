@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import AddProductForm from "./AddProductModal/AddProductForm";
+import AddProductForm from "./AddProductForm";
 import { ProductFormData } from "@/types";
 
 interface AddProductModalProps {
