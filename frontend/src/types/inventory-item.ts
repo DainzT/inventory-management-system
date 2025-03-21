@@ -1,6 +1,6 @@
 export interface InventoryItem {
     id: number;
-    productName: string;
+    name: string;
     note: string;
     quantity: number | "";
     unitPrice: number | "";
@@ -10,4 +10,5 @@ export interface InventoryItem {
     dateCreated: Date;
     lastUpdated?: Date;
   }
+
   
