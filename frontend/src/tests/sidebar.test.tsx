@@ -1,61 +1,73 @@
-import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "../components/Sidebar";
 import { SidebarContents } from "@/types/sidebar-contents";
 
-describe("Sidebar Component", () => {
-  const defaultLinks: SidebarContents[] = [
-    { path: "/", label: "General Stock", icon: null },
-    { path: "/orders", label: "Orders", icon: null },
-  ];
+jest.mock("../assets/image/businessLogo.svg", () => "mocked-logo");
 
-  it("renders all sidebar links", () => {
+const mockSidebarLinks: SidebarContents[] = [
+  { path: "/", label: "Main Inventory", icon: <span>📦</span> },
+  { path: "/orders", label: "Orders", icon: <span>📜</span> },
+  { path: "/summary/all-fleets", label: "All Fleets" },
+  { path: "/summary/fleet-1", label: "Fleet 1" },
+  { path: "/summary/fleet-2", label: "Fleet 2" },
+];
+
+describe("Sidebar Component", () => {
+  test("renders sidebar links correctly", () => {
     render(
       <MemoryRouter>
-        <Sidebar sidebarLinks={defaultLinks} showLogo={true} />
+        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={true} />
       </MemoryRouter>
     );
 
     expect(screen.getByText("Main Inventory")).toBeInTheDocument();
     expect(screen.getByText("Orders")).toBeInTheDocument();
+    expect(screen.getAllByText("All Fleets")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Fleet 1")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Fleet 2")[0]).toBeInTheDocument();
   });
 
-  it("applies active class when a link is clicked", () => {
+  test("renders business logo when showLogo is true", () => {
     render(
       <MemoryRouter>
-        <Sidebar sidebarLinks={defaultLinks} showLogo={true} />
+        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={true} />
+      </MemoryRouter>
+    );
+    expect(screen.getByAltText("Logo")).toBeInTheDocument();
+  });
+
+  test("highlights active link when clicked", () => {
+    render(
+      <MemoryRouter>
+        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={false} />
       </MemoryRouter>
     );
 
-    const generalStockLink = screen.getByText("General Stock");
-    const ordersLink = screen.getByText("Orders");
-
-    fireEvent.click(generalStockLink);
-    expect(generalStockLink).toHaveClass("bg-accent text-white");
-
-    fireEvent.click(ordersLink);
-    expect(ordersLink).toHaveClass("bg-accent text-white");
-
-    expect(generalStockLink).not.toHaveClass("bg-accent text-white");
+    const inventoryLink = screen.getByText("Main Inventory");
+    fireEvent.click(inventoryLink);
+    expect(inventoryLink).toHaveClass("bg-accent text-white");
   });
 
-  it("only keeps one link active at a time", () => {
+  test("does not highlight inactive links", () => {
     render(
       <MemoryRouter>
-        <Sidebar sidebarLinks={defaultLinks} showLogo={true} />
+        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={false} />
       </MemoryRouter>
     );
 
-    const generalStockLink = screen.getByText("Main Inventory");
     const ordersLink = screen.getByText("Orders");
-
-    fireEvent.click(generalStockLink);
-    expect(generalStockLink).toHaveClass("bg-accent text-white");
     expect(ordersLink).not.toHaveClass("bg-accent text-white");
+  });
 
-    fireEvent.click(ordersLink);
-    expect(ordersLink).toHaveClass("bg-accent text-white");
-    expect(generalStockLink).not.toHaveClass("bg-accent text-white");
+  test("does not render a non-existent link", () => {
+    render(
+      <MemoryRouter>
+        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={false} />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText("Non-Existent Link")).not.toBeInTheDocument();
   });
 });

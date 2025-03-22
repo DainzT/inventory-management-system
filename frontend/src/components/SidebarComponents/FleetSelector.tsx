@@ -1,21 +1,19 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface FleetSelectorProps {
-  onFleetSelect: () => void;
+  onFleetSelect: (fleetPath: string) => void;
 }
 
 export const FleetSelector: React.FC<FleetSelectorProps> = ({
   onFleetSelect,
 }) => {
-  const location = useLocation();
   const fleets = ["All Fleets", "Fleet 1", "Fleet 2"];
 
-  const getFleetPath = (fleet: string) => {
-    return fleet === "All Fleets"
+  const getFleetPath = (fleet: string) =>
+    fleet === "All Fleets"
       ? "/summary/all-fleets"
       : `/summary/${fleet.toLowerCase().replace(" ", "-")}`;
-  };
 
   return (
     <div className="w-4/5 bg-gray-100 rounded mt-2 flex justify-self-end">
@@ -26,10 +24,10 @@ export const FleetSelector: React.FC<FleetSelectorProps> = ({
             <li key={i} className="w-full">
               <Link
                 to={fleetPath}
-                onClick={onFleetSelect}
+                onClick={() => onFleetSelect(fleetPath)}
                 className={`flex items-center py-2 px-14 w-full rounded transition-all duration-100
                   ${
-                    location.pathname === fleetPath
+                    window.location.pathname === fleetPath
                       ? "bg-accent text-white"
                       : "hover:bg-accent hover:text-white"
                   }`}

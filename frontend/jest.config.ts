@@ -16,6 +16,7 @@ const config: Config.InitialOptions = {
   watchPathIgnorePatterns: ["node_modules", "dist"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "\\.(svg)$": "<rootDir>/src/tests/__mocks__/fileMock.js",
   },
 };
 

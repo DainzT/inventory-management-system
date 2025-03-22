@@ -7,10 +7,9 @@ import { BsBoxSeam } from "react-icons/bs";
 import { SidebarContents } from "@/types/sidebar-contents";
 import Inventory from "./pages/InventoryPage";
 import Orders from "./pages/OrderPage";
-import Summary from "./pages/SummaryPage";
 
 const sidebarLinks: SidebarContents[] = [
-  { path: "/", label: "General Stock", icon: <MdOutlineInventory2 /> },
+  { path: "/", label: "Main Inventory", icon: <MdOutlineInventory2 /> },
   { path: "/orders", label: "Orders", icon: <BsBoxSeam /> },
 ];
 
@@ -24,7 +23,6 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Inventory />} />
             <Route path="/orders" element={<Orders />} />
-            <Route path="/summary" element={<Summary />} />
           </Routes>
         </main>
       </div>
