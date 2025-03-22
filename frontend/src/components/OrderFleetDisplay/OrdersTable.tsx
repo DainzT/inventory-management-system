@@ -11,6 +11,7 @@ interface OrdersTableProps {
   onFilter?: (filter: string) => void;
   onModify?: (id: number) => void;
   activeFleet: string
+  isModifyOpen: (isopen: boolean)  => void;
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -19,6 +20,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   onFilter,
   onModify,
   activeFleet,
+  isModifyOpen
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 
@@ -101,7 +103,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   className="h-9 text-base text-white bg-emerald-700 rounded-lg w-[85px]"
-                  onClick={() => onModify && onModify(order.id)}
+                  onClick={() => isModifyOpen(true)}
                 >
                   Modify
                 </button>
