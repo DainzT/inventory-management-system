@@ -11,7 +11,9 @@
   --color-black: #333333;
   --text-black: #333333;
   --text-white: #f4f4f4;
+  --color-foreground: #d9d9d9;
   --color-accent: #1b626e;
+  --color-accent-light: #62a2ae;
   --color-white-light: #bbbbbb;
 }
 
