@@ -4,7 +4,6 @@ import Header from "./components/Header";
 import Sidebar from "@/components/Sidebar";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { BsBoxSeam } from "react-icons/bs";
-import { CiBoxList } from "react-icons/ci";
 import { SidebarContents } from "@/types/sidebar-contents";
 import Inventory from "./pages/InventoryPage";
 import Orders from "./pages/OrderPage";
@@ -13,7 +12,6 @@ import Summary from "./pages/SummaryPage";
 const sidebarLinks: SidebarContents[] = [
   { path: "/", label: "General Stock", icon: <MdOutlineInventory2 /> },
   { path: "/orders", label: "Orders", icon: <BsBoxSeam /> },
-  { path: "/summary", label: "Monthly Summary", icon: <CiBoxList /> },
 ];
 
 const App: React.FC = () => {
