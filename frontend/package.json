@@ -23,6 +23,7 @@
     "axios": "^1.8.1",
     "firebase": "^11.4.0",
     "framer-motion": "^12.5.0",
+    "lucide-react": "^0.482.0",
     "postcss": "^8.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
