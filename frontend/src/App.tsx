@@ -2,31 +2,26 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import Sidebar from "@/components/Sidebar";
-import { MdOutlineInventory2 } from "react-icons/md";
-import { BsBoxSeam } from "react-icons/bs";
-import { SidebarContents } from "@/types/sidebar-contents";
 import Inventory from "./pages/InventoryPage";
 import Orders from "./pages/OrderPage";
 import Summary from "./pages/SummaryPage";
 
-const sidebarLinks: SidebarContents[] = [
-  { path: "/", label: "General Stock", icon: <MdOutlineInventory2 /> },
-  { path: "/orders", label: "Orders", icon: <BsBoxSeam /> },
-];
 
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="flex h-screen">
+      <div className="flex flex-col h-screen overflow-hidden">
         <Header />
-        <Sidebar sidebarLinks={sidebarLinks} showLogo={true} />
-        <main className="flex-1 p-4 bg-[#F4F4F4] h-full">
-          <Routes>
-            <Route path="/" element={<Inventory />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/summary" element={<Summary />} />
-          </Routes>
-        </main>
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar />
+          <main className="flex-1 p-4 bg-[#F4F4F4] overflow-y-hidden">
+            <Routes>
+              <Route path="/" element={<Inventory />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/summary" element={<Summary />} />
+            </Routes>
+          </main>
+        </div>
       </div>
     </Router>
   );

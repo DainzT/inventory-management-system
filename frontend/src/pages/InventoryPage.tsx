@@ -50,7 +50,7 @@ const Inventory: React.FC = () => {
   };
 
   return (
-    <div className="p-4 bg-[#F4F4F4] h-full">
+    <div className="flex-1 p-4 overflow-y-auto">
       <PageTitle title="Main Inventory"/>
       <InventoryManagementTable 
         setIsAddOpen={setIsAddOpen} 

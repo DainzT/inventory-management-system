@@ -3,13 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 
 interface FleetSelectorProps {
   onFleetSelect: () => void;
+  fleets: Array<string>
 }
 
-export const FleetSelector: React.FC<FleetSelectorProps> = ({
+export const FleetSelector = ({
   onFleetSelect,
-}) => {
+  fleets,
+}: FleetSelectorProps) => {
   const location = useLocation();
-  const fleets = ["All Fleets", "Fleet 1", "Fleet 2"];
 
   const getFleetPath = (fleet: string) => {
     return fleet === "All Fleets"
@@ -18,8 +19,8 @@ export const FleetSelector: React.FC<FleetSelectorProps> = ({
   };
 
   return (
-    <div className="w-4/5 bg-gray-100 rounded mt-2 flex justify-self-end">
-      <ul className="flex flex-col w-full gap-2">
+    <nav className="relative ml-[20px] md:ml-[55px] border-l-[2px] border-[#CBC6C6]">
+      <ul className="flex flex-col gap-[8px] md:gap-[10px] ml-[10px] md:ml-[10px]">
         {fleets.map((fleet, i) => {
           const fleetPath = getFleetPath(fleet);
           return (
@@ -27,7 +28,7 @@ export const FleetSelector: React.FC<FleetSelectorProps> = ({
               <Link
                 to={fleetPath}
                 onClick={onFleetSelect}
-                className={`flex items-center py-2 px-14 w-full rounded transition-all duration-100
+                className={`className=" text-s text-black inter-font block font-medium px-3 py-2
                   ${
                     location.pathname === fleetPath
                       ? "bg-accent text-white"
@@ -40,6 +41,6 @@ export const FleetSelector: React.FC<FleetSelectorProps> = ({
           );
         })}
       </ul>
-    </div>
+    </nav>
   );
 };
