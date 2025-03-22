@@ -1,12 +1,11 @@
-import ModifyModal from "@/components/ModifyModal";
 import React, { useState } from "react";
-import { ProductItemProps } from "@/components/ProductItemProps";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
 import { OrderItemProps } from "@/types/FleetsOrder";
+import { ModifyModal } from "@/components/ModifyModal";
 
 const fleetBoats = {
-  "F/B Donya Donya": [
+  "F/B DONYA DONYA 2X": [
     "F/B Lady Rachelle",
     "F/B Mariella",
     "F/B My Shield",
@@ -27,6 +26,7 @@ const Orders: React.FC = () => {
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState<OrderItemProps | null>(null);
 
   const orders: OrderItemProps[] = [
     {
@@ -38,7 +38,7 @@ const Orders: React.FC = () => {
       selectUnit: "piece",
       unitSize: 2,
       total: 480.0,
-      fleet: "F/B Donya Donya",
+      fleet: "F/B DONYA DONYA 2X",
       boat: "F/B Lady Rachelle",
       dateOut: "Jan 15, 2024",
     },
@@ -51,7 +51,7 @@ const Orders: React.FC = () => {
       selectUnit: "roll",
       unitSize: 1,
       total: 3762.5,
-      fleet: "F/B Donya Donya",
+      fleet: "F/B DONYA DONYA 2X",
       boat: "F/B Mariella",
       dateOut: "Jan 20, 2024",
     },
@@ -71,7 +71,11 @@ const Orders: React.FC = () => {
   ];
 
   const handleModify = (id: number) => {
-    console.log(`Modify order with ID: ${id}`);
+    const order = orders.find((order) => order.id === id);
+    if (order) {
+      setSelectedOrder(order); 
+      setIsModalOpen(true); 
+    }
   };
 
   const handleSearch = (query: string) => {
@@ -86,19 +90,9 @@ const Orders: React.FC = () => {
     setActiveFleet(fleet);
   };
 
-  const product: ProductItemProps = {
-    name: "Fishing Line",
-    price: 60.0,
-    description: "For catching fish",
-    stock: 10,
-  };
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setSelectedOrder(null); 
   };
 
   const handleConfirmChanges = (
@@ -107,13 +101,17 @@ const Orders: React.FC = () => {
     boat: string,
     unit: string
   ) => {
-    console.log("Changes confirmed:", { quantity, fleet, boat, unit });
-    setIsModalOpen(false);
+    if (selectedOrder) {
+      console.log("Changes confirmed:", { selectedOrder, quantity, fleet, boat, unit });
+      setIsModalOpen(false);
+    }
   };
 
   const handleRemoveItem = () => {
-    console.log("Item removed");
-    setIsModalOpen(false);
+    if (selectedOrder) {
+      console.log("Item removed:", selectedOrder);
+      setIsModalOpen(false);
+    }
   };
 
   const filteredOrders = orders.filter((order) => {
@@ -153,10 +151,10 @@ const Orders: React.FC = () => {
             onClick={() => handleFleetSelect("All Fleets")}
           />
           <FleetCard
-            title="F/B Donya Donya"
+            title="F/B DONYA DONYA 2X"
             backgroundColor="bg-cyan-800"
-            isActive={activeFleet === "F/B Donya Donya"}
-            onClick={() => handleFleetSelect("F/B Donya Donya")}
+            isActive={activeFleet === "F/B DONYA DONYA 2X"}
+            onClick={() => handleFleetSelect("F/B DONYA DONYA 2X")}
           />
           <FleetCard
             title="F/B Doña Librada"
@@ -175,20 +173,21 @@ const Orders: React.FC = () => {
             orders={filteredOrders}
             onSearch={handleSearch}
             onFilter={handleFilter}
-            onModify={handleModify}
             activeFleet={activeFleet}
-            onModify={isModalOpen ? undefined : handleModify}
-            isModifyOpen={handleOpenModal}
+            onModify={handleModify} 
+            isModifyOpen={setIsModalOpen} 
           />
         </div>
 
-        <ModifyModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          onConfirm={handleConfirmChanges}
-          onRemove={handleRemoveItem}
-          product={product}
-        />
+        {selectedOrder && (
+          <ModifyModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onConfirm={handleConfirmChanges}
+            onRemove={handleRemoveItem}
+            order={selectedOrder}
+          />
+        )}
       </main>
     </div>
   );

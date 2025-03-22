@@ -33,7 +33,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       case "All Fleets":
         return [
           "All Boats",
-          "F/B Donya Donya",
+          "F/B DONYA DONYA 2X",
           "F/B Doña Librada",
           "F/B Lady Rachelle",
           "F/B Mariella",
@@ -46,7 +46,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           "F/V Vadeo Scout",
           "F/B Mariene",
         ];
-      case "F/B Donya Donya":
+      case "F/B DONYA DONYA 2X":
         return [
           "All Boats",
           "F/B Lady Rachelle",
@@ -75,7 +75,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
     <section className="flex-1 bg-white rounded-xl border shadow-sm">
       <div className="flex gap-5 p-8">
         <SearchBar onSearch={onSearch} />
-        <FilterDropdown label="All Boats" options={filterOptions} onSelect={onFilter} />
+        <FilterDropdown label="All Boats" options={filterOptions} onSelect={onFilter || (() => {})} />
       </div>
 
       <div className="grid px-5 py-6 w-full text-base font-bold text-white bg-cyan-900 grid-cols-[80px_180px_165px_125px_145px_120px_120px_110px]">
@@ -101,12 +101,16 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               <div className="text-lg text-gray-600">{order.boat}</div>
               <div className="text-lg text-gray-600">{order.dateOut}</div>
               <div className="flex items-center gap-2">
-                <button
-                  className="h-9 text-base text-white bg-emerald-700 rounded-lg w-[85px]"
-                  onClick={() => isModifyOpen(true)}
-                >
-                  Modify
-                </button>
+
+              <button className="h-9 text-base text-white bg-emerald-700 rounded-lg w-[85px]"
+              onClick={() => {
+              if (onModify) onModify(order.id); 
+              isModifyOpen(true); 
+              }}
+              >
+              Modify
+              </button>
+              
                 <div className=" ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50" onClick={() => toggleExpand(order.id)}>
                   <ChevronIcon isExpanded={expandedOrderId === order.id} />
                 </div>

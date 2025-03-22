@@ -3,8 +3,8 @@ import React, { useState } from "react";
 
 interface FilterDropdownProps {
   label: string;
-  options: string[];
-  onSelect?: (option: string) => void;
+  options: string[]; 
+  onSelect: (selectedOption: string) => void;
 }
 
 export const FilterDropdown: React.FC<FilterDropdownProps> = ({
@@ -12,38 +12,32 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   options,
   onSelect,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(label);
+  const [isOpen, setIsOpen] = useState(false); 
 
-  const handleSelect = (option: string) => {
-    setSelectedOption(option);
-    setIsOpen(false);
-    if (onSelect) {
-      onSelect(option);
-    }
+  const handleSelect = (value: string) => {
+    setSelectedOption(value);
+    onSelect(value);
+    setIsOpen(false); 
   };
 
   return (
     <div className="relative">
-      <button
-        className="flex relative gap-2.5 justify-center items-center bg-gray-50 rounded-xl border border shadow-sm cursor-pointer h-[51px] w-[133px]"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
+      <div
+        className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-teal-500 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)} 
       >
-        <span className="text-lg text-black">{selectedOption}</span>
-        <span className="ml-[5px]">
+        {selectedOption}
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
           <svg
-            width="10"
-            height="5"
-            viewBox="0 0 10 5"
-            fill="none"
+            className="fill-current h-4 w-4"
             xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
           >
-            <path d="M5 5L0 0H10L5 5Z" fill="#1D1B20" />
+            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
           </svg>
-        </span>
-      </button>
+        </div>
+      </div>
 
       {isOpen && (
         <ul
@@ -54,7 +48,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
             <li
               key={option}
               className="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-              onClick={() => handleSelect(option)}
+              onClick={() => handleSelect(option)} 
               role="option"
               aria-selected={selectedOption === option}
             >
