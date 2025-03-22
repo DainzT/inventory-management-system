@@ -108,9 +108,9 @@ const Orders: React.FC = () => {
   return (
     <div className="p-4 bg-[#F4F4F4] h-full">
       <main className="flex-1 p-10">
-        <h1 className="text-6xl font-bold text-cyan-800">Orders</h1>
+        <h1 className="text-5xl font-bold text-cyan-800">Orders</h1>
 
-        <div className="flex gap-8 mt-12 h-[260px]">
+        <div className="flex gap-18 mt-8 h-[260px]">
           <FleetCard
             title="All Fleets"
             backgroundColor="bg-emerald-800"
@@ -131,7 +131,7 @@ const Orders: React.FC = () => {
           />
         </div>
 
-        <h2 className="mt-15 text-5xl font-bold text-cyan-800">
+        <h2 className=" text-4xl font-bold text-cyan-800">
           Orders for {activeFleet}
         </h2>
 
@@ -141,6 +141,7 @@ const Orders: React.FC = () => {
             onSearch={handleSearch}
             onFilter={handleFilter}
             onModify={handleModify}
+            activeFleet={activeFleet}
           />
         </div>
       </main>

@@ -10,6 +10,7 @@ interface OrdersTableProps {
   onSearch?: (query: string) => void;
   onFilter?: (filter: string) => void;
   onModify?: (id: number) => void;
+  activeFleet: string
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -17,6 +18,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   onSearch,
   onFilter,
   onModify,
+  activeFleet,
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 
@@ -24,21 +26,48 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
 
-  const filterOptions = [
-    "All Boats",
-    "F/B Donya Donya",
-    "F/B Doña Librada",
-    "F/B Lady Rachelle",
-    "F/B Mariella",
-    "F/B My Shield",
-    "F/B Abigail",
-    "F/B DC-9",
-    "F/B Adomar",
-    "F/B Prince of Peace",
-    "F/B Ruth Gaily",
-    "F/V Vadeo Scout",
-    "F/B Mariene",
-  ];
+  const getFilterOptions = () => {
+    switch (activeFleet) {
+      case "All Fleets":
+        return [
+          "All Boats",
+          "F/B Donya Donya",
+          "F/B Doña Librada",
+          "F/B Lady Rachelle",
+          "F/B Mariella",
+          "F/B My Shield",
+          "F/B Abigail",
+          "F/B DC-9",
+          "F/B Adomar",
+          "F/B Prince of Peace",
+          "F/B Ruth Gaily",
+          "F/V Vadeo Scout",
+          "F/B Mariene",
+        ];
+      case "F/B Donya Donya":
+        return [
+          "All Boats",
+          "F/B Lady Rachelle",
+          "F/B Mariella",
+          "F/B My Shield",
+          "F/B Abigail",
+          "F/B DC-9",
+        ];
+      case "F/B Doña Librada":
+        return [
+          "All Boats",
+          "F/B Adomar",
+          "F/B Prince of Peace",
+          "F/B Ruth Gaily",
+          "F/V Vadeo Scout",
+          "F/B Mariene",
+        ];
+      default:
+        return ["All Boats"];
+    }
+  };
+
+  const filterOptions = getFilterOptions();
 
   return (
     <section className="flex-1 bg-white rounded-xl border shadow-sm">

@@ -11,13 +11,13 @@ export const FleetCard: React.FC<FleetCardProps> = ({
   return (
     <article
       className={`relative p-12 ${backgroundColor} rounded-xl ${
-        isActive ? "h-[240px] w-[330px]" : "h-[200px] w-[300px]"
+        isActive ? "h-[200px] w-[300px]" : "h-[170px] w-[250px]"
       } cursor-pointer transition-all duration-300 ease-in-out shadow-lg ${
         isActive ? "shadow-2xl" : "shadow-md"
       }`}
       onClick={onClick}
     >
-      <h2 className="text-4xl font-bold text-white">{title}</h2>
+      <h2 className="text-3xl font-bold text-white">{title}</h2>
 
       <div className="absolute bottom-[14px] right-[14px] opacity-[0.3]">
         <svg
