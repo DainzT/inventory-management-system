@@ -39,6 +39,7 @@ const Orders: React.FC = () => {
       unitSize: 2,
       total: 480.0,
       fleet: "F/B Donya Donya",
+      boat: "F/B Lady Rachelle",
       dateOut: "Jan 15, 2024",
     },
     {
@@ -50,7 +51,8 @@ const Orders: React.FC = () => {
       selectUnit: "roll",
       unitSize: 1,
       total: 3762.5,
-      fleet: "F/B Mariella",
+      fleet: "F/B Donya Donya",
+      boat: "F/B Mariella",
       dateOut: "Jan 20, 2024",
     },
     {
@@ -62,7 +64,8 @@ const Orders: React.FC = () => {
       selectUnit: "pack",
       unitSize: 10,
       total: 125,
-      fleet: "F/B Mariene",
+      fleet: "F/B Doña Librada",
+      boat: "F/B Mariene",
       dateOut: "Jan 30, 2024",
     },
   ];
@@ -122,17 +125,17 @@ const Orders: React.FC = () => {
       order.selectUnit.toLowerCase(),
       order.unitSize.toString(),
       order.total?.toString() || "",
-      order.fleet.toLowerCase(),
+      order.boat.toLowerCase(),
       order.dateOut.toLowerCase(),
     ].some((field) => field.includes(searchQuery.toLowerCase()));
 
     const matchesFleet =
       activeFleet === "All Fleets" ||
-      fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(order.fleet) ||
-      order.fleet === activeFleet;
+      fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(order.boat) ||
+      order.boat === activeFleet;
 
     const matchesBoat =
-      selectedBoat === "All Boats" || order.fleet === selectedBoat;
+      selectedBoat === "All Boats" || order.boat === selectedBoat;
 
     return matchesSearch && matchesFleet && matchesBoat;
   });

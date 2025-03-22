@@ -78,13 +78,13 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
         <FilterDropdown label="All Boats" options={filterOptions} onSelect={onFilter} />
       </div>
 
-      <div className="grid px-5 py-6 w-full text-base font-bold text-white bg-cyan-900 grid-cols-[80px_180px_165px_125px_150px_120px_120px_110px]">
+      <div className="grid px-5 py-6 w-full text-base font-bold text-white bg-cyan-900 grid-cols-[80px_180px_165px_125px_145px_120px_120px_110px]">
         <div>ID</div>
         <div>Product Name</div>
         <div>Note</div>
         <div>Quantity</div>
         <div>Unit Price</div>
-        <div>Fleet</div>
+        <div>Boat</div>
         <div>Date Out</div>
         <div>Actions</div>
       </div>
@@ -98,7 +98,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               <div className="text-lg text-gray-600">{order.note}</div>
               <div className="text-lg text-gray-800">{order.quantity}</div>
               <div className="text-lg text-gray-800">₱{order.unitPrice.toFixed(2)}</div>
-              <div className="text-lg text-gray-600">{order.fleet}</div>
+              <div className="text-lg text-gray-600">{order.boat}</div>
               <div className="text-lg text-gray-600">{order.dateOut}</div>
               <div className="flex items-center gap-2">
                 <button

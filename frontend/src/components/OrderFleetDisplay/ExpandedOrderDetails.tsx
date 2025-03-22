@@ -18,6 +18,10 @@ export const ExpandedOrderDetails: React.FC<ExpandedOrderDetailsProps> = ({
         </div>
       </div>
       <div>
+        <div className="mb-1 text-sm text-gray-500">Fleet Assigned:</div>
+        <div className="text-base text-gray-800">{order.fleet}</div>
+      </div>
+      <div>
         <div className="mb-1 text-sm text-gray-500">Selected Unit</div>
         <div className="text-base text-gray-800">{order.selectUnit}</div>
       </div>

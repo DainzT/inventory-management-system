@@ -23,6 +23,7 @@ export interface NavigationItemProps {
     unitSize: number | "";
     total?: number | "";
     fleet: string;
+    boat: string
     dateOut: string;
     onModify?: (id: number) => void;
   }
