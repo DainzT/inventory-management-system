@@ -1,12 +1,11 @@
-import { TableHeader } from "./TableHeader";
 import { TableRow } from "./TableRow";
 import { InventoryItem } from "@/types";
 
 interface InventoryTableProps {
-  items?: InventoryItem[]; 
+  items: InventoryItem[]; 
   expandedItem: number | null;
   onToggleExpand: (id: number) => void;
-  onOut?: () => void;
+  onOut: (item: InventoryItem) => void;
   onEdit?: () => void;
 }
 
@@ -20,20 +19,17 @@ export const InventoryTable = ({
   const inventoryItems: InventoryItem[] = items;
 
   return (
-    <section>
-      <TableHeader />
-      <div className="flex flex-col">
+      <section>  
         {inventoryItems.map((item) => (
           <TableRow
             key={item.id}
             item={item}
-            onOut={onOut}
+            onOut={() => onOut(item)}
             onEdit={onEdit}
             isExpanded={expandedItem === item.id}
             onToggle={onToggleExpand}
           />
         ))}
-      </div>
     </section>
   );
 }

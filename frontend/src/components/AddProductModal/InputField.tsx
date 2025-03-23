@@ -18,12 +18,12 @@ export const InputField = ({
   error,
 }: InputFieldProps) => {
   const inputStyles =
-    `w-full mt-2 px-4 rounded-[8px] border-[1px] border-[#0FE3FF] bg-[#F4F1F1] inter-font  
+    `w-full mt-1 px-4 rounded-[8px] border-[1px] border-[#0FE3FF] bg-[#F4F1F1] inter-font  
     ${error ? "border-red-500" : "border-[#0FE3FF]"}`;
 
   return (
     <div>
-      <label className="text-[16px] font-bold inter-font">
+      <label className="text-base font-bold inter-font">
           <span>{label}</span>
           {required && <span className="text-[#FF5757]">*</span>}
       </label>

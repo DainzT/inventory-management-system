@@ -1,58 +1,98 @@
 import React from "react";
 import { BsFileMinus, BsFilePlus } from "react-icons/bs";
-import { QuantitySelectorProps } from "@/types/quantity-selector";
+
+interface QuantitySelectorProps {
+  value: number | "";
+  onChange: (quantity: number | "") => void;
+  maxQuantity: number;
+  unitSize: number;
+  error: string;
+}
+
 
 const QuantitySelector: React.FC<QuantitySelectorProps> = ({
-  quantity,
-  setQuantity,
+  value,
+  onChange,
   maxQuantity,
-  unit,
+  unitSize,
+  error,
 }) => {
   const decrementQuantity = () => {
-    if (quantity > 0) {
-      setQuantity(quantity - 1);
+    if (Number(value) > 0) {
+      onChange((value || 0) - unitSize);
     }
   };
 
   const incrementQuantity = () => {
-    if (quantity < maxQuantity) {
-      setQuantity(quantity + 1);
+    if (Number(value) < maxQuantity) {
+      onChange((value || 0) + unitSize);
     }
   };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    if (newValue === "") {
+      onChange("");
+    } else {
+      const parsed = parseFloat(newValue);
+      if (!isNaN(parsed) && parsed >= 0) {
+        onChange(parsed);
+      }
+    }
+  };
+
+  function roundTo(num: number, precision: number): number {
+    const factor = Math.pow(10, precision);
+    return Math.round(num * factor) / factor;
+  }
 
   return (
     <div>
       <div className="flex items-center mb-2">
-        <label htmlFor="quantity" className="text-base font-bold text-black">
+        <label htmlFor="quantity" className="text-base font-bold text-black inter-font">
           Quantity
         </label>
-        <span className="ml-1 text-rose-500">*</span>
+        <span className="ml-1 text-rose-500 inter-font">*</span>
       </div>
       <div className="flex gap-2 items-center">
         <button
-          className="flex justify-center items-center w-8 h-8 rounded-lg border border-red-100 border-solid bg-zinc-100"
+          className={`
+            flex justify-center items-center w-8 h-8 rounded-lg border  border-solid bg-zinc-100 
+            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+          `}
           onClick={decrementQuantity}
           aria-label="Decrease quantity"
-          disabled={quantity <= 0}
+          disabled={Number(value) <= 0}
         >
           <BsFileMinus />
         </button>
-        <div
-          id="quantity"
-          className="flex justify-center items-center w-16 h-8 rounded-lg border border-red-100 border-solid bg-zinc-100 text-black"
+        <input
+          type="number"
+          value={value !== "" ? roundTo(value, 2) : ""}
+          onChange={handleInputChange}
+          min="0"
+          step="0.01"
+          placeholder="0.00"
+          className={`
+            px-2 flex justify-center items-center w-16 h-8 rounded-lg border border-solid bg-zinc-100 text-black inter-font
+            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+          `}
           aria-live="polite"
-        >
-          {quantity} {unit.charAt(0)}
-        </div>
+        />
+        
         <button
-          className="flex justify-center items-center w-8 h-8 rounded-lg border border-red-100 border-solid bg-zinc-100"
+          className={`
+            flex justify-center items-center w-8 h-8 rounded-lg border border-solid bg-zinc-100
+            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+          `}
           onClick={incrementQuantity}
           aria-label="Increase quantity"
-          disabled={quantity >= maxQuantity}
+          disabled={Number(value) >= maxQuantity}
         >
           <BsFilePlus />
         </button>
       </div>
+      {error && <p className="absolute text-red-600 text-sm">{error}</p>}
     </div>
   );
 };

@@ -1,13 +1,14 @@
 export interface InventoryItem {
     id: number;
-    productName: string;
+    name: string;
     note: string;
     quantity: number | "";
     unitPrice: number | "";
     selectUnit: string;
     unitSize: number | "";
-    total?: number | "";
-    dateCreated?: Date;
+    total: number | "";
+    dateCreated: Date;
     lastUpdated?: Date;
   }
+
   

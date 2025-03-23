@@ -4,28 +4,29 @@ import { InputField } from "./InputField";
 import { PriceInput } from "./PriceInput";
 import { QuantityInput } from "./QuantityInput";
 import { UnitSelector } from "./UnitSelector";
-import { ProductFormData } from "@/types";
+import { ItemFormData } from "@/types";
 
 interface ProductFormProps {
     onCancel: () => void;
-    onSubmit: (data: ProductFormData) => void;
+    onSubmit: (data: ItemFormData) => void;
   }
 
 const AddProductForm = ({ 
     onCancel, 
     onSubmit,
 }: ProductFormProps) => {
-    const [productData, setProductData] = useState<ProductFormData>({
-        productName: "",
+    const [productData, setProductData] = useState<ItemFormData>({
+        name: "",
         note: "",
         quantity: "",
         selectUnit: "Unit",
         unitPrice: "",
         unitSize: "",
         total: "",
+        dateCreated: new Date(),
     }); 
 
-    const [errors, setErrors] = useState<{ [key in keyof ProductFormData]?: string }>({});
+    const [errors, setErrors] = useState<{ [key in keyof ItemFormData]?: string }>({});
 
     useEffect(() => {
         setProductData((current) => ({
@@ -34,7 +35,7 @@ const AddProductForm = ({
         }));
     }, [productData.quantity, productData.unitPrice,  productData.unitSize]);
     
-    const handleInputChange = (field: keyof ProductFormData, value: string | number) => {
+    const handleInputChange = (field: keyof ItemFormData, value: string | number) => {
         setProductData((prevData) => ({
           ...prevData,
           [field]: value,
@@ -47,8 +48,8 @@ const AddProductForm = ({
     };
     
     const validateForm = () => {
-        const newErrors: { [key in keyof ProductFormData]?: string } = {};
-        if (!productData.productName.trim()) newErrors.productName = "Product name is required.";
+        const newErrors: { [key in keyof ItemFormData]?: string } = {};
+        if (!productData.name.trim()) newErrors.name = "Product name is required.";
         if (!productData.note.trim()) newErrors.note = "Note is required.";
         if (productData.quantity === "" || Number(productData.quantity) <= 0) newErrors.quantity = "Enter a valid quantity.";
         if (productData.unitPrice === "" || Number(productData.unitPrice) <= 0) newErrors.unitPrice = "Enter a valid price.";
@@ -67,14 +68,14 @@ const AddProductForm = ({
 
     return (
         
-        <form onSubmit={handleFormSubmit}  className="flex flex-col gap-6">
+        <form onSubmit={handleFormSubmit}  className="flex flex-col gap-3.5">
             <InputField
                 label="Product Name"
                 required
-                value={productData.productName}
-                onChange={(value) => handleInputChange("productName", value)}
+                value={productData.name}
+                onChange={(value) => handleInputChange("name", value)}
                 placeholder={"Enter product name"}
-                error={errors.productName}
+                error={errors.name}
             />
             <InputField
                 label="Note"
@@ -119,7 +120,7 @@ const AddProductForm = ({
                 readonly 
             />
             
-            <div className="flex justify-end gap-4 mt-6">
+            <div className="flex justify-end gap-4">
                 <Button 
                     variant="secondary" 
                     onClick={onCancel}

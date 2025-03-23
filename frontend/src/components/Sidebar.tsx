@@ -1,72 +1,88 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import businessLogo from "../assets/image/businessLogo.svg";
-import { SidebarContents } from "@/types/sidebar-contents";
-import { FleetSelector } from "./SidebarComponents/FleetSelector";
-import { CiBoxList } from "react-icons/ci";
-import LogoutButton from "./SidebarComponents/Logout";
 
-interface SidebarProps {
-  sidebarLinks: SidebarContents[];
-  showLogo: boolean;
-}
+  import React, { useState } from "react";
+  import {  useLocation } from "react-router-dom";
+  import { Logo } from "./SidebarComponents/Logo";
+  import { NavigationItem } from "./SidebarComponents/NavigationItem";
+  import { FleetSelector } from "./SidebarComponents/FleetSelector";
+  import { CiBoxList } from "react-icons/ci";
+  import LogoutButton from "./SidebarComponents/LogoutButton";
+  import { MdOutlineInventory2 } from "react-icons/md";
+  import { BsBoxSeam } from "react-icons/bs";
+  import { HiMenu, HiX } from "react-icons/hi";
 
-const Sidebar: React.FC<SidebarProps> = ({ sidebarLinks, showLogo }) => {
-  const location = useLocation();
-  const [activeLink, setActiveLink] = useState<string | null>(
-    window.location.pathname
-  );
+  const Sidebar: React.FC = () => {
+    const location = useLocation();
+    const [activeLink, setActiveLink] = useState<string | null>(location.pathname);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar visibility
 
-  const handleLinkClick = (path: string) => {
-    if (!path.startsWith("/summary/")) {
+    const handleLinkClick = (path: string) => {
+      if (path === "/summary") {
+        return; 
+      }
       setActiveLink(path);
-    } else {
-      setActiveLink(null);
-    }
+    };
+    
+    const navigationItems = [
+      {
+        path: "/",
+        icon: <MdOutlineInventory2 size={30}/>,
+        label: "Inventory",
+      },
+      {
+        path: "/orders",
+        icon: <BsBoxSeam size={30}/>,
+        label: "Orders",
+      },
+      {
+        path: "/summary",
+        icon: <CiBoxList size={30}/>,
+        label: "Summary",
+        disabled: true,
+      },
+    ];
+
+
+    return (
+      <>
+        <button
+          className="fixed top-4 left-4 z-50 p-2 bg-gray-200 rounded-lg md:hidden"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          {isSidebarOpen ? <HiX size={24} /> : <HiMenu size={24} />}
+        </button>
+
+        <aside
+          className={`fixed md:relative h-screen w-[256px] flex flex-col justify-between inter-font bg-[rgba(244,244,244,0.51)] border-r-[1px] border-r-[#E5E7EB] transform transition-transform duration-200 ease-in-out ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0`}
+        >
+          <div className="h-full flex flex-col flex-grow overflow-y-auto">
+            <Logo/>
+            <nav className="flex flex-col items-center w-full h-full gap-2">
+              {navigationItems.map((item) => (
+                    <NavigationItem
+                      key={item.path}
+                      path={item.path}
+                      currentPath={activeLink || location.pathname}
+                      icon={item.icon}
+                      label={item.label}
+                      onClick={() => handleLinkClick(item.path)}
+                      disabled={item.disabled} 
+                    />
+                  ))}
+                <FleetSelector 
+                  onFleetSelect={() => setActiveLink(null)} 
+                  fleets={["All Fleets", "F/B DONYA DONYA 2x", "F/B Doña Librada"]}
+                />
+            </nav>
+          </div>
+
+          <div className=" flex justify-center p-4 border-t-[1px] border-t-[#E5E7EB] mb-15">
+            <LogoutButton />
+          </div>
+        </aside>
+      </>
+    );
   };
 
-  return (
-    <div className="w-64 bg-white text-black h-screen border-r border-white-light flex flex-col justify-between py-10 items-center select-none">
-      <nav className="flex flex-col items-center w-full px-2">
-        {showLogo && businessLogo && (
-          <img src={businessLogo} alt="Logo" className="w-48 h-48" />
-        )}
-        <ul className="w-full">
-          {sidebarLinks
-            .filter((link) => link.path !== "/summary")
-            .map((link, index) => (
-              <li key={index} className="gap-2 w-full mb-2">
-                <Link
-                  to={link.path}
-                  onClick={() => handleLinkClick(link.path)}
-                  className={`flex items-center py-2 w-full px-2 pl-10 font-semibold rounded inter-font transition-all duration-100
-                  ${
-                    activeLink === link.path
-                      ? "bg-accent text-white"
-                      : "hover:bg-accent hover:text-white"
-                  }
-                `}
-                >
-                  {link.icon && <span className="mr-2">{link.icon}</span>}
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-        </ul>
-        <div className="w-full px-2 pt-2 border-t border-foreground">
-          <div className="flex items-center pl-8 font-semibold">
-            <CiBoxList className="mr-2" /> Monthly Summary
-          </div>
-          <FleetSelector
-            onFleetSelect={(fleetPath) => setActiveLink(fleetPath)}
-          />
-        </div>
-      </nav>
-      <div className="border-t border-foreground mt-2">
-        <LogoutButton />
-      </div>
-    </div>
-  );
-};
-
-export default Sidebar;
+  export default Sidebar;

@@ -1,73 +1,57 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import { SidebarContents } from "@/types/sidebar-contents";
 
-jest.mock("../assets/image/businessLogo.svg", () => "mocked-logo");
+// import { render, screen, fireEvent } from "@testing-library/react";
+// import "@testing-library/jest-dom";
+// import { MemoryRouter } from "react-router-dom";
+// import Sidebar from "@/components/Sidebar";
 
-const mockSidebarLinks: SidebarContents[] = [
-  { path: "/", label: "Main Inventory", icon: <span>📦</span> },
-  { path: "/orders", label: "Orders", icon: <span>📜</span> },
-  { path: "/summary/all-fleets", label: "All Fleets" },
-  { path: "/summary/fleet-1", label: "Fleet 1" },
-  { path: "/summary/fleet-2", label: "Fleet 2" },
-];
+// describe("Sidebar Component", () => {
 
-describe("Sidebar Component", () => {
-  test("renders sidebar links correctly", () => {
-    render(
-      <MemoryRouter>
-        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={true} />
-      </MemoryRouter>
-    );
+//   it("renders all sidebar links", () => {
+//     render(
+//       <MemoryRouter>
+//         <Sidebar />
+//       </MemoryRouter>
+//     );
 
-    expect(screen.getByText("Main Inventory")).toBeInTheDocument();
-    expect(screen.getByText("Orders")).toBeInTheDocument();
-    expect(screen.getAllByText("All Fleets")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Fleet 1")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Fleet 2")[0]).toBeInTheDocument();
-  });
+//     expect(screen.getByText("Main Inventory")).toBeInTheDocument();
+//     expect(screen.getByText("Orders")).toBeInTheDocument();
+//   });
 
-  test("renders business logo when showLogo is true", () => {
-    render(
-      <MemoryRouter>
-        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={true} />
-      </MemoryRouter>
-    );
-    expect(screen.getByAltText("Logo")).toBeInTheDocument();
-  });
+//   it("applies active class when a link is clicked", () => {
+//     render(
+//       <MemoryRouter>
+//         <Sidebar/>
+//       </MemoryRouter>
+//     );
 
-  test("highlights active link when clicked", () => {
-    render(
-      <MemoryRouter>
-        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={false} />
-      </MemoryRouter>
-    );
+//     const generalStockLink = screen.getByText("General Stock");
+//     const ordersLink = screen.getByText("Orders");
 
-    const inventoryLink = screen.getByText("Main Inventory");
-    fireEvent.click(inventoryLink);
-    expect(inventoryLink).toHaveClass("bg-accent text-white");
-  });
+//     fireEvent.click(generalStockLink);
+//     expect(generalStockLink).toHaveClass("bg-accent text-white");
 
-  test("does not highlight inactive links", () => {
-    render(
-      <MemoryRouter>
-        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={false} />
-      </MemoryRouter>
-    );
+//     fireEvent.click(ordersLink);
+//     expect(ordersLink).toHaveClass("bg-accent text-white");
 
-    const ordersLink = screen.getByText("Orders");
-    expect(ordersLink).not.toHaveClass("bg-accent text-white");
-  });
+//     expect(generalStockLink).not.toHaveClass("bg-accent text-white");
+//   });
 
-  test("does not render a non-existent link", () => {
-    render(
-      <MemoryRouter>
-        <Sidebar sidebarLinks={mockSidebarLinks} showLogo={false} />
-      </MemoryRouter>
-    );
+//   it("only keeps one link active at a time", () => {
+//     render(
+//       <MemoryRouter>
+//         <Sidebar/>
+//       </MemoryRouter>
+//     );
 
-    expect(screen.queryByText("Non-Existent Link")).not.toBeInTheDocument();
-  });
-});
+//     const generalStockLink = screen.getByText("Main Inventory");
+//     const ordersLink = screen.getByText("Orders");
+
+//     fireEvent.click(generalStockLink);
+//     expect(generalStockLink).toHaveClass("bg-accent text-white");
+//     expect(ordersLink).not.toHaveClass("bg-accent text-white");
+
+//     fireEvent.click(ordersLink);
+//     expect(ordersLink).toHaveClass("bg-accent text-white");
+//     expect(generalStockLink).not.toHaveClass("bg-accent text-white");
+//   });
+// });

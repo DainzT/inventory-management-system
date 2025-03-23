@@ -25,7 +25,7 @@ interface TableRowProps {
             {item.id}
           </div>
           <div className="w-[192px] text-[18px] font-bold text-[#1F2937]">
-            {item.productName}
+            {item.name}
           </div>
           <div className="w-[286px] text-[18px] text-[#4B5563]">
             {item.note}
@@ -49,7 +49,7 @@ interface TableRowProps {
         <div className={`transition-all duration-300 ease-in-out ${
             isExpanded 
             ? "scale-[100.5%] opacity-100 max-h-[500px]" 
-            : "scale-100 opacity-0 max-h-0 overflow-hidden"
+            : "scale-100 opacity-0 max-h-0 overflow-auto"
           }`}
         >
         {isExpanded && <ExpandedItemDetails item={item} />}
