@@ -1,4 +1,3 @@
-import { TableHeader } from "./TableHeader";
 import { TableRow } from "./TableRow";
 import { InventoryItem } from "@/types";
 
@@ -20,9 +19,7 @@ export const InventoryTable = ({
   const inventoryItems: InventoryItem[] = items;
 
   return (
-    <section>
-      <TableHeader />
-      <div className="flex flex-col">
+      <section>  
         {inventoryItems.map((item) => (
           <TableRow
             key={item.id}
@@ -33,7 +30,6 @@ export const InventoryTable = ({
             onToggle={onToggleExpand}
           />
         ))}
-      </div>
     </section>
   );
 }

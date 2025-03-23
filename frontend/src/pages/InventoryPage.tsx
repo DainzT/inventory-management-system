@@ -23,6 +23,67 @@ const Inventory: React.FC = () => {
       dateCreated: new Date(),
       lastUpdated: new Date(),
     }, 
+    {
+      id: 5,
+      name: "Fishing Reel",
+      note: "Spinning reel, corrosion-resistant",
+      quantity: 8,
+      unitPrice: 60.0,
+      selectUnit: "piece",
+      unitSize: 1,
+      total: 480.0,
+      dateCreated: new Date(),
+      lastUpdated: new Date(),
+    }, 
+    {
+      id: 4,
+      name: "Fishing Reel",
+      note: "Spinning reel, corrosion-resistant",
+      quantity: 8,
+      unitPrice: 60.0,
+      selectUnit: "piece",
+      unitSize: 1,
+      total: 480.0,
+      dateCreated: new Date(),
+      lastUpdated: new Date(),
+    }, 
+    {
+      id: 3,
+      name: "Fishing Reel",
+      note: "Spinning reel, corrosion-resistant",
+      quantity: 8,
+      unitPrice: 60.0,
+      selectUnit: "piece",
+      unitSize: 1,
+      total: 480.0,
+      dateCreated: new Date(),
+      lastUpdated: new Date(),
+    }, 
+      {
+      id: 2,
+      name: "Fishing Reel",
+      note: "Spinning reel, corrosion-resistant",
+      quantity: 8,
+      unitPrice: 60.0,
+      selectUnit: "piece",
+      unitSize: 1,
+      total: 480.0,
+      dateCreated: new Date(),
+      lastUpdated: new Date(),
+    }, 
+    {
+      id: 2,
+      name: "Fishing Reel",
+      note: "Spinning reel, corrosion-resistant",
+      quantity: 8,
+      unitPrice: 60.0,
+      selectUnit: "piece",
+      unitSize: 1,
+      total: 480.0,
+      dateCreated: new Date(),
+      lastUpdated: new Date(),
+    }, 
+    
     
     
   ]); // Stores the items in the inventory
@@ -50,7 +111,7 @@ const Inventory: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 p-4 overflow-y-auto">
+    <div className="flex-1 p-4 ">
       <PageTitle title="Main Inventory"/>
       <InventoryManagementTable 
         setIsAddOpen={setIsAddOpen} 

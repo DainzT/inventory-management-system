@@ -15,11 +15,10 @@ const Sidebar: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar visibility
 
   const handleLinkClick = (path: string) => {
-    if (!path.startsWith("/summary/")) {
-      setActiveLink(path);
-    } else {
-      setActiveLink(null);
+    if (path === "/summary") {
+      return; 
     }
+    setActiveLink(path);
   };
   
   const navigationItems = [
@@ -37,6 +36,7 @@ const Sidebar: React.FC = () => {
       path: "/summary",
       icon: <CiBoxList size={30}/>,
       label: "Summary",
+      disabled: true,
     },
   ];
 
@@ -66,6 +66,7 @@ const Sidebar: React.FC = () => {
                     icon={item.icon}
                     label={item.label}
                     onClick={() => handleLinkClick(item.path)}
+                    disabled={item.disabled} 
                   />
                 ))}
               <FleetSelector 
