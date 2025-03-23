@@ -13,7 +13,7 @@ const LogoutButton = () => {
     <>
       <button
         className="
-          flex items-center gap-[11px] w-[110px] h-[40px] rounded-[8px] 
+          flex items-center gap-[11px] w-[110px] h-[40px] rounded-[8px] scale-80
         bg-[#fc2424] cursor-pointer px-[7px] transition-all duration-200 
           ease-in-out hover:scale-105 focus:outline-none
           shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.2)] hover:shadow-[inset_0_2px_8px_0_rgba(0,0,0,0.4)]

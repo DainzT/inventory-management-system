@@ -4,12 +4,14 @@ import AddProductModal from "@/components/AddProductModal/AddProductModal";
 import OutItemModal from "@/components/OutItemModal/OutItemModal";
 import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 import { PageTitle } from "@/components/PageTitle";
+import { match } from "assert";
 
 const Inventory: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isOutOpen, setIsOutOpen] = useState(false); 
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
     {
       id: 1,
@@ -48,7 +50,7 @@ const Inventory: React.FC = () => {
       lastUpdated: new Date(),
     }, 
     {
-      id: 3,
+      id: 6,
       name: "Fishing Reel",
       note: "Spinning reel, corrosion-resistant",
       quantity: 8,
@@ -60,7 +62,7 @@ const Inventory: React.FC = () => {
       lastUpdated: new Date(),
     }, 
       {
-      id: 2,
+      id: 3,
       name: "Fishing Reel",
       note: "Spinning reel, corrosion-resistant",
       quantity: 8,
@@ -110,6 +112,26 @@ const Inventory: React.FC = () => {
     setOutItems((prevOutItems) => [...prevOutItems, outItem]);
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  
+  const filteredItems = inventoryItems.filter((item) => {
+    const matchesSearch = [
+      item.name.toLowerCase(),
+      item.note.toLowerCase(),
+      item.quantity.toString(),
+      item.unitPrice.toString(),
+      item.selectUnit.toLowerCase(),
+      item.unitSize.toString(),
+      item.total?.toString() || "",
+      item.dateCreated.toISOString().toLowerCase(),
+    ].some((field) => field.includes(searchQuery.toLowerCase()));
+    console.log(matchesSearch)
+    return matchesSearch;
+  });
+
   return (
     <div className="flex-1 p-4 ">
       <PageTitle title="Main Inventory"/>
@@ -120,7 +142,8 @@ const Inventory: React.FC = () => {
           setSelectedItem(item || null);
           setIsOutOpen(isOpen);
         }}
-        inventoryItems={inventoryItems}
+        inventoryItems={filteredItems}
+        onSearch={handleSearch}
       />
       <AddProductModal 
         isOpen={isAddOpen} 

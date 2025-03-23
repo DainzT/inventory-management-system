@@ -25,17 +25,17 @@
     const navigationItems = [
       {
         path: "/",
-        icon: <MdOutlineInventory2 size={30}/>,
+        icon: <MdOutlineInventory2 size={24}/>,
         label: "Inventory",
       },
       {
         path: "/orders",
-        icon: <BsBoxSeam size={30}/>,
+        icon: <BsBoxSeam size={24}/>,
         label: "Orders",
       },
       {
         path: "/summary",
-        icon: <CiBoxList size={30}/>,
+        icon: <CiBoxList size={24}/>,
         label: "Summary",
         disabled: true,
       },
@@ -52,13 +52,13 @@
         </button>
 
         <aside
-          className={`fixed md:relative h-screen w-[256px] flex flex-col justify-between inter-font bg-[rgba(244,244,244,0.51)] border-r-[1px] border-r-[#E5E7EB] transform transition-transform duration-200 ease-in-out ${
+          className={`fixed md:relative h-screen w-[256px] flex flex-col justify-between inter-font bg-[rgba(244,244,244,0.8)] border-r-[1px] border-r-[#E5E7EB] transform transition-transform duration-200 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0`}
         >
           <div className="h-full flex flex-col flex-grow overflow-y-auto">
             <Logo/>
-            <nav className="flex flex-col items-center w-full h-full gap-2">
+            <nav className="flex flex-col items-center w-full h-full gap-1">
               {navigationItems.map((item) => (
                     <NavigationItem
                       key={item.path}
@@ -77,7 +77,7 @@
             </nav>
           </div>
 
-          <div className=" flex justify-center p-4 border-t-[1px] border-t-[#E5E7EB] mb-15">
+          <div className=" flex justify-center p-4 border-t-[1px] border-t-[#E5E7EB] mb-10 pt-6">
             <LogoutButton />
           </div>
         </aside>
