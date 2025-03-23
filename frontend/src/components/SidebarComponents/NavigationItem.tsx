@@ -31,9 +31,9 @@ import { Link } from "react-router-dom";
             onClick(); 
             }
         }}
-            className={`flex items-center gap-3 w-full h-[72px] px-10 py-2 text-lg font-medium text-black transition-all duration-200 ease-in-out ${
+            className={`flex items-center gap-3 w-full h-[72px] px-10 py-2 text-lg font-medium  transition-all duration-200 ease-in-out ${
                 isActive ? "bg-[#295C65] text-white" : ""
-            } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            } ${disabled ? "text-[#8f940a] opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-accent hover:text-white"}`}
         >
             {icon} {label}
         </Link>

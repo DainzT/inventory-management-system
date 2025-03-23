@@ -11,11 +11,23 @@ export const FleetSelector = ({
   fleets,
 }: FleetSelectorProps) => {
   const location = useLocation();
-
+ 
   const getFleetPath = (fleet: string) => {
     return fleet === "All Fleets"
-      ? "/summary/all-fleets"
-      : `/summary/${fleet.toLowerCase().replace(" ", "-")}`;
+    ? "/summary/all-fleets"
+    : `/summary/${fleet
+        .toLowerCase()
+        .replace(/ /g, "-")
+        .normalize("NFD") 
+        .replace(/[\u0300-\u036f]/g, "")}`; 
+};
+
+  const normalizePath = (path: string) => {
+    return path
+      .toLowerCase()
+      .replace(/\/$/, "") 
+      .normalize("NFD") 
+      .replace(/[\u0300-\u036f]/g, ""); 
   };
 
   return (
@@ -23,6 +35,8 @@ export const FleetSelector = ({
       <ul className="flex flex-col gap-[8px] md:gap-[10px] ml-[10px] md:ml-[10px]">
         {fleets.map((fleet, i) => {
           const fleetPath = getFleetPath(fleet);
+          const isActive = normalizePath(location.pathname) === normalizePath(fleetPath);
+          console.log(`Fleet: ${fleet} | Fleet Path: ${fleetPath}`);
           return (
             <li key={i} className="w-full">
               <Link
@@ -30,7 +44,7 @@ export const FleetSelector = ({
                 onClick={onFleetSelect}
                 className={`className=" text-s text-black inter-font block font-medium px-3 py-2
                   ${
-                    location.pathname === fleetPath
+                    isActive
                       ? "bg-accent text-white"
                       : "hover:bg-accent hover:text-white"
                   }`}
