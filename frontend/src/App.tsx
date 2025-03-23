@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import Sidebar from "@/components/Sidebar";
 import Inventory from "./pages/InventoryPage";
 import Orders from "./pages/OrderPage";
+import Summary from "./pages/SummaryPage";
 
 
 const App: React.FC = () => {
