@@ -10,6 +10,7 @@ interface InventoryManagementTableProps {
   setIsAddOpen: (isOpen: boolean) => void;
   setIsOutOpen: (isOpen: boolean, item?: InventoryItem) => void;
   setIsEditOpen: (isOpen: boolean) => void;
+  onSearch?: (query: string) => void;
 }
 
 const InventoryManagementTable = ({
@@ -17,6 +18,7 @@ const InventoryManagementTable = ({
   setIsAddOpen,
   setIsOutOpen,
   setIsEditOpen,
+  onSearch,
 }: InventoryManagementTableProps) => {
 
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
@@ -33,7 +35,7 @@ const InventoryManagementTable = ({
       <main className="p-[30px] max-lg:p-[15px] h-[calc(100vh-135px)]">
         <section className="w-full h-[calc(100vh-140px)] rounded-[12px] border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]">
           <div className="p-[24px] flex items-center gap-[10px]">
-              <SearchBar />
+              <SearchBar placeholder="Search Items..."  onSearch={onSearch}/>
               <InventoryButton 
                   variant="add"
                   onAdd={() => setIsAddOpen(true)}
