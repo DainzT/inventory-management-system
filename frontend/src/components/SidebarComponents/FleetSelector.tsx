@@ -42,7 +42,7 @@ export const FleetSelector = ({
               <Link
                 to={fleetPath}
                 onClick={onFleetSelect}
-                className={`className=" text-s text-black inter-font block font-medium px-3 py-2
+                className={`className=" text-sm text-black inter-font block font-medium px-2 py-2
                   ${
                     isActive
                       ? "bg-accent text-white"
