@@ -33,7 +33,8 @@ import { Link } from "react-router-dom";
         }}
             className={`flex items-center gap-3 w-full h-[60px] px-15  text-base font-medium  transition-all duration-200 ease-in-out ${
                 isActive ? "bg-[#295C65] text-white" : ""
-            } ${disabled ? "text-[#8f940a] opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-accent hover:text-white"}`}
+            } ${disabled ? "text-[#8f940a] opacity-80 cursor-not-allowed drag" : "cursor-pointer hover:bg-accent hover:text-white"}`}
+            draggable={disabled ? "false" : "true" }
         >
             {icon} {label}
         </Link>

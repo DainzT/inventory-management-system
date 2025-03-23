@@ -48,6 +48,7 @@ export const FleetSelector = ({
                       ? "bg-accent text-white"
                       : "hover:bg-accent hover:text-white"
                   }`}
+                draggable="true"
               >
                 {fleet}
               </Link>
