@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import InventoryManagementTable from "@/components/InventoryManagementTable/InventoryManagementTable";
 import AddProductModal from "@/components/AddProductModal/AddProductModal";
 import OutItemModal from "@/components/OutItemModal/OutItemModal";
+import EditProductModal from "@/components/EditProductModal/EditProductModal";
 import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 import { PageTitle } from "@/components/PageTitle";
-import { match } from "assert";
+
 
 const Inventory: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -112,6 +113,20 @@ const Inventory: React.FC = () => {
     setOutItems((prevOutItems) => [...prevOutItems, outItem]);
   };
 
+  const handleEditItem = (updatedItem: InventoryItem) => {
+     setInventoryItems((prevItems) =>
+      prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
+  };
+
+  const handleDeleteItem = (id: number) => {
+    console.log("no", id)
+    setInventoryItems((prevItems) =>
+      prevItems.filter((item) => item.id !== id)
+    );
+  };
+
+
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
@@ -128,7 +143,6 @@ const Inventory: React.FC = () => {
       item.total?.toString() || "",
       item.dateCreated.toISOString().toLowerCase(),
     ].some((field) => field.includes(searchQuery.toLowerCase()));
-    console.log(matchesSearch)
     return matchesSearch;
   });
 
@@ -137,7 +151,10 @@ const Inventory: React.FC = () => {
       <PageTitle title="Main Inventory"/>
       <InventoryManagementTable 
         setIsAddOpen={setIsAddOpen} 
-        setIsEditOpen={setIsEditOpen} 
+        setIsEditOpen={(isOpen, item) => {
+          setSelectedItem(item || null);
+          setIsEditOpen(isOpen);
+        }} 
         setIsOutOpen={(isOpen, item) => {
           setSelectedItem(item || null);
           setIsOutOpen(isOpen);
@@ -155,6 +172,13 @@ const Inventory: React.FC = () => {
         setIsOpen={setIsOutOpen}
         selectedItem={selectedItem}
         onOutItem={handleOutItem}
+      />
+      <EditProductModal 
+        isOpen={isEditOpen}
+        setIsOpen={setIsEditOpen}
+        selectedItem={selectedItem}
+        onEditItem={(item) => handleEditItem(item)}
+        onDeleteItem={(id) => handleDeleteItem(id)}
       />
     </div>
   );

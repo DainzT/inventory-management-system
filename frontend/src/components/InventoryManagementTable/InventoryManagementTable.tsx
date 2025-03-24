@@ -9,7 +9,7 @@ interface InventoryManagementTableProps {
   inventoryItems: InventoryItem[];
   setIsAddOpen: (isOpen: boolean) => void;
   setIsOutOpen: (isOpen: boolean, item?: InventoryItem) => void;
-  setIsEditOpen: (isOpen: boolean) => void;
+  setIsEditOpen: (isOpen: boolean, item?: InventoryItem) => void;
   onSearch?: (query: string) => void;
 }
 
@@ -31,6 +31,10 @@ const InventoryManagementTable = ({
     setIsOutOpen(true, item);
   };
 
+  const handleEditItemClick = (item: InventoryItem) => {
+    setIsEditOpen(true, item);
+  };
+
   return (
       <main className="p-[30px] max-lg:p-[15px] h-[calc(100vh-135px)]">
         <section className="w-full h-[calc(100vh-140px)] rounded-[12px] border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]">
@@ -48,7 +52,7 @@ const InventoryManagementTable = ({
               expandedItem={expandedItem}
               onToggleExpand={handleToggleExpand}
               onOut={(item) => handleOutItemClick(item)}
-              onEdit={() => setIsEditOpen(true)}
+              onEdit={(item) => handleEditItemClick(item)}
             />
           </div>
         </section>
