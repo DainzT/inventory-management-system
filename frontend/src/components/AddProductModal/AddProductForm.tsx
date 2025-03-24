@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "./Button";
 import { InputField } from "./InputField";
 import { PriceInput } from "./PriceInput";
@@ -9,13 +9,15 @@ import { ItemFormData } from "@/types";
 interface ProductFormProps {
     onCancel: () => void;
     onSubmit: (data: ItemFormData) => void;
+    onFormChange: (hasChanges: boolean) => void;
   }
 
 const AddProductForm = ({ 
     onCancel, 
     onSubmit,
+    onFormChange,
 }: ProductFormProps) => {
-    const [productData, setProductData] = useState<ItemFormData>({
+    const emptyFormState = useMemo<ItemFormData>(() => ({
         name: "",
         note: "",
         quantity: "",
@@ -24,7 +26,9 @@ const AddProductForm = ({
         unitSize: "",
         total: "",
         dateCreated: new Date(),
-    }); 
+    }), []);
+
+    const [productData, setProductData] = useState<ItemFormData>(emptyFormState);
 
     const [errors, setErrors] = useState<{ [key in keyof ItemFormData]?: string }>({});
 
@@ -35,6 +39,16 @@ const AddProductForm = ({
         }));
     }, [productData.quantity, productData.unitPrice,  productData.unitSize]);
     
+    useEffect(() => {
+        const hasChanges = Object.keys(productData).some(key => {
+            if (key === 'dateCreated' || key === 'total') return false;
+            const value = productData[key as keyof ItemFormData];
+            const defaultValue = emptyFormState[key as keyof ItemFormData];
+            return value !== defaultValue;
+        });
+        onFormChange(hasChanges);
+    }, [productData, onFormChange, emptyFormState]);
+
     const handleInputChange = (field: keyof ItemFormData, value: string | number) => {
         setProductData((prevData) => ({
           ...prevData,

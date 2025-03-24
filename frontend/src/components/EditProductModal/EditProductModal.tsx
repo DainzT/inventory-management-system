@@ -1,6 +1,7 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { InventoryItem } from "@/types";
 import EditProductForm from "./EditProductForm";
+import { UnsavedChangesModal } from "./UnsavedChangesModal";
 
 interface EditProductModalProps {
     isOpen: boolean;
@@ -17,8 +18,19 @@ const EditProductModal = ({
     onEditItem, 
     onDeleteItem,
 }: EditProductModalProps) => {
-    if (!isOpen || !selectedItem) return null;
+    const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
+       
+    const handleCloseAttempt = () => {
+        if (hasChanges) {
+            setShowUnsavedModal(true);
+        } else {
+            setIsOpen(false);
+        }
+    };
 
+    if (!isOpen || !selectedItem) return null;
+    
     return (
         <section className="flex fixed inset-0 justify-center items-center ">  
             <article 
@@ -29,7 +41,7 @@ const EditProductModal = ({
                         Edit Product
                     </h1>
                     <button
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleCloseAttempt}
                     className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
                     aria-label="Close dialog"
                     >
@@ -46,10 +58,9 @@ const EditProductModal = ({
                 </header>
                 <div className="h-[1px] bg-[#E0D8D8] my-1"/>
                     <EditProductForm
-                        onCancel={() => setIsOpen(false)}
+                        onCancel={handleCloseAttempt}
                         onSubmit={(updatedItem) => {
                             onEditItem(updatedItem);    
-                          
                             setIsOpen(false); 
                         }}
                         onDelete={(deleteItem) => {
@@ -57,12 +68,21 @@ const EditProductModal = ({
                             setIsOpen(false); 
                         }}
                         initialData={selectedItem} 
+                        onFormChange={setHasChanges}
                     />
             </article>
             <div
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity "
                 onClick={() => setIsOpen(false)}
                 aria-hidden="true"
+            />
+            <UnsavedChangesModal
+                isOpen={showUnsavedModal}
+                onClose={() => setShowUnsavedModal(false)}
+                onConfirm={() => {
+                    setShowUnsavedModal(false);
+                    setIsOpen(false);
+                }}
             />
         </section>
     );

@@ -1,6 +1,7 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import AddProductForm from "./AddProductForm";
 import { ItemFormData } from "@/types";
+import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
 
 interface AddProductModalProps {
     isOpen: boolean;
@@ -13,6 +14,17 @@ const AddProductModal = ({
     setIsOpen,
     onAddItem, 
 }: AddProductModalProps) => {
+    const [hasChanges, setHasChanges] = useState(false);
+    const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+
+    const handleCloseAttempt = () => {
+        if (hasChanges) {
+            setShowUnsavedModal(true);
+        } else {
+            setIsOpen(false);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -25,7 +37,7 @@ const AddProductModal = ({
                         Add Product
                     </h1>
                     <button
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleCloseAttempt}
                     className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
                     aria-label="Close dialog"
                     >
@@ -42,14 +54,24 @@ const AddProductModal = ({
                 </header>
                 <div className="h-[1px] bg-[#E0D8D8] my-1"/>
                     <AddProductForm
-                        onCancel={() => setIsOpen(false)}
+                        onCancel={handleCloseAttempt}
                         onSubmit={onAddItem}
+                        onFormChange={setHasChanges}
                 />
             </article>
             <div
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity "
                 onClick={() => setIsOpen(false)}
                 aria-hidden="true"
+            />
+            <UnsavedChangesModal
+                isOpen={showUnsavedModal}
+                onClose={() => setShowUnsavedModal(false)}
+                onConfirm={() => {
+                    setShowUnsavedModal(false);
+                    setIsOpen(false);
+                }}
+                text="Are you sure you want to leave? Your changes will be lost if you don't save them."
             />
         </section>
     );

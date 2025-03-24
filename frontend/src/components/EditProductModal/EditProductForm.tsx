@@ -7,11 +7,12 @@ import { UnitSelector } from "../AddProductModal/UnitSelector";
 import DeleteButton from "./DeleteButton";
 import { InventoryItem } from "@/types";
 
-interface ProductFormProps {
+interface EditProductFormProps {
     initialData: InventoryItem;
     onCancel: () => void;
     onSubmit: (data: InventoryItem) => void;
     onDelete: (data: InventoryItem) => void
+    onFormChange: (hasChanges: boolean) => void;
   }
 
 const EditProductForm = ({ 
@@ -19,7 +20,8 @@ const EditProductForm = ({
     onCancel, 
     onSubmit,
     onDelete,
-}: ProductFormProps) => {
+    onFormChange,
+}: EditProductFormProps) => {
      const [productData, setProductData] = useState<InventoryItem>({
         id: initialData.id,
         name: initialData?.name || "",
@@ -32,8 +34,6 @@ const EditProductForm = ({
         dateCreated: initialData?.dateCreated || new Date(),
         lastUpdated: new Date(),
     });
-
-
     const [errors, setErrors] = useState<{ [key in keyof InventoryItem]?: string }>({});
 
     useEffect(() => {
@@ -43,6 +43,14 @@ const EditProductForm = ({
         }));
     }, [productData.quantity, productData.unitPrice,  productData.unitSize]);
     
+   useEffect(() => {
+        const changed = Object.keys(productData).some(key => {
+            if (key === 'lastUpdated') return false;
+            return productData[key as keyof InventoryItem] !== initialData[key as keyof InventoryItem];
+        });
+        onFormChange(changed);
+    }, [productData, initialData, onFormChange]);
+
     const handleInputChange = (field: keyof InventoryItem, value: string | number) => {
         setProductData((prevData) => ({
           ...prevData,
@@ -135,21 +143,21 @@ const EditProductForm = ({
                 >
                     Delete
                 </DeleteButton>
-            <div className="flex item-center justify-end gap-4 ">
-                <Button 
-                    variant="secondary" 
-                    onClick={onCancel}
-                    className="text-s "
-                >
-                    Cancel
-                </Button>
-                <Button 
-                    type="submit"
-                    className="text-xs h-[3rem]"
-                >
-                    Confirm Changes
-                </Button>
-            </div>
+                <div className="flex item-center justify-end gap-4 ">
+                    <Button 
+                        variant="secondary" 
+                        onClick={onCancel}
+                        className="text-s "
+                    >
+                        Cancel
+                    </Button>
+                    <Button 
+                        type="submit"
+                        className="text-xs h-[3rem]"
+                    >
+                        Confirm Changes
+                    </Button>
+                </div>
             </div>
         </form>
     );
