@@ -14,7 +14,7 @@ const App: React.FC = () => {
         <Header />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />
-            <div className="flex-1 p-4 overflow-y-auto">
+            <div className="flex-1 p-4 overflow-y-hidden">
             <Routes>
               <Route path="/" element={<Inventory />} />
               <Route path="/orders" element={<Orders />} />

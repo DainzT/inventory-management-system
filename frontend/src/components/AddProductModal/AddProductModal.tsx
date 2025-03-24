@@ -71,7 +71,8 @@ const AddProductModal = ({
                     setShowUnsavedModal(false);
                     setIsOpen(false);
                 }}
-                text="Are you sure you want to leave? Your changes will be lost if you don't save them."
+                text="Are you sure you want to leave? Your product details will be lost."
+                header="Discard New Product?"
             />
         </section>
     );

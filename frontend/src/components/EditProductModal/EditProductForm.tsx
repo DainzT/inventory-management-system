@@ -35,7 +35,7 @@ const EditProductForm = ({
         lastUpdated: new Date(),
     });
     const [errors, setErrors] = useState<{ [key in keyof InventoryItem]?: string }>({});
-
+    
     useEffect(() => {
         setProductData((current) => ({
             ...current,
