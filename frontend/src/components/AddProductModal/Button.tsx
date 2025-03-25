@@ -1,14 +1,16 @@
 interface ButtonProps {
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" ;
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit";
+  className?: string;
 }
 
 export const Button = ({
   variant = "primary",
   children,
   onClick,
+  className,
   type = "button",
 }: ButtonProps) => {
   const baseStyles = "px-6 py-2 rounded-[5px]";
@@ -20,7 +22,7 @@ export const Button = ({
     <button
       type={type}
       onClick={onClick}
-      className={`inter-font ${baseStyles} ${variantStyles[variant]}`}
+      className={`inter-font ${baseStyles} ${variantStyles[variant]} ${className}`}
     >
       {children}
     </button>

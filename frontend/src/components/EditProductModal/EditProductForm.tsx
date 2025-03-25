@@ -1,35 +1,39 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "./Button";
-import { InputField } from "./InputField";
-import { PriceInput } from "./PriceInput";
-import { QuantityInput } from "./QuantityInput";
-import { UnitSelector } from "./UnitSelector";
-import { ItemFormData } from "@/types";
+import { useEffect, useState } from "react";
+import { Button } from "../AddProductModal/Button";
+import { InputField } from "../AddProductModal/InputField";
+import { PriceInput } from "../AddProductModal/PriceInput";
+import { QuantityInput } from "../AddProductModal/QuantityInput";
+import { UnitSelector } from "../AddProductModal/UnitSelector";
+import DeleteButton from "./DeleteButton";
+import { InventoryItem } from "@/types";
 
-interface ProductFormProps {
-    onSubmit: (data: ItemFormData) => void;
+interface EditProductFormProps {
+    initialData: InventoryItem;
+    onSubmit: (data: InventoryItem) => void;
+    onDelete: (data: InventoryItem) => void
     onFormChange: (hasChanges: boolean) => void;
   }
 
-const AddProductForm = ({  
+const EditProductForm = ({ 
+    initialData,
     onSubmit,
+    onDelete,
     onFormChange,
-}: ProductFormProps) => {
-    const emptyFormState = useMemo<ItemFormData>(() => ({
-        name: "",
-        note: "",
-        quantity: "",
-        selectUnit: "Unit",
-        unitPrice: "",
-        unitSize: "",
-        total: "",
-        dateCreated: new Date(),
-    }), []);
-
-    const [productData, setProductData] = useState<ItemFormData>(emptyFormState);
-
-    const [errors, setErrors] = useState<{ [key in keyof ItemFormData]?: string }>({});
-
+}: EditProductFormProps) => {
+     const [productData, setProductData] = useState<InventoryItem>({
+        id: initialData.id,
+        name: initialData?.name || "",
+        note: initialData?.note || "",
+        quantity: initialData?.quantity || "",
+        selectUnit: initialData?.selectUnit || "Unit",
+        unitPrice: initialData?.unitPrice || "",
+        unitSize: initialData?.unitSize || "",
+        total: initialData?.total || "",
+        dateCreated: initialData?.dateCreated || new Date(),
+        lastUpdated: new Date(),
+    });
+    const [errors, setErrors] = useState<{ [key in keyof InventoryItem]?: string }>({});
+    
     useEffect(() => {
         setProductData((current) => ({
             ...current,
@@ -37,17 +41,15 @@ const AddProductForm = ({
         }));
     }, [productData.quantity, productData.unitPrice,  productData.unitSize]);
     
-    useEffect(() => {
-        const hasChanges = Object.keys(productData).some(key => {
-            if (key === 'dateCreated' || key === 'total') return false;
-            const value = productData[key as keyof ItemFormData];
-            const defaultValue = emptyFormState[key as keyof ItemFormData];
-            return value !== defaultValue;
+   useEffect(() => {
+        const changed = Object.keys(productData).some(key => {
+            if (key === 'lastUpdated') return false;
+            return productData[key as keyof InventoryItem] !== initialData[key as keyof InventoryItem];
         });
-        onFormChange(hasChanges);
-    }, [productData, onFormChange, emptyFormState]);
+        onFormChange(changed);
+    }, [productData, initialData, onFormChange]);
 
-    const handleInputChange = (field: keyof ItemFormData, value: string | number) => {
+    const handleInputChange = (field: keyof InventoryItem, value: string | number) => {
         setProductData((prevData) => ({
           ...prevData,
           [field]: value,
@@ -60,7 +62,7 @@ const AddProductForm = ({
     };
     
     const validateForm = () => {
-        const newErrors: { [key in keyof ItemFormData]?: string } = {};
+        const newErrors: { [key in keyof InventoryItem]?: string } = {};
         if (!productData.name.trim()) newErrors.name = "Product name is required.";
         if (!productData.note.trim()) newErrors.note = "Note is required.";
         if (productData.quantity === "" || Number(productData.quantity) <= 0) newErrors.quantity = "Enter a valid quantity.";
@@ -132,15 +134,24 @@ const AddProductForm = ({
                 readonly 
             />
             
-            <div className="flex justify-end gap-4">
-                <Button 
-                    type="submit"
+           <div className="flex gap-20">
+                <DeleteButton
+                    onClick={() => onDelete(initialData)}
+                    className="text-s"
                 >
-                        Add Product
-                </Button>
+                    Delete
+                </DeleteButton>
+                <div className="flex item-center justify-end ">
+                    <Button 
+                        type="submit"
+                        className="text-s h-[3rem]"
+                    >
+                        Confirm Changes
+                    </Button>
+                </div>
             </div>
         </form>
     );
 };
 
-export default AddProductForm;
+export default EditProductForm;

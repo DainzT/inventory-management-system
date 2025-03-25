@@ -1,22 +1,26 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import AddProductForm from "./AddProductForm";
-import { ItemFormData } from "@/types";
-import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
+import { InventoryItem } from "@/types";
+import EditProductForm from "./EditProductForm";
+import { UnsavedChangesModal } from "./UnsavedChangesModal";
 
-interface AddProductModalProps {
+interface EditProductModalProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
-    onAddItem: (product: ItemFormData) => void;
+    selectedItem: InventoryItem | null;
+    onDeleteItem: (id: number) => void; 
+    onEditItem: (editItem: InventoryItem) => void;
 }
 
-const AddProductModal = ({ 
+const EditProductModal = ({ 
     isOpen, 
     setIsOpen,
-    onAddItem, 
-}: AddProductModalProps) => {
-    const [hasChanges, setHasChanges] = useState(false);
+    selectedItem,
+    onEditItem, 
+    onDeleteItem,
+}: EditProductModalProps) => {
     const [showUnsavedModal, setShowUnsavedModal] = useState(false);
-
+    const [hasChanges, setHasChanges] = useState(false);
+       
     const handleCloseAttempt = () => {
         if (hasChanges) {
             setShowUnsavedModal(true);
@@ -25,8 +29,8 @@ const AddProductModal = ({
         }
     };
 
-    if (!isOpen) return null;
-
+    if (!isOpen || !selectedItem) return null;
+    
     return (
         <section className="flex fixed inset-0 justify-center items-center ">  
             <article 
@@ -34,7 +38,7 @@ const AddProductModal = ({
             >
                 <header className="flex justify-between items-center">
                     <h1 className="text-[24px] font-bold text-[#1B626E] inter-font">
-                        Add Product
+                        Edit Product
                     </h1>
                     <button
                     onClick={handleCloseAttempt}
@@ -53,10 +57,18 @@ const AddProductModal = ({
                     </button>
                 </header>
                 <div className="h-[1px] bg-[#E0D8D8] my-1"/>
-                    <AddProductForm
-                        onSubmit={onAddItem}
+                    <EditProductForm
+                        onSubmit={(updatedItem) => {
+                            onEditItem(updatedItem);    
+                            setIsOpen(false); 
+                        }}
+                        onDelete={(deleteItem) => {
+                            onDeleteItem(deleteItem.id);
+                            setIsOpen(false); 
+                        }}
+                        initialData={selectedItem} 
                         onFormChange={setHasChanges}
-                />
+                    />
             </article>
             <div
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity "
@@ -70,11 +82,9 @@ const AddProductModal = ({
                     setShowUnsavedModal(false);
                     setIsOpen(false);
                 }}
-                text="Are you sure you want to leave? Your product details will be lost."
-                header="Discard New Product?"
             />
         </section>
     );
 };
 
-export default AddProductModal;
+export default EditProductModal;
