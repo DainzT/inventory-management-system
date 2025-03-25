@@ -9,7 +9,6 @@ import { InventoryItem } from "@/types";
 
 interface EditProductFormProps {
     initialData: InventoryItem;
-    onCancel: () => void;
     onSubmit: (data: InventoryItem) => void;
     onDelete: (data: InventoryItem) => void
     onFormChange: (hasChanges: boolean) => void;
@@ -17,7 +16,6 @@ interface EditProductFormProps {
 
 const EditProductForm = ({ 
     initialData,
-    onCancel, 
     onSubmit,
     onDelete,
     onFormChange,
@@ -136,24 +134,17 @@ const EditProductForm = ({
                 readonly 
             />
             
-           <div className="flex gap-10">
+           <div className="flex gap-20">
                 <DeleteButton
                     onClick={() => onDelete(initialData)}
                     className="text-s"
                 >
                     Delete
                 </DeleteButton>
-                <div className="flex item-center justify-end gap-4 ">
-                    <Button 
-                        variant="secondary" 
-                        onClick={onCancel}
-                        className="text-s "
-                    >
-                        Cancel
-                    </Button>
+                <div className="flex item-center justify-end ">
                     <Button 
                         type="submit"
-                        className="text-xs h-[3rem]"
+                        className="text-s h-[3rem]"
                     >
                         Confirm Changes
                     </Button>

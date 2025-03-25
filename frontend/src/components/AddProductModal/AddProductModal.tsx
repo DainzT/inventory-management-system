@@ -54,7 +54,6 @@ const AddProductModal = ({
                 </header>
                 <div className="h-[1px] bg-[#E0D8D8] my-1"/>
                     <AddProductForm
-                        onCancel={handleCloseAttempt}
                         onSubmit={onAddItem}
                         onFormChange={setHasChanges}
                 />

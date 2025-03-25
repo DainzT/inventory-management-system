@@ -7,13 +7,11 @@ import { UnitSelector } from "./UnitSelector";
 import { ItemFormData } from "@/types";
 
 interface ProductFormProps {
-    onCancel: () => void;
     onSubmit: (data: ItemFormData) => void;
     onFormChange: (hasChanges: boolean) => void;
   }
 
-const AddProductForm = ({ 
-    onCancel, 
+const AddProductForm = ({  
     onSubmit,
     onFormChange,
 }: ProductFormProps) => {
@@ -135,12 +133,6 @@ const AddProductForm = ({
             />
             
             <div className="flex justify-end gap-4">
-                <Button 
-                    variant="secondary" 
-                    onClick={onCancel}
-                >
-                        Cancel
-                </Button>
                 <Button 
                     type="submit"
                 >

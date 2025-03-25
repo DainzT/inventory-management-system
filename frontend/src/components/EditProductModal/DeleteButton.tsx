@@ -24,7 +24,7 @@ export const DeleteButton = ({
         type="button"
         onClick={() => setShowConfirm(true)}
         className={`
-            flex items-center gap-[3px] px-[8px] py-[1px]   
+            flex items-center gap-[2px] px-[10px]   
             text-red-500 rounded-[4px] font-medium transition-transform
             hover:translate-y-[-1px] text-sm
             hover:outline-1

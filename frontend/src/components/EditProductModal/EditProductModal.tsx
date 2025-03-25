@@ -58,7 +58,6 @@ const EditProductModal = ({
                 </header>
                 <div className="h-[1px] bg-[#E0D8D8] my-1"/>
                     <EditProductForm
-                        onCancel={handleCloseAttempt}
                         onSubmit={(updatedItem) => {
                             onEditItem(updatedItem);    
                             setIsOpen(false); 
