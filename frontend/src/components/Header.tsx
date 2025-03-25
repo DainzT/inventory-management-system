@@ -1,6 +1,6 @@
 const Header = () => {
   return (
-    <div className="z-50 w-screen  bg-[#1B626E] select-none font-bold inter-font h-8 text-[#F4F4F4] flex items-center px-2">
+    <div className="z-50 w-screen text-xl bg-accent select-none font-semibold inter-font h-10 text-white flex items-center px-2">
       Inventory Management System
     </div>
   );
