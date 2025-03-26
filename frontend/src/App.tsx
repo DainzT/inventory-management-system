@@ -18,7 +18,13 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Inventory />} />
               <Route path="/orders" element={<Orders />} />
-              <Route path="/summary/:fleetName" element={<Summary />} />
+              <Route 
+                path="/summary/:fleetName" 
+                element={
+                  <div className="h-full overflow-y-auto">
+                    <Summary />
+                  </div>}
+              />
             </Routes>
             </div>
         </div>

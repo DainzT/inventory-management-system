@@ -1,67 +1,77 @@
-"use client";
-import { useState } from "react";
-import { InvoiceItem } from "./types";
+import { useMemo, useState } from "react";
 import { YearSelector } from "./YearSelector";
 import { MonthSelector } from "./MonthSelector";
 import { InvoiceHeader } from "./InvoiceHeader";
 import { InvoiceTable } from "./InvoiceTable";
 import { InvoiceSummary } from "./InvoiceSummary";
+import { Order } from "@/types";
 
-const SummaryDesign = () => {
-  const [selectedYear, setSelectedYear] = useState(2025);
-  const [selectedMonth, setSelectedMonth] = useState("January");
-  const [items] = useState<InvoiceItem[]>([
-    {
-      id: 1,
-      name: "Safety Rope",
-      desc: "Premium Grade 24 inch",
-      qty: 24,
-      price: 89.99,
-      boats: ["Boat 1", "Boat 2"],
-    },
-    {
-      id: 2,
-      name: "Life Jacket",
-      desc: "Type III PFD Size XL",
-      qty: 15,
-      price: 129.99,
-      boats: ["Boat 1", "Boat 3"],
-    },
-    {
-      id: 3,
-      name: "Navigation Light",
-      desc: "LED 360° Waterproof",
-      qty: 30,
-      price: 89.99,
-      boats: ["Boat 2"],
-    },
-  ]);
+interface SummaryDesignProps {
+  orders: Order[];
+}
 
+const SummaryDesign = ({
+  orders,
+}: SummaryDesignProps) => {
   const printInvoice = () => {
     window.print();
   };
 
-  const getSubtotal = () => {
-    return items
-      .reduce((sum, item) => sum + item.qty * item.price, 0)
-      .toFixed(2);
-  };
+  const availableYears = useMemo(() => {
+    const years = new Set<number>();
+    orders.forEach(order => {
+      try {
+        const year = new Date(order.outDate).getFullYear();
+        years.add(year);
+      } catch {
+        console.warn('Invalid date for order:', order.id);
+      }
+    });
+    return Array.from(years).sort((a, b) => b - a); 
+  }, [orders]);
 
-  const getTax = () => {
-    return (parseFloat(getSubtotal()) * 0.08).toFixed(2);
-  };
+  const [selectedYear, setSelectedYear] = useState(availableYears[0] || new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState("January");
 
-  const getTotal = () => {
-    return (parseFloat(getSubtotal()) + parseFloat(getTax())).toFixed(2);
-  };
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      try {
+        const orderDate = new Date(order.outDate);
+        return (
+          orderDate.getFullYear() === selectedYear &&
+          orderDate.toLocaleString('default', { month: 'long' }) === selectedMonth
+        );
+      } catch {
+        console.warn('Invalid date for order:', order.id);
+        return false;
+      }
+    });
+  }, [orders, selectedYear, selectedMonth]);
 
+  const getTotal = (): number => {
+    return Number(
+      filteredOrders
+        .reduce((sum: number, order: Order) => {
+          const unitSize = Number(order.item_id?.unitSize) || 1;
+          
+          const orderTotal = Number(order.total) || 0;
+          
+          const normalizedTotal = orderTotal / unitSize;
+          
+          return sum + normalizedTotal;
+        }, 0)
+        .toFixed(2) 
+    );
+  };
+  console.log(getTotal())
   return (
     <>
-      <main className="p-6 w-screen bg-zinc-100 min-h-[screen]">
-        <article className="p-6 mx-auto bg-white rounded border border-stone-400 max-w-[920px]">
+      <main className="h-full flex flex-col">
+        <article className="p-6 mx-auto bg-white rounded border border-stone-400 max-w-[920px] ">
           <div className="flex flex-col gap-6">
             <div data-year-select="true">
               <YearSelector
+                availableYears={availableYears}
                 selectedYear={selectedYear}
                 onYearSelect={setSelectedYear}
               />
@@ -77,10 +87,10 @@ const SummaryDesign = () => {
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
               />
-              <InvoiceTable items={items} />
+              <InvoiceTable 
+                orders={filteredOrders} 
+              />
               <InvoiceSummary
-                subtotal={getSubtotal()}
-                tax={getTax()}
                 total={getTotal()}
               />
               <div className="flex justify-end mt-8">
