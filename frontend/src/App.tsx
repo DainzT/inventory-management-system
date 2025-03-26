@@ -14,13 +14,20 @@ const App: React.FC = () => {
         <Header />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />
-            <div className="flex-1 p-4 overflow-y-hidden">
+          <div className="flex-1 p-4">
             <Routes>
               <Route path="/" element={<Inventory />} />
-              <Route path="/orders" element={<Orders />} />
+              <Route
+                path="/orders"
+                element={
+                  <div className="h-full overflow-y-auto">
+                    <Orders />
+                  </div>
+                }
+              />
               <Route path="/summary" element={<Summary />} />
             </Routes>
-            </div>
+          </div>
         </div>
       </div>
     </Router>

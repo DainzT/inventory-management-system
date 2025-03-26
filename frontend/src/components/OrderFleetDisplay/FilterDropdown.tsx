@@ -24,7 +24,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   return (
     <div className="relative">
       <div
-        className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-teal-500 cursor-pointer"
+        className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-4 px-5 pr-8 rounded leading-tight focus:outline-none focus:border-teal-500 cursor-pointer"
         onClick={() => setIsOpen(!isOpen)} 
       >
         {selectedOption}

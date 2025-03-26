@@ -20,7 +20,7 @@ export interface NavigationItemProps {
     quantity: number | "";
     unitPrice: number ;
     selectUnit: string;
-    unitSize: number | "";
+    unitSize: number | string;
     total?: number | "";
     fleet: string;
     boat: string

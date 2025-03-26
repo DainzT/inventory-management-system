@@ -1,5 +1,5 @@
 import React from "react";
-import { FleetCardProps, FleetListProps } from "@/types/FleetsOrder";
+import { FleetCardProps, FleetListProps } from "@/types/fleetorders";
 
 // Combined component
 export const FleetCard: React.FC<FleetCardProps> = ({
@@ -17,7 +17,7 @@ export const FleetCard: React.FC<FleetCardProps> = ({
       }`}
       onClick={onClick}
     >
-      <h2 className="text-3xl font-bold text-white">{title}</h2>
+      <h2 className="text-2xl font-bold text-white">{title}</h2>
 
       <div className="absolute bottom-[14px] right-[14px] opacity-[0.3]">
         <svg
@@ -62,7 +62,10 @@ export const FleetList: React.FC<FleetListProps> = ({
 
   return (
     <nav className="flex relative flex-col gap-4 pl-24 mt-5">
-      <div className="absolute w-0.5 bg-stone-300 h-[136px] left-[58px]" />
+      <div
+        className="absolute w-0.5 bg-stone-300 h-[136px] left-[58px]"
+        data-testid="fleet-list-separator"
+      />
       {fleets.map((fleet) => (
         <button
           key={fleet}
@@ -76,4 +79,3 @@ export const FleetList: React.FC<FleetListProps> = ({
     </nav>
   );
 };
-
