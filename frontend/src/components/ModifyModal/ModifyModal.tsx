@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
-
- 
 import { OrderItemProps } from "@/types/fleetorders";
 import UnsavedChangesModal from "../DiscardChangesModal";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
@@ -45,6 +43,7 @@ const units = [
   "sack",
   "box",
   "liter",
+  "pack"
 ];
 
 export const ModifyModal: React.FC<ModifyModalProps> = ({
@@ -67,7 +66,6 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const currentStock = 8;
 
   useEffect(() => {
-    // Check if any values have been changed
     const hasChanged = 
       quantity !== order.quantity || 
       unit !== order.selectUnit || 
@@ -139,7 +137,6 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               </button>
             </div>
 
-            {/* Display Order Details */}
             <div>
               <h3 className="text-lg font-bold text-gray-800">
                 {order.productName}
@@ -148,7 +145,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               <p className="text-gray-800">₱{order.unitPrice.toFixed(2)}</p>
             </div>
 
-            {/* Quantity and Unit */}
+
             <div>
               <label className="block font-medium mb-2">Quantity</label>
               <div className="flex items-center gap-2">
