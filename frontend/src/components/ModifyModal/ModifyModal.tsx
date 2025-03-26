@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
+
+ 
 import { OrderItemProps } from "@/types/fleetorders";
+import UnsavedChangesModal from "../DiscardChangesModal";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
 
 interface ModifyModalProps {
   isOpen: boolean;
@@ -58,8 +61,21 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const [fleet, setFleet] = useState(order.fleet);
   const [boat, setBoat] = useState(order.boat);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const currentStock = 8;
+
+  useEffect(() => {
+    // Check if any values have been changed
+    const hasChanged = 
+      quantity !== order.quantity || 
+      unit !== order.selectUnit || 
+      fleet !== order.fleet || 
+      boat !== order.boat;
+    
+    setHasChanges(hasChanged);
+  }, [quantity, unit, fleet, boat, order]);
 
   const handleIncrement = () => {
     if (quantity < currentStock) {
@@ -85,6 +101,19 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleRemoveClick = () => {
     setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseClick = () => {
+    if (hasChanges) {
+      setIsUnsavedChangesModalOpen(true);
+    } else {
+      onClose();
+    }
+  };
+
+  const handleDiscardChanges = () => {
+    setIsUnsavedChangesModalOpen(false);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -197,7 +226,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             </div>
             <div className="flex gap-3 mt-2">
               <button
-                onClick={onClose}
+                onClick={handleCloseClick}
                 className="flex-1 bg-sky-200 hover:bg-sky-300 text-sky-700 font-medium py-2 px-4 rounded flex items-center justify-center gap-2"
               >
                 <X size={18} />
@@ -221,11 +250,20 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
         onConfirm={() => {
           setIsDeleteModalOpen(false);
           onRemove();
+          onClose();
         }}
-        title="Remove this item?"
-        message="This action cannot be undone. This item will be permanently removed from your orders."
+        title="Remove Item"
+        message="Are you sure you want to remove this item from your order? This action cannot be undone."
         confirmButtonText="Remove Item"
+      />
+
+      <UnsavedChangesModal
+        isOpen={isUnsavedChangesModalOpen}
+        onCancel={() => setIsUnsavedChangesModalOpen(false)}
+        onDiscard={handleDiscardChanges}
       />
     </>
   );
 };
+
+export default ModifyModal;
