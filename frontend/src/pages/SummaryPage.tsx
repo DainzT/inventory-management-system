@@ -1,8 +1,8 @@
 import React from "react";
 import { InventoryItem } from "@/types";
 import SummaryDesign from "@/components/Summary/SummaryDesign";
+import { PageTitle } from "@/components/PageTitle";
 import { Boat, Fleet, Order } from "@/types";
-import { InvoiceTable } from "@/components/Summary/InvoiceTable";
 import { useParams } from "react-router-dom";
 
 // Mock Data
@@ -53,6 +53,7 @@ const inventoryItems: InventoryItem[] = [
     total: "",
     dateCreated: new Date("2023-04-01")
   }
+  
 ];
 
 const fleets: Fleet[] = [
@@ -157,6 +158,7 @@ const Summary: React.FC = () => {
   return (
   
     <div className="p-4">
+      <PageTitle title={String(modifiedName)}/>
       <SummaryDesign
          orders={filteredOrders}
       />
