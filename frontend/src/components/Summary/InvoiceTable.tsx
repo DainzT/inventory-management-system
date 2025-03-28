@@ -1,36 +1,21 @@
 import { InventoryItem, Order } from "@/types";
 
-interface InvoiceTableProps {
-  orders: Order[]
-}
-
-export const InvoiceTable = ({
-  orders, 
-}: InvoiceTableProps)  => {
-  const itemSummary = orders.reduce((acc, order) => {
-    const itemId = order.item_id.id;
-    
-    if (!acc[itemId]) {
-      acc[itemId] = {
-        item: order.item_id,
-        totalQuantity: order.quantity,
-        totalPrice: order.total,
-        orders: [order]
-      };
-    } else {
-      acc[itemId].totalQuantity += order.quantity;
-      acc[itemId].totalPrice += order.total;
-      acc[itemId].orders.push(order);
-    }
-    return acc;
-  }, {} as Record<number, {
+interface ItemSummary {
+  [key: number]: {
     item: InventoryItem;
     totalQuantity: number;
     totalPrice: number;
     orders: Order[];
-  }>);
+  };
+}
 
-  console.log(itemSummary)
+interface InvoiceTableProps {
+  itemSummary: ItemSummary;
+}
+
+export const InvoiceTable = ({
+  itemSummary, 
+}: InvoiceTableProps)  => {
 
   const pluralize = (unit: string, quantity: number): string => {
     if (quantity === 1) return unit;
@@ -73,7 +58,7 @@ export const InvoiceTable = ({
               ₱{(summary.totalPrice / Number(summary.item.unitSize)).toFixed(2)}
             </div>
             <div className="flex flex-wrap gap-1">
-              {summary.orders.map((order) => (
+              {summary.orders.map((order: Order) => (
                 <span
                   key={`${order.id}-${order.boat_id.id}`}
                   className="px-2 py-0.5 text-xs text-blue-700 bg-sky-100 rounded-xl"

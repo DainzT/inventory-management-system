@@ -9,51 +9,124 @@ import { useParams } from "react-router-dom";
 const inventoryItems: InventoryItem[] = [
   {
     id: 1,
-    name: "Marine Engine Oil",
-    note: "Synthetic 10W-40",
-    quantity: 50,
-    unitPrice: 45.99,
-    selectUnit: "liter",
-    unitSize: 5,
-    total: 45.99 * 50,
-    dateCreated: new Date("2023-01-15"),
-    lastUpdated: new Date("2023-05-10")
+    name: "Fishing Reel Pro X",
+    note: "Spinning reel, corrosion-resistant",
+    quantity: 2,
+    unitPrice: 89.99,
+    selectUnit: "piece",
+    unitSize: 1,
+    total: 179.98,
+    dateCreated: new Date("2023-05-15"),
+    lastUpdated: new Date("2023-05-15"),
   },
   {
     id: 2,
-    name: "Propeller Blades",
-    note: "Stainless steel 3-blade",
-    quantity: 15,
-    unitPrice: 320.50,
-    selectUnit: "piece",
-    unitSize: 1,
-    total: 320.50 * 15,
-    dateCreated: new Date("2023-02-20")
+    name: "Titanium Fishing Hooks",
+    note: "Size 4, pack of 10",
+    quantity: 5,
+    unitPrice: 12.50,
+    selectUnit: "pack",
+    unitSize: 5,
+    total: 62.50 / 5,
+    dateCreated: new Date("2023-05-16"),
+    lastUpdated: new Date("2023-05-16"),
   },
   {
     id: 3,
-    name: "Life Jackets",
-    note: "Coast guard approved",
-    quantity: 200,
-    unitPrice: 28.75,
+    name: "Carbon Fiber Fishing Rod",
+    note: "7ft medium action",
+    quantity: 1,
+    unitPrice: 149.95,
     selectUnit: "piece",
     unitSize: 1,
-    total: 28.75 * 200,
-    dateCreated: new Date("2023-03-05"),
-    lastUpdated: new Date("2023-05-15")
+    total: 149.95,
+    dateCreated: new Date("2023-05-17"),
+    lastUpdated: new Date("2023-05-17"),
   },
   {
     id: 4,
-    name: "GPS Units",
-    note: "With chartplotter",
-    quantity: "",
-    unitPrice: 499.99,
-    selectUnit: "unit",
+    name: "Waterproof Tackle Box",
+    note: "Large capacity with 3 trays",
+    quantity: 3,
+    unitPrice: 45.00,
+    selectUnit: "piece",
     unitSize: 1,
-    total: "",
-    dateCreated: new Date("2023-04-01")
+    total: 135.00,
+    dateCreated: new Date("2023-05-18"),
+    lastUpdated: new Date("2023-05-18"),
+  },
+  {
+    id: 5,
+    name: "Fishing Line (300yds)",
+    note: "20lb test, braided",
+    quantity: 4,
+    unitPrice: 24.99,
+    selectUnit: "roll",
+    unitSize: 1,
+    total: 99.96,
+    dateCreated: new Date("2023-05-19"),
+    lastUpdated: new Date("2023-05-19"),
+  },
+  {
+    id: 6,
+    name: "Fishing Lures Set",
+    note: "12-piece assorted colors",
+    quantity: 2,
+    unitPrice: 18.75,
+    selectUnit: "set",
+    unitSize: 1,
+    total: 37.50,
+    dateCreated: new Date("2023-05-20"),
+    lastUpdated: new Date("2023-05-20"),
+  },
+  {
+    id: 7,
+    name: "Fishing Waders",
+    note: "Breathable, size L",
+    quantity: 1,
+    unitPrice: 129.99,
+    selectUnit: "pair",
+    unitSize: 1,
+    total: 129.99,
+    dateCreated: new Date("2023-05-21"),
+    lastUpdated: new Date("2023-05-21"),
+  },
+  {
+    id: 8,
+    name: "Fishing Net",
+    note: "Rubber-coated, extendable handle",
+    quantity: 1,
+    unitPrice: 35.50,
+    selectUnit: "piece",
+    unitSize: 1,
+    total: 35.50,
+    dateCreated: new Date("2023-05-22"),
+    lastUpdated: new Date("2023-05-22"),
+  },
+  {
+    id: 9,
+    name: "Fishing Pliers",
+    note: "Stainless steel with line cutter",
+    quantity: 2,
+    unitPrice: 22.99,
+    selectUnit: "piece",
+    unitSize: 1,
+    total: 45.98,
+    dateCreated: new Date("2023-05-23"),
+    lastUpdated: new Date("2023-05-23"),
+  },
+  {
+    id: 10,
+    name: "Fishing Hat",
+    note: "UV protection, adjustable",
+    quantity: 3,
+    unitPrice: 19.99,
+    selectUnit: "piece",
+    unitSize: 1,
+    total: 59.97,
+    dateCreated: new Date("2023-05-24"),
+    lastUpdated: new Date("2023-05-24"),
   }
-  
 ];
 
 const fleets: Fleet[] = [
@@ -76,69 +149,107 @@ const boats: Boat[] = [
 ];
 
 const orders: Order[] = [
-  // Fleet 1 (F/B DONYA DONYA 2x) orders - IDs start with 1
   {
-    id: 1, // First order in Fleet 1
+    id: 1, 
     item_id: inventoryItems[0],
     fleet_id: fleets[0], 
-    boat_id: boats[1], // F/B Mariella
+    boat_id: boats[1], 
     quantity: 5,
     total: 5 * Number(inventoryItems[0].unitPrice),
-    outDate: new Date("2023-05-10"),
+    outDate: new Date("2025-05-10"),
     lastUpdated: new Date("2023-05-10"),
   },
   {
-    id: 2, // Second order in Fleet 1
+    id: 2, 
     item_id: inventoryItems[1],
     fleet_id: fleets[0],
-    boat_id: boats[2], // F/B My Shield
+    boat_id: boats[2], 
     quantity: 2,
     total: 2 * Number(inventoryItems[1].unitPrice),
-    outDate: new Date("2023-05-18"),
+    outDate: new Date("2025-05-18"),
     lastUpdated: new Date("2023-05-17"),
   },
   {
-    id: 3, // Third order in Fleet 1
+    id: 3, 
     item_id: inventoryItems[0],
     fleet_id: fleets[0],
-    boat_id: boats[4], // F/B DC-9
+    boat_id: boats[4], 
     quantity: 8,
     total: 8 * Number(inventoryItems[0].unitPrice),
-    outDate: new Date("2023-05-22"),
+    outDate: new Date("2025-05-22"),
     lastUpdated: null,
   },
 
-  // Fleet 2 (F/B Doña Librada) orders - IDs start with 1
   {
-    id: 1, // First order in Fleet 2
+    id: 1, 
     item_id: inventoryItems[2],
     fleet_id: fleets[1],
-    boat_id: boats[6], // F/B Prince of Peace
+    boat_id: boats[6], 
     quantity: 10,
     total: 10 * Number(inventoryItems[2].unitPrice),
     outDate: new Date("2025-05-15"),
     lastUpdated: null,
   },
   {
-    id: 2, // Second order in Fleet 2
+    id: 2, 
     item_id: inventoryItems[3],
     fleet_id: fleets[1],
-    boat_id: boats[8], // F/V Vadeo Scout
+    boat_id: boats[8], 
     quantity: 1,
     total: 1 * Number(inventoryItems[3].unitPrice),
-    outDate: new Date("2024-05-20"),
+    outDate: new Date("2025-05-20"),
     lastUpdated: new Date("2026-05-19"),
   },
   {
-    id: 3, // Third order in Fleet 2
+    id: 3, 
     item_id: inventoryItems[0],
     fleet_id: fleets[1],
-    boat_id: boats[6], // F/B Prince of Peace
+    boat_id: boats[6], 
     quantity: 3,
     total: 3 * Number(inventoryItems[0].unitPrice),
-    outDate: new Date("2023-05-22"),
+    outDate: new Date("2025-05-22"),
     lastUpdated: null,
-  }
+  },
+  {
+    id: 4, 
+    item_id: inventoryItems[7],
+    fleet_id: fleets[1],
+    boat_id: boats[7], 
+    quantity: 3,
+    total: 3 * Number(inventoryItems[7].unitPrice),
+    outDate: new Date("2025-05-22"),
+    lastUpdated: null,
+  },
+  {
+    id: 5, 
+    item_id: inventoryItems[8],
+    fleet_id: fleets[1],
+    boat_id: boats[8], 
+    quantity: 3,
+    total: 3 * Number(inventoryItems[8].unitPrice),
+    outDate: new Date("2025-05-22"),
+    lastUpdated: null,
+  },
+  {
+    id: 6, 
+    item_id: inventoryItems[6],
+    fleet_id: fleets[1],
+    boat_id: boats[8], 
+    quantity: 3,
+    total: 3 * Number(inventoryItems[6].unitPrice),
+    outDate: new Date("2025-05-22"),
+    lastUpdated: null,
+  },
+  {
+    id: 7, 
+    item_id: inventoryItems[4],
+    fleet_id: fleets[1],
+    boat_id: boats[8], 
+    quantity: 3,
+    total: 3 * Number(inventoryItems[4].unitPrice),
+    outDate: new Date("2025-05-22"),
+    lastUpdated: null,
+  },
 ];
 
 const Summary: React.FC = () => {
@@ -157,7 +268,7 @@ const Summary: React.FC = () => {
 
   return (
   
-    <div className="p-4">
+    <div className="flex-1 p-0">
       <PageTitle title={String(modifiedName)}/>
       <SummaryDesign
          orders={filteredOrders}

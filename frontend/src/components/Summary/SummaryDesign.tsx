@@ -61,8 +61,8 @@ const SummaryDesign = ({
 
   return (
     <>
-      <main className="h-full flex flex-col">
-        <div className="p-7 flex-1 ">
+      <main className="p-7 h-full flex flex-col">
+        <div className="p-7 flex-1  border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]  rounded-[5px]">
           <div data-year-select="true">
               <YearSelector
                 availableYears={availableYears}
@@ -77,12 +77,14 @@ const SummaryDesign = ({
               />
           </div>
         </div>
-        <Invoice 
-          orders={filteredOrders}
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          total={getTotal()}
-        />
+        <div className="mt-10 border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] rounded-[5px]">
+          <Invoice 
+            orders={filteredOrders}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            total={getTotal()}
+          />
+        </div>
       </main>
     </>
   );

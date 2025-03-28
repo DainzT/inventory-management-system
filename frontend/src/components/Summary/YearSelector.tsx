@@ -20,7 +20,7 @@ interface YearSelectorProps {
               className={`px-4 py-3 text-base rounded font-medium ${
                 selectedYear === year 
                   ? 'bg-cyan-900 text-white' 
-                  : 'outline-1 text-zinc-800'
+                  : 'outline-1 text-zinc-800 bg-[#fff]'
               }`}
               onClick={() => onYearSelect(year)}
             >

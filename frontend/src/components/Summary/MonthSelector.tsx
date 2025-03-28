@@ -32,7 +32,7 @@ interface MonthSelectorProps {
               className={`py-4 text-base rounded font-medium ${
                 selectedMonth === month 
                   ? 'bg-[#295C65] text-white' 
-                  : 'outline-1 text-zinc-800'
+                  : 'outline-1 text-zinc-800 bg-[#fff]'
               }`}
               onClick={() => onMonthSelect(month)}
             >

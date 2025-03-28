@@ -10,8 +10,9 @@ interface InvoiceHeaderProps {
     return (
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-cyan-900">INVOICE</h1>
-        <time className="text-xl font-semibold">
-          Invoice Date: {selectedMonth} 01, {selectedYear}
+        <time className="text-xl font-semibold text-">
+          {selectedMonth} {selectedYear} 
+           
         </time>
       </header>
     );
