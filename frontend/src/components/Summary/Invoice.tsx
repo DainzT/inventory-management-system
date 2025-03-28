@@ -105,7 +105,7 @@ export const Invoice  = ({
     };
 
     useEffect(() => {
-        scrollToPage(2);
+        scrollToPage(currentPage);
     }, [currentPage])
 
     return (
