@@ -3,7 +3,7 @@ import { InvoiceHeader } from "./InvoiceHeader";
 import { InvoiceTable } from "./InvoiceTable";
 import { InvoiceSummary } from "./InvoiceSummary";
 import { DownloadButton } from "./DownloadButton";
-import { useEffect, useRef, useState } from "react";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 
@@ -49,6 +49,31 @@ export const Invoice  = ({
     const totalPages = Math.ceil(Object.values(itemSummary).length / ordersPerPage);
     const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [isManualScroll, setIsManualScroll] = useState(false);
+
+    const handleScroll = (event: SyntheticEvent<HTMLDivElement>) => {
+        if (isManualScroll) {
+            return;
+        }
+
+        const container = event.currentTarget;
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        
+        const scrollPosition = scrollTop / (scrollHeight - clientHeight);
+
+        const calculatedPage = Math.floor(scrollPosition * totalPages);
+        
+  
+        const newPage = Math.max(0, Math.min(totalPages - 1, calculatedPage));
+
+        if (newPage !== currentPage) {
+            setCurrentPage(newPage);
+        }
+    };
+
+    useEffect(() => {
+        setCurrentPage(0);
+    }, [Object.keys(itemSummary).length]);
 
     const handleDownloadPDF = async () => {
         const element = pageRefs.current
@@ -91,22 +116,21 @@ export const Invoice  = ({
 
     const scrollToPage = (pageIndex: number) => {
         if (pageRefs.current[pageIndex] && containerRef.current) {
+            setIsManualScroll(true);
             containerRef.current.scrollTo({
                 top: pageRefs.current[pageIndex]?.offsetTop - containerRef.current.offsetTop,
                 behavior: 'smooth'
             });
+            setIsManualScroll(false);
         }
     };
 
     const handlePageChange = (newPage: number) => {
         const validatedPage = Math.max(0, Math.min(totalPages - 1, newPage));
-        setCurrentPage(validatedPage);
-        scrollToPage(validatedPage);
+        if (validatedPage !== currentPage) {
+            scrollToPage(validatedPage);
+        }
     };
-
-    useEffect(() => {
-        scrollToPage(currentPage);
-    }, [currentPage])
 
     return (
         <div className="flex flex-col items-center p-10">
@@ -146,6 +170,7 @@ export const Invoice  = ({
                 <div 
                     className="w-[894px] h-[1160px] overflow-y-auto  p-4 rounded-lg border"  
                     ref={containerRef}
+                    onScroll={handleScroll}
                 >
                 {allItems.length > 0 ? (
                     Array.from({ length: totalPages }).map((_, pageIndex) => {
