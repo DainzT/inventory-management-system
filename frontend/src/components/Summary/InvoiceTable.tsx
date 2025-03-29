@@ -11,10 +11,12 @@ interface ItemSummary {
 
 interface InvoiceTableProps {
   itemSummary: ItemSummary;
+  startIndex?: number;  
 }
 
 export const InvoiceTable = ({
-  itemSummary, 
+  itemSummary,
+  startIndex,
 }: InvoiceTableProps)  => {
 
   const pluralize = (unit: string, quantity: number): string => {
@@ -49,7 +51,7 @@ export const InvoiceTable = ({
             key={summary.item.id}
             className="grid px-5 py-4 border grid-cols-[50px_1fr_1fr_100px_100px_100px_200px] max-sm:grid-cols-1 max-sm:gap-2"
           >
-            <div>{index + 1}</div>
+            <div>{Number(startIndex) + index + 1}</div>
             <div className="mr-3">{summary.item.name}</div>
             <div className="text-stone-500">{summary.item.note}</div>
             <div className="text-center"> {summary.totalQuantity} {pluralize(summary.item.selectUnit, summary.totalQuantity)}</div>

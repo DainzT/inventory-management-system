@@ -195,7 +195,7 @@ export const Invoice  = ({
                                         selectedYear={selectedYear}
                                         />
                                         <div className="flex-grow">
-                                            <InvoiceTable itemSummary={pageItems} />
+                                            <InvoiceTable itemSummary={pageItems} startIndex={startIndex}/>
                                         </div>
                                     {pageIndex === totalPages - 1 && (
                                         <div className="mt-auto">
