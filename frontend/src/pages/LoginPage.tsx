@@ -4,24 +4,29 @@ import Header from "@/components/Header";
 import { Logo } from "@/components/SidebarComponents/Logo";
 import PinInput from "@/components/AuthComponents/PinInput";
 import { ClipLoader } from "react-spinners";
+import { login } from "@/api/authAPI";
 
 const LoginPage: React.FC = () => {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const pinCode = "123456";
-
-  const handleLogin = () => {
-    if (pin == pinCode) {
-      setLoading(true);
-      setError("");
-      setTimeout(() => {
+  const handleLogin = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await login(pin);
+      if (response.token) {
+        localStorage.setItem("token", response.token);
         navigate("/inventory");
-      }, 2000);
-    } else {
-      setError("Invalid PIN");
+      } else {
+        setError(response.message || "Invalid PIN");
+      }
+    } catch (err: any) {
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 

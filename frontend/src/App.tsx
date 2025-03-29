@@ -6,6 +6,7 @@ import Inventory from "./pages/InventoryPage";
 import Orders from "./pages/OrderPage";
 import Summary from "./pages/SummaryPage";
 import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoutes";
 
 const App: React.FC = () => {
   return (
@@ -16,19 +17,21 @@ const App: React.FC = () => {
           <Route
             path="/*"
             element={
-              <>
-                <Header />
-                <div className="flex flex-1 overflow-hidden">
-                  <Sidebar />
-                  <div className="flex-1 p-4 overflow-y-hidden">
-                    <Routes>
-                      <Route path="/inventory" element={<Inventory />} />
-                      <Route path="/orders" element={<Orders />} />
-                      <Route path="/summary" element={<Summary />} />
-                    </Routes>
+              <ProtectedRoute>
+                <>
+                  <Header />
+                  <div className="flex flex-1 overflow-hidden">
+                    <Sidebar />
+                    <div className="flex-1 p-4 overflow-y-hidden">
+                      <Routes>
+                        <Route path="/inventory" element={<Inventory />} />
+                        <Route path="/orders" element={<Orders />} />
+                        <Route path="/summary" element={<Summary />} />
+                      </Routes>
+                    </div>
                   </div>
-                </div>
-              </>
+                </>
+              </ProtectedRoute>
             }
           />
         </Routes>
