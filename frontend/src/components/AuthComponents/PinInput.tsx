@@ -24,10 +24,10 @@ function PinInput({ pin, setPin }: PinInputProps) {
       />
       <button
         onClick={() => setShowPin(!showPin)}
-        aria-label={showPin ? "Hide PIN" : "Show PIN"}
+        aria-label={showPin ? "Show PIN" : "Hide PIN"}
         className="ml-3 text-black"
       >
-        <EyeIcon />
+        {showPin ? <EyeIcon /> : <EyeOffIcon />}
       </button>
     </div>
   );
