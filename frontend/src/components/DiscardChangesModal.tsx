@@ -34,11 +34,13 @@ const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
             >
               Cancel
             </button>
-            <button 
+            
+            <button
+              data-testid="discard-changes-button"
               onClick={onDiscard}
-              className="flex-1 bg-white hover:bg-gray-50 text-teal-700 font-medium py-3 px-4 rounded border border-teal-700 transition-colors"
+              className="..."
             >
-              Yes
+              Discard Changes
             </button>
           </div>
         </div>

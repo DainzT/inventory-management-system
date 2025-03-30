@@ -129,12 +129,14 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                 Modify Item
               </h2>
               <button
+                data-testid="remove-item-button"
                 onClick={handleRemoveClick}
                 className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded flex items-center gap-1.5"
               >
                 <Trash2 size={16} />
                 <span>Remove Item</span>
               </button>
+
             </div>
 
             <div>
@@ -156,7 +158,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                   >
                     <Minus size={20} />
                   </button>
-                  <div className="bg-gray-100 w-12 h-10 flex items-center justify-center">
+                  <div 
+                      data-testid="quantity-display"
+                      className="bg-gray-100 w-12 h-10 flex items-center justify-center"
+                    > 
                     {quantity}
                   </div>
                   <button
@@ -217,9 +222,14 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Remaining Stock</span>
-                <span className="font-medium">{remainingStock}</span>
-              </div>
+                  <span className="text-gray-600">Remaining Stock</span>
+                  <span 
+                    data-testid="remaining-stock"
+                    className="font-medium"
+                  >
+                    {remainingStock}
+                  </span>
+                </div>
             </div>
             <div className="flex gap-3 mt-2">
               <button
@@ -230,6 +240,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                 <span>Cancel</span>
               </button>
               <button
+                data-testid="confirm-changes-button"
                 onClick={handleConfirm}
                 className="flex-1 bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-4 rounded flex items-center justify-center gap-2"
               >
@@ -248,6 +259,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           setIsDeleteModalOpen(false);
           onRemove();
           onClose();
+          
         }}
         title="Remove Item"
         message="Are you sure you want to remove this item from your order? This action cannot be undone."
