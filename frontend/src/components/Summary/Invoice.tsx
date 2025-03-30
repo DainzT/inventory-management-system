@@ -1,4 +1,4 @@
-import { InventoryItem, Order } from "@/types";
+import { Boat, InventoryItem, Order } from "@/types";
 import { InvoiceHeader } from "./InvoiceHeader";
 import { InvoiceTable } from "./InvoiceTable";
 import { InvoiceSummary } from "./InvoiceSummary";
@@ -12,6 +12,7 @@ interface InvoiceProps {
     selectedMonth: string;
     selectedYear: number;
     total: number;
+    fleetName?: string;
 }
 
 export const Invoice  = ({
@@ -19,33 +20,45 @@ export const Invoice  = ({
    selectedMonth,
    selectedYear, 
    total,
+   fleetName,
 }: InvoiceProps) => {
         const [currentPage, setCurrentPage] = useState(0);
-        const itemSummary = orders.reduce((acc, order) => {
-            const itemId = order.item_id.id;
-            
-            if (!acc[itemId]) {
-            acc[itemId] = {
+        const itemSummary = orders
+        .reduce((acc, order) => {
+            const groupKey = `${order.outDate.toISOString()}_${order.item_id.id}`;
+      
+            if (!acc[groupKey]) {
+                acc[groupKey] = {
                 item: order.item_id,
+                outDate: order.outDate,
                 totalQuantity: order.quantity,
                 totalPrice: order.total,
-                orders: [order]
-            };
+                boats: [order.boat_id], 
+                orders: [order],
+                };
             } else {
-            acc[itemId].totalQuantity += order.quantity;
-            acc[itemId].totalPrice += order.total;
-            acc[itemId].orders.push(order);
+                acc[groupKey].totalQuantity += order.quantity;
+                acc[groupKey].totalPrice += order.total;
+                if (!acc[groupKey].boats.some(b => b.id === order.boat_id.id)) {
+                acc[groupKey].boats.push(order.boat_id);
+                }
+                acc[groupKey].orders.push(order);
             }
             return acc;
-        }, {} as Record<number, {
-            item: InventoryItem;
-            totalQuantity: number;
-            totalPrice: number;
-            orders: Order[];
-        }>);
+            }, {} as Record<string, {
+                item: InventoryItem;
+                boats: Boat[];
+                outDate: Date;
+                totalQuantity: number;
+                totalPrice: number;
+                orders: Order[];
+            }>);
 
-    const ordersPerPage = 6;
-    const allItems = Object.values(itemSummary);
+        const sortedItems = Object.values(itemSummary).sort(
+            (a, b) => a.outDate.getTime() - b.outDate.getTime()
+        );
+        
+    const ordersPerPage = 7;
     const totalPages = Math.ceil(Object.values(itemSummary).length / ordersPerPage);
     const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -172,11 +185,11 @@ export const Invoice  = ({
                     ref={containerRef}
                     onScroll={handleScroll}
                 >
-                {allItems.length > 0 ? (
+                {sortedItems.length > 0 ? (
                     Array.from({ length: totalPages }).map((_, pageIndex) => {
                         const startIndex = pageIndex * ordersPerPage;
                         const endIndex = startIndex + ordersPerPage;
-                        const pageItems = allItems.slice(startIndex, endIndex);
+                        const pageItems = sortedItems.slice(startIndex, endIndex);
                         return (
                             <div    
                                 key={pageIndex} 
@@ -191,11 +204,12 @@ export const Invoice  = ({
                             >
                                 <div className="flex-1 flex flex-col gap-6">
                                         <InvoiceHeader
+                                        fleetName={String(fleetName)}
                                         selectedMonth={selectedMonth}
                                         selectedYear={selectedYear}
                                         />
                                         <div className="flex-grow">
-                                            <InvoiceTable itemSummary={pageItems} startIndex={startIndex}/>
+                                            <InvoiceTable itemSummary={pageItems}/>
                                         </div>
                                     {pageIndex === totalPages - 1 && (
                                         <div className="mt-auto">
@@ -227,12 +241,13 @@ export const Invoice  = ({
                                 className="flex-1 flex flex-col gap-6 "
                             >
                                         <InvoiceHeader
+                                        fleetName={String(fleetName)}
                                             selectedMonth={selectedMonth}
                                             selectedYear={selectedYear}
                                         />
 
                                         <div className="flex-grow">
-                                            <InvoiceTable itemSummary={allItems} />
+                                            <InvoiceTable itemSummary={sortedItems} />
                                         </div>
                                 
                                         <div className="mt-auto">

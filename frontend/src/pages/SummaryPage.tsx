@@ -11,10 +11,10 @@ const inventoryItems: InventoryItem[] = [
     id: 1,
     name: "Fishing Reel Pro X",
     note: "Spinning reel, corrosion-resistant",
-    quantity: 2,
+    quantity: 10,
     unitPrice: 89.99,
     selectUnit: "piece",
-    unitSize: 1,
+    unitSize: 2,
     total: 179.98,
     dateCreated: new Date("2023-05-15"),
     lastUpdated: new Date("2023-05-15"),
@@ -155,19 +155,19 @@ const orders: Order[] = [
     fleet_id: fleets[0], 
     boat_id: boats[1], 
     quantity: 5,
-    total: 5 * Number(inventoryItems[0].unitPrice),
+    total: (5 * Number(inventoryItems[0].unitPrice)) / Number(inventoryItems[0].unitSize),
     outDate: new Date("2025-05-10"),
     lastUpdated: new Date("2023-05-10"),
   },
   {
     id: 2, 
-    item_id: inventoryItems[1],
+    item_id: inventoryItems[0],
     fleet_id: fleets[0],
     boat_id: boats[2], 
     quantity: 2,
-    total: 2 * Number(inventoryItems[1].unitPrice),
-    outDate: new Date("2025-05-18"),
-    lastUpdated: new Date("2023-05-17"),
+    total: (2 * Number(inventoryItems[0].unitPrice)) / Number(inventoryItems[0].unitSize),
+    outDate: new Date("2025-05-10"),
+    lastUpdated: new Date("2023-06-17"),
   },
   {
     id: 3, 
@@ -175,7 +175,7 @@ const orders: Order[] = [
     fleet_id: fleets[0],
     boat_id: boats[4], 
     quantity: 8,
-    total: 8 * Number(inventoryItems[0].unitPrice),
+    total: (8 * Number(inventoryItems[0].unitPrice)) / Number(inventoryItems[0].unitSize),
     outDate: new Date("2025-05-22"),
     lastUpdated: null,
   },
@@ -186,8 +186,8 @@ const orders: Order[] = [
     fleet_id: fleets[1],
     boat_id: boats[6], 
     quantity: 10,
-    total: 10 * Number(inventoryItems[2].unitPrice),
-    outDate: new Date("2025-05-15"),
+    total: (10 * Number(inventoryItems[2].unitPrice)) / Number(inventoryItems[2].unitSize),
+    outDate: new Date("2025-05-16"),
     lastUpdated: null,
   },
   {
@@ -196,7 +196,7 @@ const orders: Order[] = [
     fleet_id: fleets[1],
     boat_id: boats[8], 
     quantity: 1,
-    total: 1 * Number(inventoryItems[3].unitPrice),
+    total: (1 * Number(inventoryItems[3].unitPrice)) / Number(inventoryItems[3].unitSize),
     outDate: new Date("2025-05-20"),
     lastUpdated: new Date("2026-05-19"),
   },
@@ -206,7 +206,7 @@ const orders: Order[] = [
     fleet_id: fleets[1],
     boat_id: boats[6], 
     quantity: 3,
-    total: 3 * Number(inventoryItems[0].unitPrice),
+    total: (3 * Number(inventoryItems[0].unitPrice)) / Number(inventoryItems[0].unitSize),
     outDate: new Date("2025-05-22"),
     lastUpdated: null,
   },
@@ -216,7 +216,7 @@ const orders: Order[] = [
     fleet_id: fleets[1],
     boat_id: boats[7], 
     quantity: 3,
-    total: 3 * Number(inventoryItems[7].unitPrice),
+    total: (3 * Number(inventoryItems[7].unitPrice)) / Number(inventoryItems[7].unitSize),
     outDate: new Date("2025-05-22"),
     lastUpdated: null,
   },
@@ -226,7 +226,7 @@ const orders: Order[] = [
     fleet_id: fleets[1],
     boat_id: boats[8], 
     quantity: 3,
-    total: 3 * Number(inventoryItems[8].unitPrice),
+    total: (3 * Number(inventoryItems[8].unitPrice)) / Number(inventoryItems[8].unitSize),
     outDate: new Date("2025-05-22"),
     lastUpdated: null,
   },
@@ -236,7 +236,7 @@ const orders: Order[] = [
     fleet_id: fleets[1],
     boat_id: boats[8], 
     quantity: 3,
-    total: 3 * Number(inventoryItems[6].unitPrice),
+    total: (3 * Number(inventoryItems[6].unitPrice)) / Number(inventoryItems[6].unitSize),
     outDate: new Date("2025-05-22"),
     lastUpdated: null,
   },
@@ -246,7 +246,7 @@ const orders: Order[] = [
     fleet_id: fleets[1],
     boat_id: boats[8], 
     quantity: 3,
-    total: 3 * Number(inventoryItems[4].unitPrice),
+    total: (3 * Number(inventoryItems[4].unitPrice)) / Number(inventoryItems[4].unitSize),
     outDate: new Date("2025-05-22"),
     lastUpdated: null,
   },
@@ -264,13 +264,13 @@ const Summary: React.FC = () => {
       ? orders 
       : orders.filter((order) => 
           order.fleet_id?.name.toUpperCase() === modifiedName
-      );
+      )
 
   return (
-  
     <div className="flex-1 p-0">
       <PageTitle title={String(modifiedName)}/>
       <SummaryDesign
+      fleetName={String(fleetName)}
          orders={filteredOrders}
       />
     </div>

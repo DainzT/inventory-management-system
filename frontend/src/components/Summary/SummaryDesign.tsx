@@ -6,10 +6,12 @@ import { Order } from "@/types";
 
 interface SummaryDesignProps {
   orders: Order[];
+  fleetName: string;
 }
 
 const SummaryDesign = ({
   orders,
+  fleetName,
 }: SummaryDesignProps) => {
   const availableYears = useMemo(() => {
     const years = new Set<number>();
@@ -39,18 +41,17 @@ const SummaryDesign = ({
         console.warn('Invalid date for order:', order.id);
         return false;
       }
-    });
+    })
+    
   }, [orders, selectedYear, selectedMonth]);
 
   const getTotal = (): number => {
     return Number(
       filteredOrders
         .reduce((sum: number, order: Order) => {
-          const unitSize = Number(order.item_id?.unitSize) || 1;
-          
           const orderTotal = Number(order.total) || 0;
           
-          const normalizedTotal = orderTotal / unitSize;
+          const normalizedTotal = orderTotal;
           
           return sum + normalizedTotal;
         }, 0)
@@ -83,6 +84,7 @@ const SummaryDesign = ({
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
             total={getTotal()}
+            fleetName={fleetName}
           />
         </div>
       </main>

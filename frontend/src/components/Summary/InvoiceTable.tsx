@@ -1,8 +1,9 @@
-import { InventoryItem, Order } from "@/types";
+import { Boat, InventoryItem, Order } from "@/types";
 
 interface ItemSummary {
   [key: number]: {
     item: InventoryItem;
+    boats: Boat[];
     totalQuantity: number;
     totalPrice: number;
     orders: Order[];
@@ -11,14 +12,12 @@ interface ItemSummary {
 
 interface InvoiceTableProps {
   itemSummary: ItemSummary;
-  startIndex?: number;  
 }
 
 export const InvoiceTable = ({
   itemSummary,
-  startIndex,
 }: InvoiceTableProps)  => {
-
+  console.log(itemSummary)
   const pluralize = (unit: string, quantity: number): string => {
     if (quantity === 1) return unit;
     const irregularPlurals: Record<string, string> = {
@@ -27,17 +26,16 @@ export const InvoiceTable = ({
     };
     return irregularPlurals[unit] || `${unit}s`;
   };
-
   return (
     <section>
-      <div className="grid px-5 py-4 text-white bg-cyan-900  grid-cols-[50px_1fr_1fr_100px_100px_100px_200px] max-sm:hidden">
-        <div className="text-base font-semibold">No.</div>
-        <div className="text-base font-semibold">Product</div>
-        <div className="text-base font-semibold">Note</div>
-        <div className="text-base font-semibold text-center">Qty</div>
-        <div className="text-base font-semibold text-right">Unit Price</div>
-        <div className="text-base font-semibold text-center">Total</div> 
-        <div className="text-base font-semibold text-center">
+      <div className="grid text-white bg-cyan-900  grid-cols-[90px_110px_130px_70px_100px_90px_150px] max-sm:hidden">
+        <div className="text-sm font-semibold px-2 py-6 border-r text-center">Date Out</div>
+        <div className="text-sm font-semibold px-5 py-6 border-r text-center">Product</div>
+        <div className="text-sm font-semibold px-5 py-6 border-r text-center">Note</div>
+        <div className="text-sm font-semibold text-center px-5 py-6 border-r">Qty</div>
+        <div className="text-sm font-semibold text-right px-4 py-6 border-r">Unit Price</div>
+        <div className="text-sm font-semibold text-center px-5 py-6 border-r">Total</div> 
+        <div className="text-sm font-semibold text-center px-5 py-6">
           Assigned Boats
         </div>
       </div>
@@ -46,26 +44,32 @@ export const InvoiceTable = ({
           No existing orders during this month of the year.
         </div>
       ) : (
-        Object.values(itemSummary).map((summary, index) => (
+        Object.values(itemSummary).map((summary) => (
           <div
-            key={summary.item.id}
-            className="grid px-5 py-4 border grid-cols-[50px_1fr_1fr_100px_100px_100px_200px] max-sm:grid-cols-1 max-sm:gap-2"
+            key={`${summary.outDate.toISOString()}_${summary.item.id}`}
+            className="text-sm grid border grid-cols-[90px_120px_120px_70px_100px_90px_150px] max-sm:grid-cols-1 max-sm:gap-2"
           >
-            <div>{Number(startIndex) + index + 1}</div>
-            <div className="mr-3">{summary.item.name}</div>
-            <div className="text-stone-500">{summary.item.note}</div>
-            <div className="text-center"> {summary.totalQuantity} {pluralize(summary.item.selectUnit, summary.totalQuantity)}</div>
-            <div className="text-right"> ₱{Number(summary.item.unitPrice).toFixed(2)} / {summary.item.unitSize} {pluralize(summary.item.selectUnit, Number(summary.item.unitSize))}</div>
-            <div className="text-center">
-              ₱{(summary.totalPrice / Number(summary.item.unitSize)).toFixed(2)}
+            <div className="px-3 py-4 border-r">
+              {new Date(summary.orders[0].outDate).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              }).replace(/\//g, '/')}
             </div>
-            <div className="flex flex-wrap gap-1">
-              {summary.orders.map((order: Order) => (
+            <div className="mr-3 px-3 py-4 border-r">{summary.item.name}</div>
+            <div className="text-stone-500 px-3 py-4 border-r">{summary.item.note}</div>
+            <div className="text-center px-2 py-4 border-r"> {summary.totalQuantity} {pluralize(summary.item.selectUnit, summary.totalQuantity)}</div>
+            <div className="text-right px-4 py-4 border-r"> ₱{Number(summary.item.unitPrice).toFixed(2)} / {summary.item.unitSize} {pluralize(summary.item.selectUnit, Number(summary.item.unitSize))}</div>
+            <div className="text-center px-3 py-4 border-r">
+              ₱{(summary.totalPrice).toFixed(2)}
+            </div>
+            <div className="flex flex-wrap gap-1 item-center justify-center mt-2">
+              {summary.boats.map((boat: Boat) => (
                 <span
-                  key={`${order.id}-${order.boat_id.id}`}
-                  className="px-2 py-0.5 text-xs text-blue-700 bg-sky-100 rounded-xl"
+                  key={`${boat.id}`}
+                  className="px-2 py-0.5 text-xs text-blue-700 bg-sky-100 rounded-xl h-10 text-center"
                 >
-                  {order.boat_id.name} ({order.fleet_id.name})
+                  {boat.name} 
                 </span>
               ))}
             </div>
