@@ -25,6 +25,30 @@ const isPinSet = async (): Promise<boolean> => {
 };
 
 router.post(
+  "/create-admin",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const existingUser = await prisma.user.findFirst();
+      if (existingUser) {
+        res.status(400).json({ message: "Admin account already exists" });
+        return;
+      }
+
+      const hashedPin = await bcrypt.hash("123456", 10);
+
+      await prisma.user.create({
+        data: { pin: hashedPin },
+      });
+
+      res.json({ message: "Admin account created successfully" });
+    } catch (error) {
+      console.error("Error creating admin:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.post(
   "/setup-pin",
   async (req: Request, res: Response): Promise<void> => {
     try {
