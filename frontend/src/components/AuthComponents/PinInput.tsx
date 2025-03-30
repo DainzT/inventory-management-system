@@ -11,8 +11,11 @@ function PinInput({ pin, setPin }: PinInputProps) {
 
   return (
     <div className="w-96 h-12 bg-foreground rounded-xl flex items-center px-[19px] mb-[24px]">
-      <label className="text-2xl font-bold text-black">PIN</label>
+      <label htmlFor="pin-input" className="text-2xl font-bold text-black">
+        PIN
+      </label>
       <input
+        id="pin-input"
         type={showPin ? "text" : "password"}
         value={pin}
         onChange={(e) => setPin(e.target.value)}
@@ -21,10 +24,10 @@ function PinInput({ pin, setPin }: PinInputProps) {
       />
       <button
         onClick={() => setShowPin(!showPin)}
-        aria-label={showPin ? "Hide PIN" : "Show PIN"}
+        aria-label={showPin ? "Show PIN" : "Hide PIN"}
         className="ml-3 text-black"
       >
-        <EyeIcon />
+        {showPin ? <EyeIcon /> : <EyeOffIcon />}
       </button>
     </div>
   );
