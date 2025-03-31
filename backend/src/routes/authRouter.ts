@@ -1,11 +1,10 @@
 import express, { Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import prisma from "../lib/prisma";
 
 dotenv.config();
-const prisma = new PrismaClient();
 const router: Router = express.Router();
 
 const SECRET_KEY = process.env.JWT_SECRET;
