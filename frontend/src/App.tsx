@@ -19,15 +19,23 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute>
                 <>
+                  <div className="flex flex-col h-screen overflow-hidden">
                   <Header />
-                  <div className="flex flex-1 overflow-hidden">
+                    <div className="flex flex-1 overflow-hidden">
                     <Sidebar />
-                    <div className="flex-1 p-4 overflow-y-hidden">
+                      <div className="flex-1 p-4 overflow-y-hidden">
                       <Routes>
                         <Route path="/inventory" element={<Inventory />} />
                         <Route path="/orders" element={<Orders />} />
-                        <Route path="/summary" element={<Summary />} />
-                      </Routes>
+                        <Route 
+                          path="/summary/:fleetName" 
+                          element={
+                            <div className="h-full overflow-y-auto">
+                              <Summary />
+                            </div>}
+                          />
+                        </Routes>
+                      </div>
                     </div>
                   </div>
                 </>

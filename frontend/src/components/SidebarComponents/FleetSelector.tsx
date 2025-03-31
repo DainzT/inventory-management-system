@@ -15,19 +15,23 @@ export const FleetSelector = ({
   const getFleetPath = (fleet: string) => {
     return fleet === "All Fleets"
     ? "/summary/all-fleets"
-    : `/summary/${fleet
+    : `/summary/${encodeURIComponent(
+      fleet
         .toLowerCase()
         .replace(/ /g, "-")
         .normalize("NFD") 
-        .replace(/[\u0300-\u036f]/g, "")}`; 
+        .replace(/[\u0300-\u036f]/g, "")
+      )}`; 
 };
 
   const normalizePath = (path: string) => {
-    return path
-      .toLowerCase()
-      .replace(/\/$/, "") 
-      .normalize("NFD") 
-      .replace(/[\u0300-\u036f]/g, ""); 
+    return decodeURIComponent(
+      path
+        .toLowerCase()
+        .replace(/\/$/, "") 
+        .normalize("NFD") 
+        .replace(/[\u0300-\u036f]/g, "") 
+    );
   };
 
   return (
