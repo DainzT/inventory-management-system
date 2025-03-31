@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Sidebar from "@/components/Sidebar";
 import Inventory from "./pages/InventoryPage";
@@ -13,6 +13,7 @@ const App: React.FC = () => {
     <Router>
       <div className="flex flex-col h-screen overflow-hidden">
         <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/*"
@@ -42,6 +43,7 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </Router>

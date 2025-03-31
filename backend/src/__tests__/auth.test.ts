@@ -1,11 +1,10 @@
 import request from "supertest";
 import express from "express";
 import authRoutes from "../routes/authRouter";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const prisma = new PrismaClient();
 const app = express();
 app.use(express.json());
 app.use("/api/auth", authRoutes);
@@ -23,6 +22,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
       data: {
         id: "test-user-id",
         pin: await bcrypt.hash("654321", 10),
+        createdAt: new Date(),
       },
     });
   });
