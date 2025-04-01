@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
-import { OrderItemProps } from "@/types/FleetsOrder";
+import { OrderItemProps } from "@/types/fleetorders";
+import UnsavedChangesModal from "../DiscardChangesModal";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
 
 interface ModifyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (quantity: number, fleet: string, boat: string, unit: string) => void;
+  onConfirm: (
+    quantity: number,
+    fleet: string,
+    boat: string,
+    unit: string
+  ) => void;
   onRemove: () => void;
-  order: OrderItemProps; 
+  order: OrderItemProps;
 }
 
 const fleets = {
@@ -28,7 +34,17 @@ const fleets = {
   ],
 };
 
-const units = ["piece", "meter", "kilogram", "gram", "roll", "sack", "box", "liter"];
+const units = [
+  "piece",
+  "meter",
+  "kilogram",
+  "gram",
+  "roll",
+  "sack",
+  "box",
+  "liter",
+  "pack"
+];
 
 export const ModifyModal: React.FC<ModifyModalProps> = ({
   isOpen,
@@ -37,13 +53,27 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   onRemove,
   order,
 }) => {
-  const [quantity, setQuantity] = useState<number>(typeof order.quantity === "number" ? order.quantity : 0); 
+  const [quantity, setQuantity] = useState<number>(
+    typeof order.quantity === "number" ? order.quantity : 0
+  );
   const [unit, setUnit] = useState(order.selectUnit);
-  const [fleet, setFleet] = useState(order.fleet); 
-  const [boat, setBoat] = useState(order.boat); 
+  const [fleet, setFleet] = useState(order.fleet);
+  const [boat, setBoat] = useState(order.boat);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
-  const currentStock = 8; 
+  const currentStock = 8;
+
+  useEffect(() => {
+    const hasChanged = 
+      quantity !== order.quantity || 
+      unit !== order.selectUnit || 
+      fleet !== order.fleet || 
+      boat !== order.boat;
+    
+    setHasChanges(hasChanged);
+  }, [quantity, unit, fleet, boat, order]);
 
   const handleIncrement = () => {
     if (quantity < currentStock) {
@@ -59,16 +89,29 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleFleetChange = (newFleet: string) => {
     setFleet(newFleet);
-    setBoat(fleets[newFleet as keyof typeof fleets][0]); 
+    setBoat(fleets[newFleet as keyof typeof fleets][0]);
   };
 
   const handleConfirm = () => {
-    onConfirm(quantity, fleet, boat, unit); 
+    onConfirm(quantity, fleet, boat, unit);
     onClose();
   };
 
   const handleRemoveClick = () => {
     setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseClick = () => {
+    if (hasChanges) {
+      setIsUnsavedChangesModalOpen(true);
+    } else {
+      onClose();
+    }
+  };
+
+  const handleDiscardChanges = () => {
+    setIsUnsavedChangesModalOpen(false);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -82,24 +125,29 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
         <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 overflow-hidden">
           <div className="p-6 flex flex-col gap-5">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-medium text-teal-700">Modify Item</h2>
+              <h2 className="text-2xl font-medium text-teal-700">
+                Modify Item
+              </h2>
               <button
+                data-testid="remove-item-button"
                 onClick={handleRemoveClick}
                 className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded flex items-center gap-1.5"
               >
                 <Trash2 size={16} />
                 <span>Remove Item</span>
               </button>
+
             </div>
 
-            {/* Display Order Details */}
             <div>
-              <h3 className="text-lg font-bold text-gray-800">{order.productName}</h3>
+              <h3 className="text-lg font-bold text-gray-800">
+                {order.productName}
+              </h3>
               <p className="text-gray-600">{order.note}</p>
               <p className="text-gray-800">₱{order.unitPrice.toFixed(2)}</p>
             </div>
 
-            {/* Quantity and Unit */}
+
             <div>
               <label className="block font-medium mb-2">Quantity</label>
               <div className="flex items-center gap-2">
@@ -110,7 +158,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                   >
                     <Minus size={20} />
                   </button>
-                  <div className="bg-gray-100 w-12 h-10 flex items-center justify-center">
+                  <div 
+                      data-testid="quantity-display"
+                      className="bg-gray-100 w-12 h-10 flex items-center justify-center"
+                    > 
                     {quantity}
                   </div>
                   <button
@@ -166,22 +217,30 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             <div>
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-medium">Total</h3>
-                <span className="text-teal-600 font-medium">₱{totalPrice.toFixed(2)}</span>
+                <span className="text-teal-600 font-medium">
+                  ₱{totalPrice.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Remaining Stock</span>
-                <span className="font-medium">{remainingStock}</span>
-              </div>
+                  <span className="text-gray-600">Remaining Stock</span>
+                  <span 
+                    data-testid="remaining-stock"
+                    className="font-medium"
+                  >
+                    {remainingStock}
+                  </span>
+                </div>
             </div>
             <div className="flex gap-3 mt-2">
               <button
-                onClick={onClose}
+                onClick={handleCloseClick}
                 className="flex-1 bg-sky-200 hover:bg-sky-300 text-sky-700 font-medium py-2 px-4 rounded flex items-center justify-center gap-2"
               >
                 <X size={18} />
                 <span>Cancel</span>
               </button>
               <button
+                data-testid="confirm-changes-button"
                 onClick={handleConfirm}
                 className="flex-1 bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-4 rounded flex items-center justify-center gap-2"
               >
@@ -199,11 +258,21 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
         onConfirm={() => {
           setIsDeleteModalOpen(false);
           onRemove();
+          onClose();
+          
         }}
-        title="Remove this item?"
-        message="This action cannot be undone. This item will be permanently removed from your orders."
+        title="Remove Item"
+        message="Are you sure you want to remove this item from your order? This action cannot be undone."
         confirmButtonText="Remove Item"
+      />
+
+      <UnsavedChangesModal
+        isOpen={isUnsavedChangesModalOpen}
+        onCancel={() => setIsUnsavedChangesModalOpen(false)}
+        onDiscard={handleDiscardChanges}
       />
     </>
   );
 };
+
+export default ModifyModal;

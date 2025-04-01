@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
-import { OrderItemProps } from "@/types/FleetsOrder";
-import { ModifyModal } from "@/components/ModifyModal";
+import { OrderItemProps } from "@/types/fleetorders";
+import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [
@@ -26,7 +26,9 @@ const Orders: React.FC = () => {
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<OrderItemProps | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderItemProps | null>(
+    null
+  );
 
   const orders: OrderItemProps[] = [
     {
@@ -73,8 +75,8 @@ const Orders: React.FC = () => {
   const handleModify = (id: number) => {
     const order = orders.find((order) => order.id === id);
     if (order) {
-      setSelectedOrder(order); 
-      setIsModalOpen(true); 
+      setSelectedOrder(order);
+      setIsModalOpen(true);
     }
   };
 
@@ -92,7 +94,7 @@ const Orders: React.FC = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedOrder(null); 
+    setSelectedOrder(null);
   };
 
   const handleConfirmChanges = (
@@ -102,7 +104,13 @@ const Orders: React.FC = () => {
     unit: string
   ) => {
     if (selectedOrder) {
-      console.log("Changes confirmed:", { selectedOrder, quantity, fleet, boat, unit });
+      console.log("Changes confirmed:", {
+        selectedOrder,
+        quantity,
+        fleet,
+        boat,
+        unit,
+      });
       setIsModalOpen(false);
     }
   };
@@ -129,7 +137,9 @@ const Orders: React.FC = () => {
 
     const matchesFleet =
       activeFleet === "All Fleets" ||
-      fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(order.boat) ||
+      fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(
+        order.boat
+      ) ||
       order.boat === activeFleet;
 
     const matchesBoat =
@@ -139,11 +149,13 @@ const Orders: React.FC = () => {
   });
 
   return (
-    <div className="p-4 bg-[#F4F4F4] h-full">
-      <main className="flex-1 p-10">
-        <h1 className="text-5xl font-bold text-cyan-800">Orders</h1>
+    <div>
+      <main className="flex-1">
+        <h1 className="mt-3 text-4xl font-bold text-[#295C65]">
+          Orders for {activeFleet}
+        </h1>
 
-        <div className="flex gap-18 mt-8 h-[260px]">
+        <div className="-mt-5 flex justify-center items-center gap-25  h-[300px]">
           <FleetCard
             title="All Fleets"
             backgroundColor="bg-emerald-800"
@@ -164,18 +176,14 @@ const Orders: React.FC = () => {
           />
         </div>
 
-        <h2 className=" text-4xl font-bold text-cyan-800">
-          Orders for {activeFleet}
-        </h2>
-
-        <div className="flex gap-9 mt-10">
+        <div className = "-mt-5 scale-97">
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}
             onFilter={handleFilter}
             activeFleet={activeFleet}
-            onModify={handleModify} 
-            isModifyOpen={setIsModalOpen} 
+            onModify={handleModify}
+            isModifyOpen={setIsModalOpen}
           />
         </div>
 

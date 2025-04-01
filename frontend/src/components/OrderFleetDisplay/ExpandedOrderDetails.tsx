@@ -1,5 +1,5 @@
 import React from "react";
-import { OrderItemProps } from "@/types/FleetsOrder";
+import { OrderItemProps } from "@/types/fleetorders";
 
 interface ExpandedOrderDetailsProps {
   order: OrderItemProps;
@@ -12,7 +12,7 @@ export const ExpandedOrderDetails: React.FC<ExpandedOrderDetailsProps> = ({
     <div className="grid grid-cols-2 gap-6 px-15 py-4 bg-gray-50">
       <div>
         <div className="mb-1 text-sm text-gray-500">Total Price</div>
-        <div className="text-base text-gray-800">
+        <div className="text-base text-gray-800" data-testid="total-price">
           <span>₱</span>
           <span>{Number(order.total).toFixed(2)}</span>
         </div>
