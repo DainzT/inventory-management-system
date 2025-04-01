@@ -34,12 +34,13 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
           <p className="text-gray-500 text-center mb-6">{message}</p>
           
           <div className="flex flex-col w-full gap-3">
-            <button 
-              onClick={onConfirm}
-              className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition-colors"
-            >
-              {confirmButtonText}
-            </button>
+          <button
+            data-testid="confirm-removal-button"
+            onClick={onConfirm}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition-colors"
+          >
+            {confirmButtonText}
+          </button>
             <button 
               onClick={onClose}
               className="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded border border-gray-300 transition-colors"

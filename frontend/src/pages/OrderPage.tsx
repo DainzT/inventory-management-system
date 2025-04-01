@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
 import { OrderItemProps } from "@/types/fleetorders";
-import { ModifyModal } from "@/components/ModifyModal";
+import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [

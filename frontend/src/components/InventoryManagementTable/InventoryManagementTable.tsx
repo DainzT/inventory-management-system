@@ -55,6 +55,16 @@ const InventoryManagementTable = ({
               onEdit={(item) => handleEditItemClick(item)}
             />
           </div>
+          <div className="p-3 px-6 border-t border-gray-200 bg-gray-50 text-sm text-gray-500">
+            <div className="flex justify-between items-center">
+                <span>
+                  {inventoryItems.length} {inventoryItems.length === 1 ? 'item' : 'items total'}
+                </span>
+                <span className="text-xs text-gray-400">
+                  {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+          </div>
         </section>
       </main>
   );
