@@ -1,11 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import { FilterDropdownProps } from "@/types/fleetorders";
 
-interface FilterDropdownProps {
-  label: string;
-  options: string[]; 
-  onSelect: (selectedOption: string) => void;
-}
 
 export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   label,

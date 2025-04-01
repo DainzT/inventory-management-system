@@ -14,7 +14,7 @@ export interface NavigationItemProps {
   }
   
   export interface OrderItemProps {
-    id: number;
+    id:number,
     productName: string;
     note: string;
     quantity: number | "";
@@ -32,4 +32,9 @@ export interface NavigationItemProps {
     activeFleet?: string;
     onFleetSelect?: (fleet: string) => void;
   }
-  
+
+export interface FilterDropdownProps {
+    label: string;
+    options: string[]; 
+    onSelect: (selectedOption: string) => void;
+  }
