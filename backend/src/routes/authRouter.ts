@@ -107,7 +107,6 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
     try {
       user = await prisma.user.findFirst();
     } catch (dbError) {
-      console.error("Database error:", dbError);
       res.status(500).json({ message: "Internal server error" });
       return;
     }

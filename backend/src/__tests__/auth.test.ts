@@ -3,7 +3,6 @@ import express from "express";
 import authRoutes from "../routes/authRouter";
 import prisma from "../lib/prisma";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 const app = express();
 app.use(express.json());
@@ -32,6 +31,21 @@ describe("POST /api/auth/login (Negative Cases)", () => {
     await prisma.$disconnect();
   });
 
+  it("should handle database connection failure", async () => {
+    jest
+      .spyOn(prisma.user, "findFirst")
+      .mockRejectedValue(new Error("DB Failure"));
+
+    const response = await request(app)
+      .post("/api/auth/login")
+      .send({ pin: "123456" });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty("message", "Internal server error");
+
+    jest.restoreAllMocks();
+  });
+
   it("should return a token for valid PIN", async () => {
     const response = await request(app)
       .post("/api/auth/login")
@@ -44,7 +58,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
   it("should return 401 for incorrect PIN", async () => {
     const response = await request(app)
       .post("/api/auth/login")
-      .send({ pin: "123456" });
+      .send({ pin: "121212" });
 
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty("message", "Invalid PIN");
@@ -82,26 +96,11 @@ describe("POST /api/auth/login (Negative Cases)", () => {
 
     const response = await request(app)
       .post("/api/auth/login")
-      .send({ pin: "654321" });
+      .send({ pin: "123456" });
 
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("message", "No user account found");
   });
-
-  // it("should handle database connection failure", async () => {
-  //   jest
-  //     .spyOn(prisma.user, "findFirst")
-  //     .mockRejectedValue(new Error("DB Failure"));
-
-  //   const response = await request(app)
-  //     .post("/api/auth/login")
-  //     .send({ pin: "654321" });
-
-  //   expect(response.status).toBe(500);
-  //   expect(response.body).toHaveProperty("message", "Internal server error");
-
-  //   jest.restoreAllMocks();
-  // });
 
   it("should return 400 for malformed request (not an object)", async () => {
     const response = await request(app)
