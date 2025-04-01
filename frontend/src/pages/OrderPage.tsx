@@ -32,7 +32,7 @@ const Orders: React.FC = () => {
 
   const orders: OrderItemProps[] = [
     {
-      id: 1,
+      id:1,
       productName: "Fishing Reel",
       note: "Spinning reel, corrosion-resistant",
       quantity: 1,
@@ -45,7 +45,7 @@ const Orders: React.FC = () => {
       dateOut: "Jan 15, 2024",
     },
     {
-      id: 2,
+      id:2,
       productName: "Nylon Fishing Line",
       note: "500m, high-tensile strength",
       quantity: 25,
@@ -58,7 +58,7 @@ const Orders: React.FC = () => {
       dateOut: "Jan 20, 2024",
     },
     {
-      id: 3,
+      id:3,
       productName: "Hook",
       note: "small size",
       quantity: 10,
@@ -70,15 +70,28 @@ const Orders: React.FC = () => {
       boat: "F/B Mariene",
       dateOut: "Jan 30, 2024",
     },
+    {
+      id:4,
+      productName: "Rice",
+      note: "Jasmine rice",
+      quantity: 1,
+      unitPrice: 130.00,
+      selectUnit: "kilo",
+      unitSize: 1,
+      total: 130.00,
+      fleet: "F/B DONYA DONYA 2X",
+      boat: "F/B DC-9",
+      dateOut: "Jan 15, 2024",
+    },
   ];
 
-  const handleModify = (id: number) => {
-    const order = orders.find((order) => order.id === id);
-    if (order) {
-      setSelectedOrder(order);
-      setIsModalOpen(true);
-    }
-  };
+  // const handleModify = (id: number) => {
+  //   const order = orders.find((order) => order.id === id);
+  //   if (order) {
+  //     setSelectedOrder(order);
+  //     setIsModalOpen(true);
+  //   }
+  // };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -151,7 +164,7 @@ const Orders: React.FC = () => {
   return (
     <div>
       <main className="flex-1">
-        <h1 className="mt-3 text-4xl font-bold text-[#295C65]">
+        <h1 className="mt-4 text-5xl font-bold text-[#295C65]">
           Orders for {activeFleet}
         </h1>
 
@@ -182,7 +195,7 @@ const Orders: React.FC = () => {
             onSearch={handleSearch}
             onFilter={handleFilter}
             activeFleet={activeFleet}
-            onModify={handleModify}
+            // onModify={handleModify}
             isModifyOpen={setIsModalOpen}
           />
         </div>
