@@ -41,13 +41,12 @@ describe('OrdersTable', () => {
       />
     );
     
-    expect(getByText('ID')).toBeInTheDocument();
+    expect(getByText('Date Out')).toBeInTheDocument();
     expect(getByText('Product Name')).toBeInTheDocument();
     expect(getByText('Note')).toBeInTheDocument();
     expect(getByText('Quantity')).toBeInTheDocument();
     expect(getByText('Unit Price')).toBeInTheDocument();
     expect(getByText('Boat')).toBeInTheDocument();
-    expect(getByText('Date Out')).toBeInTheDocument();
     expect(getByText('Actions')).toBeInTheDocument();
   });
 
@@ -95,5 +94,18 @@ describe('OrdersTable', () => {
       fireEvent.click(chevronIcon);
       expect(getByText('Note 1')).toBeInTheDocument();
     }
+  });
+
+  it('renders search bar and filter dropdown', () => {
+    const { getByPlaceholderText, getByText } = render(
+      <OrdersTable
+        orders={mockOrders}
+        activeFleet="All Fleets"
+        isModifyOpen={() => {}}
+      />
+    );
+
+    expect(getByPlaceholderText('Search Items...')).toBeInTheDocument();
+    expect(getByText('All Boats')).toBeInTheDocument();
   });
 });
