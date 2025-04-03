@@ -21,7 +21,7 @@ model InventoryItem {
   quantity     Int
   unitPrice    Int
   selectUnit   String
-  unitSize     String
+  unitSize     Int
   total        Int
   dateCreated  DateTime       @default(now())
   lastUpdated  DateTime?      @updatedAt

@@ -5,12 +5,12 @@ import OutItemModal from "@/components/OutItemModal/OutItemModal";
 import EditProductModal from "@/components/EditProductModal/EditProductModal";
 import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 import { PageTitle } from "@/components/PageTitle";
-
+import { addInventoryItem } from "@/api/inventoryAPI";
 
 const Inventory: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isOutOpen, setIsOutOpen] = useState(false); 
+  const [isOutOpen, setIsOutOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
@@ -134,22 +134,18 @@ const Inventory: React.FC = () => {
       dateCreated: new Date("2023-05-24"),
       lastUpdated: new Date("2023-05-24"),
     }
-    
+
   ]); // Stores the items in the inventory
   const [outItems, setOutItems] = useState<OrderItem[]>([]); // For when item is out, it creates a copy of the modified item from the inventory and stores it
 
   console.log(outItems)
 
-  const handleAddProduct = (newProduct: ItemFormData) => {
-    setInventoryItems((prevItems) => [
-      ...prevItems,
-      {
-        ...newProduct,
-        id: prevItems.length + 1, 
-      },
-    ]);
-    setIsAddOpen(false); 
-  };  
+  const handleAddProduct = async (newProduct: ItemFormData) => {
+    const addedItem = await addInventoryItem(newProduct);
+
+    setInventoryItems((prevItems) => [...prevItems, addedItem]);
+    setIsAddOpen(false);
+  };
 
   const handleOutItem = (updatedItem: InventoryItem, outItem: OrderItem) => {
     setInventoryItems((prevItems) =>
@@ -160,7 +156,7 @@ const Inventory: React.FC = () => {
   };
 
   const handleEditItem = (updatedItem: InventoryItem) => {
-     setInventoryItems((prevItems) =>
+    setInventoryItems((prevItems) =>
       prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
   };
@@ -177,30 +173,33 @@ const Inventory: React.FC = () => {
     setSearchQuery(query);
   };
 
-  
+
   const filteredItems = inventoryItems.filter((item) => {
+    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+
     const matchesSearch = [
-      item.name.toLowerCase(),
-      item.note.toLowerCase(),
-      item.quantity.toString(),
-      item.unitPrice.toString(),
-      item.selectUnit.toLowerCase(),
-      item.unitSize.toString(),
-      item.total?.toString() || "",
-      item.dateCreated.toISOString().toLowerCase(),
-    ].some((field) => field.includes(searchQuery.toLowerCase()));
+      item.name?.toLowerCase(),
+      item.note?.toLowerCase(),
+      item.quantity?.toString(),
+      item.unitPrice?.toString(),
+      item.selectUnit?.toLowerCase(),
+      item.unitSize?.toString(),
+      item.total?.toString(),
+      item.dateCreated?.toISOString().toLowerCase(),
+    ].some((field) => field?.includes(lowerCaseSearchQuery));
+
     return matchesSearch;
   });
 
   return (
     <div className="flex-1 p-0 ">
-      <PageTitle title="Main Inventory"/>
-      <InventoryManagementTable 
-        setIsAddOpen={setIsAddOpen} 
+      <PageTitle title="Main Inventory" />
+      <InventoryManagementTable
+        setIsAddOpen={setIsAddOpen}
         setIsEditOpen={(isOpen, item) => {
           setSelectedItem(item || null);
           setIsEditOpen(isOpen);
-        }} 
+        }}
         setIsOutOpen={(isOpen, item) => {
           setSelectedItem(item || null);
           setIsOutOpen(isOpen);
@@ -208,18 +207,18 @@ const Inventory: React.FC = () => {
         inventoryItems={filteredItems}
         onSearch={handleSearch}
       />
-      <AddProductModal 
-        isOpen={isAddOpen} 
-        setIsOpen={setIsAddOpen} 
+      <AddProductModal
+        isOpen={isAddOpen}
+        setIsOpen={setIsAddOpen}
         onAddItem={handleAddProduct}
       />
-      <OutItemModal 
-        isOpen={isOutOpen} 
+      <OutItemModal
+        isOpen={isOutOpen}
         setIsOpen={setIsOutOpen}
         selectedItem={selectedItem}
         onOutItem={handleOutItem}
       />
-      <EditProductModal 
+      <EditProductModal
         isOpen={isEditOpen}
         setIsOpen={setIsEditOpen}
         selectedItem={selectedItem}
