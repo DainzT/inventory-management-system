@@ -9,7 +9,51 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   pin       String
   createdAt DateTime @default(now())
+}
+
+model InventoryItem {
+  id           Int            @id @default(autoincrement())
+  name         String
+  note         String
+  quantity     Int
+  unitPrice    Int
+  selectUnit   String
+  unitSize     String
+  total        Int
+  dateCreated  DateTime       @default(now())
+  lastUpdated  DateTime?      @updatedAt
+  AssignedItem AssignedItem[]
+}
+
+model AssignedItem {
+  id          Int           @id @default(autoincrement())
+  item_id     Int
+  item        InventoryItem @relation(fields: [item_id], references: [id])
+  fleet_id    Int
+  fleet       Fleet         @relation(fields: [fleet_id], references: [id])
+  boat_id     Int
+  boat        Boat          @relation(fields: [boat_id], references: [id])
+  processed   Boolean       @default(false)
+  quantity    Int
+  total       Int
+  outDate     DateTime      @default(now())
+  lastUpdated DateTime?     @updatedAt
+}
+
+model Fleet {
+  id           Int            @id @default(autoincrement())
+  fleet_name   String
+  AssignedItem AssignedItem[]
+  Boat         Boat[]
+}
+
+model Boat {
+  id           Int            @id @default(autoincrement())
+  fleet_id     Int
+  fleet        Fleet          @relation(fields: [fleet_id], references: [id])
+  boat_name    String
+  AssignedItem AssignedItem[]
 }
