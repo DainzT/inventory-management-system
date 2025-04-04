@@ -15,31 +15,45 @@ router.post("/add-item", async (req: Request, res: Response) => {
 
         const { name, note, quantity, unitPrice, selectUnit, unitSize, total, dateCreated} = req.body;
         
+        if (!name || typeof name !== 'string') {
+            res.status(400).json({ error: "Valid name (string) is required" });
+            return; 
+        }
 
-        // if (!name || typeof name !== 'string') {
-        //     res.status(400).json({ error: "Valid name (string) is required" });
-        //     return 
-        // }
+        if (!note || typeof name !== 'string') {
+            res.status(400).json({ error: "Valid note (string) is required" });
+            return; 
+        }
 
-        // // validate notes
+        if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
+            res.status(400).json({ error: "Valid quantity (number > 0) is required" });
+            return;
+        }
 
-        // if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
-        //     res.status(400).json({ error: "Valid quantity (number > 0) is required" });
-        //     return;
-        // }
+        if (!unitPrice || typeof unitPrice !== 'number' || quantity <= 0) {
+            res.status(400).json({ error: "Valid unitPrice (number) is required" });
+            return;
+        }
 
-        // validate unitPrice
+        if (!selectUnit || typeof selectUnit !== 'string') {
+            res.status(400).json({ error: "Valid selectUnit (string) is required" });
+            return; 
+        }
 
-        // validate selectUnit
+        if (!unitSize || typeof unitSize !== 'number' || unitSize <= 0 || unitSize > quantity) {
+            res.status(400).json({ error: "Valid unitSize (number > 0 || number > quantity) is required" });
+            return;
+        }
 
-        // validate unitsize
+        if (!total || typeof total !== 'number' || total <= 0 || total != ((unitPrice * quantity) / unitSize) ) {
+            res.status(400).json({ error: "Valid total (number > 0 ||  total != ((unitPrice * quantity) / unitSize) is required" });
+            return;
+        }
 
-        // if (!unitPrice || typeof unitPrice !== 'number' || unitPrice <= 0) {
-        //     res.status(400).json({ error: "Valid unitPrice (number > 0) is required" });
-        //     return 
-        // }
-        
-        //also validate if total is correctly calculated
+        if (!dateCreated || isNaN(Date.parse(dateCreated))) {
+            res.status(400).json({ error: "Valid dateCreated (ISO 8601 format) is required" });
+            return;
+        }
 
         const newItem = await prisma.inventoryItem.create({
             data: {
@@ -64,7 +78,7 @@ router.post("/add-item", async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
         return;
-    }   
+    }
 })
 
 // router.delete("/remove-item:id")

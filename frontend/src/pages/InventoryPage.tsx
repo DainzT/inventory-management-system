@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+
 import InventoryManagementTable from "@/components/InventoryManagementTable/InventoryManagementTable";
+import EditProductModal from "@/components/EditProductModal/EditProductModal";
 import AddProductModal from "@/components/AddProductModal/AddProductModal";
 import OutItemModal from "@/components/OutItemModal/OutItemModal";
-import EditProductModal from "@/components/EditProductModal/EditProductModal";
-import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 import { PageTitle } from "@/components/PageTitle";
+
+import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 import { addInventoryItem } from "@/api/inventoryAPI";
 
 const Inventory: React.FC = () => {
@@ -136,15 +138,21 @@ const Inventory: React.FC = () => {
     }
 
   ]); // Stores the items in the inventory
-  const [outItems, setOutItems] = useState<OrderItem[]>([]); // For when item is out, it creates a copy of the modified item from the inventory and stores it
-
-  console.log(outItems)
+  const [, setOutItems] = useState<OrderItem[]>([]); // For when item is out, it creates a copy of the modified item from the inventory and stores it
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAddProduct = async (newProduct: ItemFormData) => {
-    const addedItem = await addInventoryItem(newProduct);
-
-    setInventoryItems((prevItems) => [...prevItems, addedItem]);
-    setIsAddOpen(false);
+    try {
+      setIsLoading(true);
+      const addedItem = await addInventoryItem(newProduct);
+      
+      setInventoryItems((prevItems) => [...prevItems, addedItem]);
+      setIsAddOpen(false);
+    } catch (error) {
+      console.error("Failed to add product:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleOutItem = (updatedItem: InventoryItem, outItem: OrderItem) => {
@@ -162,17 +170,14 @@ const Inventory: React.FC = () => {
   };
 
   const handleDeleteItem = (id: number) => {
-    console.log("no", id)
     setInventoryItems((prevItems) =>
       prevItems.filter((item) => item.id !== id)
     );
   };
 
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
-
 
   const filteredItems = inventoryItems.filter((item) => {
     const lowerCaseSearchQuery = searchQuery.toLowerCase();
@@ -211,6 +216,7 @@ const Inventory: React.FC = () => {
         isOpen={isAddOpen}
         setIsOpen={setIsAddOpen}
         onAddItem={handleAddProduct}
+        isAdding={isLoading}
       />
       <OutItemModal
         isOpen={isOutOpen}
