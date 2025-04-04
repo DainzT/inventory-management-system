@@ -171,17 +171,9 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                     <Plus size={20} />
                   </button>
                 </div>
-                <select
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                  className="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
-                >
-                  {units.map((unitOption) => (
-                    <option key={unitOption} value={unitOption}>
-                      {unitOption}
-                    </option>
-                  ))}
-                </select>
+                <div className= "px-3 py-2 h-10 flex items-center justify-center min-w-[80px]">
+                  {unit}
+                </div>
               </div>
             </div>
 
