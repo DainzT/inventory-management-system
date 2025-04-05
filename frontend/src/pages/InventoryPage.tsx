@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import InventoryManagementTable from "@/components/InventoryManagementTable/InventoryManagementTable";
 import EditProductModal from "@/components/EditProductModal/EditProductModal";
@@ -144,12 +146,29 @@ const Inventory: React.FC = () => {
   const handleAddProduct = async (newProduct: ItemFormData) => {
     try {
       setIsLoading(true);
+      toast.loading("Adding product...", {
+        position: "top-center",
+        toastId: "adding-product", 
+      });
       const addedItem = await addInventoryItem(newProduct);
-      
-      setInventoryItems((prevItems) => [...prevItems, addedItem]);
+
+      toast.update("adding-product", {
+        render: "Product added successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+        hideProgressBar: false,
+      });
+
+      setInventoryItems(prev => [...prev, { ...newProduct, id: addedItem.id }]);
       setIsAddOpen(false);
+      
     } catch (error) {
       console.error("Failed to add product:", error);
+      toast.error("Failed to add product. Please try again.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -198,6 +217,18 @@ const Inventory: React.FC = () => {
 
   return (
     <div className="flex-1 p-0 ">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <PageTitle title="Main Inventory" />
       <InventoryManagementTable
         setIsAddOpen={setIsAddOpen}

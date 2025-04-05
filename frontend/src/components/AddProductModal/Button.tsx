@@ -24,7 +24,7 @@ export const Button = ({
     <button
       type={type}
       onClick={onClick}
-      className={`inter-font ${baseStyles} ${variantStyles[variant]} ${className}`}
+      className={`inter-font cursor-pointer ${baseStyles} ${variantStyles[variant]} ${className}`}
       disabled={disabled}
     >
       {children}
