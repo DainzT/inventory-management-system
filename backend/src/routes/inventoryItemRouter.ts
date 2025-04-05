@@ -8,21 +8,50 @@ const router: Router = express.Router();
 
 router.use(authenticateToken)
 
-// router.get("/get-item/:id")
+router.get("/get-items", async (req: Request, res: Response) => {
+    try {
+        const items = await prisma.inventoryItem.findMany();
+
+        if (!items || items.length === 0) {
+            res.status(404).json({
+                success: false,
+                message: "Inventory is empty",
+                error: "INVENTORY_EMPTY"
+            });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            data: items
+        });
+        return;
+
+    } catch (error) {
+        console.error('Error fetching items:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch items from inventory',
+            error: process.env.NODE_ENV === 'development' ? error : undefined,
+        });
+        return;
+
+    }
+})
 
 router.post("/add-item", async (req: Request, res: Response) => {
     try {
 
-        const { name, note, quantity, unitPrice, selectUnit, unitSize, total, dateCreated} = req.body;
-        
+        const { name, note, quantity, unitPrice, selectUnit, unitSize, total, dateCreated } = req.body;
+
         if (!name || typeof name !== 'string') {
             res.status(400).json({ error: "Valid name (string) is required" });
-            return; 
+            return;
         }
 
         if (!note || typeof name !== 'string') {
             res.status(400).json({ error: "Valid note (string) is required" });
-            return; 
+            return;
         }
 
         if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
@@ -37,7 +66,7 @@ router.post("/add-item", async (req: Request, res: Response) => {
 
         if (!selectUnit || typeof selectUnit !== 'string') {
             res.status(400).json({ error: "Valid selectUnit (string) is required" });
-            return; 
+            return;
         }
 
         if (!unitSize || typeof unitSize !== 'number' || unitSize <= 0 || unitSize > quantity) {
@@ -45,7 +74,7 @@ router.post("/add-item", async (req: Request, res: Response) => {
             return;
         }
 
-        if (!total || typeof total !== 'number' || total <= 0 || total != ((unitPrice * quantity) / unitSize) ) {
+        if (!total || typeof total !== 'number' || total <= 0 || total != ((unitPrice * quantity) / unitSize)) {
             res.status(400).json({ error: "Valid total (number > 0 ||  total != ((unitPrice * quantity) / unitSize) is required" });
             return;
         }
@@ -76,8 +105,13 @@ router.post("/add-item", async (req: Request, res: Response) => {
         return;
 
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({
+            success: false,
+            message: 'Failed to add item to inventory',
+            error: process.env.NODE_ENV === 'development' ? error : undefined,
+        });
         return;
+        
     }
 })
 
