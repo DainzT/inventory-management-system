@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
 
-export const authenticateAdmin = (
+const authenticateAdmin = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -11,7 +11,8 @@ export const authenticateAdmin = (
   const token = req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized: No token provided" });
+    res.status(401).json({ error: "Unauthorized: No token provided" });
+    return;
   }
 
   try {
@@ -19,6 +20,9 @@ export const authenticateAdmin = (
     (req as any).admin = decoded;
     next();
   } catch (err) {
-    return res.status(403).json({ error: "Invalid token" });
+    res.status(403).json({ error: "Invalid token" });
+    return;
   }
 };
+
+export default authenticateAdmin;

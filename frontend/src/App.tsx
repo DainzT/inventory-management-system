@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import Header from "./components/Header";
 import Sidebar from "@/components/Sidebar";
 import Inventory from "./pages/InventoryPage";
@@ -21,19 +26,20 @@ const App: React.FC = () => {
               <ProtectedRoute>
                 <>
                   <div className="flex flex-col h-screen overflow-hidden">
-                  <Header />
+                    <Header />
                     <div className="flex flex-1 overflow-hidden">
-                    <Sidebar />
+                      <Sidebar />
                       <div className="flex-1 p-4 overflow-y-hidden">
-                      <Routes>
-                        <Route path="/inventory" element={<Inventory />} />
-                        <Route path="/orders" element={<Orders />} />
-                        <Route 
-                          path="/summary/:fleetName" 
-                          element={
-                            <div className="h-full overflow-y-auto">
-                              <Summary />
-                            </div>}
+                        <Routes>
+                          <Route path="/inventory" element={<Inventory />} />
+                          <Route path="/orders" element={<Orders />} />
+                          <Route
+                            path="/summary/:fleetName"
+                            element={
+                              <div className="h-full overflow-y-auto">
+                                <Summary />
+                              </div>
+                            }
                           />
                         </Routes>
                       </div>
