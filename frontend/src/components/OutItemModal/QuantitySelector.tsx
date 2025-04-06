@@ -7,6 +7,7 @@ interface QuantitySelectorProps {
   maxQuantity: number;
   unitSize: number;
   error: string;
+  disabled?: boolean;
 }
 
 
@@ -16,6 +17,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   maxQuantity,
   unitSize,
   error,
+  disabled,
 }) => {
   const decrementQuantity = () => {
     if (Number(value) > 0) {
@@ -62,7 +64,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           `}
           onClick={decrementQuantity}
           aria-label="Decrease quantity"
-          disabled={Number(value) <= 0}
+          disabled={Number(value) <= 0 || disabled}
         >
           <BsFileMinus />
         </button>
@@ -78,6 +80,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
             ${error ? "border-red-500" : "border-[#0FE3FF]"}
           `}
           aria-live="polite"
+          disabled={disabled}
         />
         
         <button
@@ -87,7 +90,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           `}
           onClick={incrementQuantity}
           aria-label="Increase quantity"
-          disabled={Number(value) >= maxQuantity}
+          disabled={Number(value) >= maxQuantity || disabled}
         >
           <BsFilePlus />
         </button>

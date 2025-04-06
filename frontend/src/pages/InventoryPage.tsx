@@ -9,7 +9,7 @@ import OutItemModal from "@/components/OutItemModal/OutItemModal";
 import { PageTitle } from "@/components/PageTitle";
 
 import { InventoryItem, ItemFormData, OrderItem } from "@/types";
-import { addInventoryItem, fetchInventoryItems } from "@/api/inventoryAPI";
+import { addInventoryItem, fetchInventoryItems, outInventoryItem } from "@/api/inventoryAPI";
 
 const Inventory: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -17,11 +17,11 @@ const Inventory: React.FC = () => {
   const [isOutOpen, setIsOutOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [, setOutItems] = useState<OrderItem[]>([]); // For when item is out, it creates a copy of the modified item from the inventory and stores it
 
   const [isLoading, setIsLoading] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  
+  const [isOuting, setIsOuting] = useState(false);
+
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]); // Stores the items in the inventory
 
   useEffect(() => {
@@ -97,12 +97,39 @@ const Inventory: React.FC = () => {
     }
   };
 
-  const handleOutItem = (updatedItem: InventoryItem, outItem: OrderItem) => {
-    setInventoryItems((prevItems) =>
-      prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    );
+  const handleOutItem = async (outItem: OrderItem) => {
+    toast.loading("Assigning product...", {
+      position: "top-center",
+      toastId: "assigning-product",
+    });
+    try {
+      setIsOuting(true);
+      await outInventoryItem(outItem)
 
-    setOutItems((prevOutItems) => [...prevOutItems, outItem]);
+      toast.update("assigning-product", {
+        render: "Assigned product to orders",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+        hideProgressBar: false,
+      });
+
+      const items = await fetchInventoryItems();
+      setInventoryItems(items);
+      setIsOutOpen(false);
+    } catch (error) {
+      console.error("Failed to assign product:", error);
+      toast.update("assigning-product", {
+        render: "Failed to assign product. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+        hideProgressBar: false,
+      });
+
+    } finally {
+      setIsOuting(false);
+    }
   };
 
   const handleEditItem = (updatedItem: InventoryItem) => {
@@ -179,6 +206,7 @@ const Inventory: React.FC = () => {
         setIsOpen={setIsOutOpen}
         selectedItem={selectedItem}
         onOutItem={handleOutItem}
+        isOuting={isOuting}
       />
       <EditProductModal
         isOpen={isEditOpen}

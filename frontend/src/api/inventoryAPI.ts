@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import apiClient from "./apiClient";
-import { InventoryItem, ItemFormData } from "@/types";
+import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 
 const handleApiError = (error: unknown) => {
   const axiosError = error as AxiosError<{ error?: string; message?: string }>;
@@ -67,3 +67,16 @@ export const addInventoryItem = async (
   }
 };
 
+export const outInventoryItem = async (
+  item: OrderItem
+): Promise<OrderItem> => {
+  try {
+
+    const response = await apiClient.post('/inventory-item/assign-item', item);
+    return response.data;
+
+  } catch (error) {
+    return handleApiError(error);
+
+  }
+}

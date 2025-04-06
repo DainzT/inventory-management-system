@@ -1,34 +1,43 @@
 
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
 import SelectField from "./SelectField";
 import QuantitySelector from "./QuantitySelector";
 import SummarySection from "./SummarySection";
 import { InventoryItem, OrderItem } from "@/types";
 import { MdAdd } from "react-icons/md";
 import ItemDetails from "./ItemDetails";
+import { ClipLoader } from "react-spinners";
+import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
 
 interface OutItemModalProps {
-  isOpen: boolean, 
+  isOpen: boolean,
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   selectedItem: InventoryItem | null;
-  onOutItem: (updatedItem: InventoryItem, outItem: OrderItem) => void;
+  onOutItem: (outItem: OrderItem) => void;
+  isOuting?: boolean;
 }
 
-const OutItemModal: React.FC<OutItemModalProps> = ({ 
-  isOpen, 
-  setIsOpen, 
+const OutItemModal: React.FC<OutItemModalProps> = ({
+  isOpen,
+  setIsOpen,
   selectedItem,
   onOutItem,
-  }) => {
+  isOuting,
+}) => {
   const [fleet, setFleet] = useState<string>("");
   const [boat, setBoat] = useState<string>("");
   const [quantity, setQuantity] = useState<number | "">("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const hasChanges = useMemo(() => {
+    return !!fleet || !!boat || !!quantity;
+  }, [fleet, boat, quantity]);
+  
   const clearError = (field: string) => {
     setErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
-      delete newErrors[field]; 
+      delete newErrors[field];
       return newErrors;
     });
   };
@@ -46,25 +55,25 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; 
+    return Object.keys(newErrors).length === 0;
   };
 
   const getBoatOptions = (fleet: string) => {
     switch (fleet) {
       case "F/B DONYA DONYA 2x":
         return [
-          "F/B Lady Rachelle", 
+          "F/B Lady Rachelle",
           "F/B Mariella",
           "F/B My Shield",
-          "F/B Abigail", 
+          "F/B Abigail",
           "F/B DC-9"
         ];
       case "F/B Doña Librada":
         return [
-          "F/B Adomar", 
-          "F/B Prince of Peace", 
-          "F/B Ruth Gaily", 
-          "F/V Vadeo Scout", 
+          "F/B Adomar",
+          "F/B Prince of Peace",
+          "F/B Ruth Gaily",
+          "F/V Vadeo Scout",
           "F/B Mariene"
         ];
       default:
@@ -76,14 +85,14 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
 
   const handleFleetChange = (selectedFleet: string) => {
     setFleet(selectedFleet);
-    setBoat(""); 
-    clearError("fleet"); 
+    setBoat("");
+    clearError("fleet");
     clearError("boat");
   };
 
   const handleBoatChange = (selectedBoat: string) => {
     setBoat(selectedBoat);
-    clearError("boat"); 
+    clearError("boat");
   };
 
   const handleQuantityChange = (newValue: number | "") => {
@@ -91,7 +100,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
     clearError("quantity");
   };
 
-  const handleAssign = () => {
+  const handleAssign = async () => {
 
     if (!validateForm()) return;
 
@@ -99,33 +108,42 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
 
     const updatedTotalPrice =
       Number(selectedItem?.unitPrice) * (remainingStock / Number(selectedItem?.unitSize));
-  
-    const updatedItem: InventoryItem = {
-      ...selectedItem!,
-      quantity: remainingStock,
-      total: updatedTotalPrice,
-      lastUpdated: new Date(),
-    };
 
     const outItem: OrderItem = {
-      ...selectedItem!,
-      quantity: Number(quantity), 
-      fleet, 
-      boat, 
+      item_id: {
+        ...selectedItem!,
+        quantity: remainingStock,
+        total: updatedTotalPrice,
+        lastUpdated: new Date()
+      },
+      quantity: Number(quantity),
+      total: totalPrice,
+      fleet_name: fleet,
+      boat_name: boat,
       outDate: new Date(),
     };
 
-    onOutItem(updatedItem, outItem);
+    await onOutItem(outItem);
 
     setFleet("");
     setBoat("");
     setQuantity("");
-    setIsOpen(false);
   };
 
   const totalPrice = Number(selectedItem?.unitPrice) * (Number(quantity) / Number(selectedItem?.unitSize));
   const remainingStock = Number(selectedItem?.quantity) - Number(quantity);
-  
+
+  const handleCloseAttempt = () => {
+    if (hasChanges) {
+      setShowUnsavedModal(true);
+    } else {
+      setFleet("");
+      setBoat("");
+      setQuantity("");
+      setIsOpen(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -134,23 +152,19 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
         <header className="flex justify-between items-center mb-4">
           <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Out Product</h1>
           <button
-            onClick={() => {
-              setFleet("");
-              setBoat("");
-              setQuantity(""); 
-              setIsOpen(false);
-            }}
+            onClick={handleCloseAttempt}
             className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
             aria-label="Close dialog"
+            disabled={isOuting}
           >
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
                 d="M18 6L6 18M6 6L18 18"
                 stroke="black"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                />
+              />
             </svg>
           </button>
         </header>
@@ -164,6 +178,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
             onChange={handleFleetChange}
             options={fleetOptions}
             error={errors.fleet}
+            disabled={isOuting}
             required
           />
         </div>
@@ -177,7 +192,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
               onChange={handleBoatChange}
               options={boatOptions}
               error={errors.boat}
-              disabled={!fleet}
+              disabled={!fleet || isOuting}
             />
           </div>
         )}
@@ -189,6 +204,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
             maxQuantity={Number(selectedItem?.quantity)}
             unitSize={Number(selectedItem?.unitSize)}
             error={errors.quantity}
+            disabled={isOuting}
           />
         </div>
 
@@ -204,14 +220,36 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
             flex absolute right-6 bottom-6 gap-2 justify-center items-center h-10 text-white
             bg-[#1B626E] rounded-md w-24 transition-colors hover:bg-[#297885] active:bg-[#145965]
           "
+          disabled={isOuting}
         >
-          <MdAdd />
-          <span>Assign</span>
+          {isOuting ? (
+            <div className="flex items-center justify-center">
+              <ClipLoader color="#ffffff" size={20} className="mr-2" />
+              Outing...
+            </div>
+          ) : (
+            <>
+              <MdAdd />
+              <span>Assign</span>
+            </>
+          )}
         </button>
       </article>
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        onClick={!isOuting ? handleCloseAttempt : undefined}
         aria-hidden="true"
+      />
+      <UnsavedChangesModal
+        isOpen={showUnsavedModal}
+        onClose={() => setShowUnsavedModal(false)}
+        onConfirm={() => {
+          setShowUnsavedModal(false);
+          setFleet("");
+          setBoat("");
+          setQuantity("");
+          setIsOpen(false);
+        }}
       />
     </section>
   );

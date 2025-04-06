@@ -18,11 +18,11 @@ model InventoryItem {
   id           Int            @id @default(autoincrement())
   name         String
   note         String
-  quantity     Int
-  unitPrice    Int
+  quantity     Float
+  unitPrice    Float
   selectUnit   String
-  unitSize     Int
-  total        Int
+  unitSize     Float
+  total        Float
   dateCreated  DateTime       @default(now())
   lastUpdated  DateTime?      @updatedAt
   AssignedItem AssignedItem[]
@@ -37,8 +37,8 @@ model AssignedItem {
   boat_id     Int
   boat        Boat          @relation(fields: [boat_id], references: [id])
   processed   Boolean       @default(false)
-  quantity    Int
-  total       Int
+  quantity    Float
+  total       Float
   outDate     DateTime      @default(now())
   lastUpdated DateTime?     @updatedAt
 }
