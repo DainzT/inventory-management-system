@@ -85,13 +85,13 @@ const Orders: React.FC = () => {
     },
   ];
 
-  // const handleModify = (id: number) => {
-  //   const order = orders.find((order) => order.id === id);
-  //   if (order) {
-  //     setSelectedOrder(order);
-  //     setIsModalOpen(true);
-  //   }
-  // };
+  const handleModify = (id: number) => {
+    const order = orders.find((order) => order.id === id);
+    if (order) {
+      setSelectedOrder(order);
+      setIsModalOpen(true);
+    }
+  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -195,7 +195,7 @@ const Orders: React.FC = () => {
             onSearch={handleSearch}
             onFilter={handleFilter}
             activeFleet={activeFleet}
-            // onModify={handleModify}
+            onModify={handleModify}
             isModifyOpen={setIsModalOpen}
           />
         </div>

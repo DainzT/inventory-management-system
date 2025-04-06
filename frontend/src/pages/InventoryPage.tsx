@@ -85,7 +85,7 @@ const Inventory: React.FC = () => {
     } catch (error) {
       console.error("Failed to add product:", error);
       toast.update("adding-product", {
-        render: "Failed to add product. Please try again.",
+        render: error instanceof Error ? error.message : "Failed to add product. Please try again.",
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -120,7 +120,7 @@ const Inventory: React.FC = () => {
     } catch (error) {
       console.error("Failed to assign product:", error);
       toast.update("assigning-product", {
-        render: "Failed to assign product. Please try again.",
+        render: error instanceof Error ? error.message : "Failed to assign product. Please try again.",
         type: "error",
         isLoading: false,
         autoClose: 3000,
