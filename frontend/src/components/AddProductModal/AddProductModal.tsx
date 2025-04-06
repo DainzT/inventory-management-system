@@ -7,12 +7,14 @@ interface AddProductModalProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
     onAddItem: (product: ItemFormData) => void;
+    isAdding?: boolean;
 }
 
-const AddProductModal = ({ 
-    isOpen, 
+const AddProductModal = ({
+    isOpen,
     setIsOpen,
-    onAddItem, 
+    onAddItem,
+    isAdding = false,
 }: AddProductModalProps) => {
     const [hasChanges, setHasChanges] = useState(false);
     const [showUnsavedModal, setShowUnsavedModal] = useState(false);
@@ -28,8 +30,8 @@ const AddProductModal = ({
     if (!isOpen) return null;
 
     return (
-        <section className="flex fixed inset-0 justify-center items-center ">  
-            <article 
+        <section className="flex fixed inset-0 justify-center items-center ">
+            <article
                 className="relative z-50 px-6 py-4 w-96 bg-white rounded-[19px] border-[1px] border-[#E0D8D8] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] animate-[fadeIn_0.2s_ease-out] h-[36rem]"
             >
                 <header className="flex justify-between items-center">
@@ -37,30 +39,32 @@ const AddProductModal = ({
                         Add Product
                     </h1>
                     <button
-                    onClick={handleCloseAttempt}
-                    className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
-                    aria-label="Close dialog"
+                        onClick={handleCloseAttempt}
+                        className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10 cursor-pointer"
+                        aria-label="Close dialog"
+                        disabled={isAdding}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path
-                            d="M18 6L6 18M6 6L18 18"
-                            stroke="black"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+                                d="M18 6L6 18M6 6L18 18"
+                                stroke="black"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                             />
                         </svg>
                     </button>
                 </header>
-                <div className="h-[1px] bg-[#E0D8D8] my-1"/>
-                    <AddProductForm
-                        onSubmit={onAddItem}
-                        onFormChange={setHasChanges}
+                <div className="h-[1px] bg-[#E0D8D8] my-1" />
+                <AddProductForm
+                    onSubmit={onAddItem}
+                    onFormChange={setHasChanges}
+                    isAdding={isAdding}
                 />
             </article>
             <div
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity "
-                onClick={() => setIsOpen(false)}
+                onClick={!isAdding ? handleCloseAttempt : undefined}
                 aria-hidden="true"
             />
             <UnsavedChangesModal

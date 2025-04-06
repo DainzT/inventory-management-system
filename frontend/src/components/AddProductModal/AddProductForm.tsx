@@ -5,15 +5,18 @@ import { PriceInput } from "./PriceInput";
 import { QuantityInput } from "./QuantityInput";
 import { UnitSelector } from "./UnitSelector";
 import { ItemFormData } from "@/types";
+import { ClipLoader } from "react-spinners";
 
 interface ProductFormProps {
     onSubmit: (data: ItemFormData) => void;
     onFormChange: (hasChanges: boolean) => void;
-  }
+    isAdding?: boolean;
+}
 
-const AddProductForm = ({  
+const AddProductForm = ({
     onSubmit,
     onFormChange,
+    isAdding = false,
 }: ProductFormProps) => {
     const emptyFormState = useMemo<ItemFormData>(() => ({
         name: "",
@@ -35,8 +38,8 @@ const AddProductForm = ({
             ...current,
             total: Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)),
         }));
-    }, [productData.quantity, productData.unitPrice,  productData.unitSize]);
-    
+    }, [productData.quantity, productData.unitPrice, productData.unitSize]);
+
     useEffect(() => {
         const hasChanges = Object.keys(productData).some(key => {
             if (key === 'dateCreated' || key === 'total') return false;
@@ -49,8 +52,8 @@ const AddProductForm = ({
 
     const handleInputChange = (field: keyof ItemFormData, value: string | number) => {
         setProductData((prevData) => ({
-          ...prevData,
-          [field]: value,
+            ...prevData,
+            [field]: value,
         }));
 
         setErrors((prevErrors) => ({
@@ -58,7 +61,7 @@ const AddProductForm = ({
             [field]: "",
         }));
     };
-    
+
     const validateForm = () => {
         const newErrors: { [key in keyof ItemFormData]?: string } = {};
         if (!productData.name.trim()) newErrors.name = "Product name is required.";
@@ -69,18 +72,18 @@ const AddProductForm = ({
         if (!productData.selectUnit.trim() || productData.selectUnit.trim() === "Unit") newErrors.selectUnit = "Please select a unit.";
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; 
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) return;
-        onSubmit(productData); 
+        onSubmit(productData);
     };
 
     return (
-        
-        <form onSubmit={handleFormSubmit}  className="flex flex-col gap-3.5">
+
+        <form onSubmit={handleFormSubmit} className="flex flex-col gap-3.5">
             <InputField
                 label="Product Name"
                 required
@@ -88,6 +91,7 @@ const AddProductForm = ({
                 onChange={(value) => handleInputChange("name", value)}
                 placeholder={"Enter product name"}
                 error={errors.name}
+                disabled={isAdding}
             />
             <InputField
                 label="Note"
@@ -97,19 +101,22 @@ const AddProductForm = ({
                 onChange={(value) => handleInputChange("note", value)}
                 placeholder={"Enter note"}
                 error={errors.note}
+                disabled={isAdding}
             />
             <div className="flex gap-6">
                 <QuantityInput
                     required
                     value={productData.quantity}
-                    onChange={(value) => handleInputChange("quantity", value)} 
+                    onChange={(value) => handleInputChange("quantity", value)}
                     error={errors.quantity}
+                    disabled={isAdding}
                 />
 
                 <UnitSelector
                     value={productData.selectUnit}
-                    onChange={(value) => handleInputChange("selectUnit", value)} 
+                    onChange={(value) => handleInputChange("selectUnit", value)}
                     error={errors.selectUnit}
+                    disabled={isAdding}
                 />
             </div>
             <PriceInput
@@ -119,24 +126,34 @@ const AddProductForm = ({
                 unit={productData.selectUnit}
                 unitSize={productData.unitSize}
                 quantity={productData.quantity}
-                unitChange={(value)  => handleInputChange("unitSize", value)}
+                unitChange={(value) => handleInputChange("unitSize", value)}
                 onChange={(value) => handleInputChange("unitPrice", value)}
                 error={{
                     unitPrice: errors.unitPrice,
                     unitSize: errors.unitSize,
                 }}
+                disabled={isAdding}
             />
-            <PriceInput 
-                label="Total" 
-                value={productData.total} 
-                readonly 
+            <PriceInput
+                label="Total"
+                value={productData.total}
+                readonly
+                disabled={isAdding}
             />
-            
+
             <div className="flex justify-end gap-4">
-                <Button 
+                <Button
                     type="submit"
+                    disabled={isAdding}
                 >
-                        Add Product
+                    {isAdding ? (
+                        <div className="flex items-center justify-center">
+                            <ClipLoader color="#ffffff" size={20} className="mr-2" />
+                            Adding...
+                        </div>
+                    ) : (
+                        "Add Product"
+                    )}
                 </Button>
             </div>
         </form>
