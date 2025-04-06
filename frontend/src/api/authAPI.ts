@@ -1,12 +1,12 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const checkPin = async () => {
-  const res = await fetch(`${API_URL}/api/auth/check-pin`);
+  const res = await fetch(`${API_URL}/auth/check-pin`);
   return res.json();
 };
 
 export const setupPin = async (pin: string) => {
-  const res = await fetch(`${API_URL}/api/auth/setup-pin`, {
+  const res = await fetch(`${API_URL}/auth/setup-pin`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ pin }),
@@ -17,7 +17,7 @@ export const setupPin = async (pin: string) => {
 export const login = async (
   pin: string
 ): Promise<{ token?: string; message?: string }> => {
-  const res = await fetch(`${API_URL}/api/auth/login`, {
+  const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ pin }),
@@ -32,7 +32,7 @@ export const login = async (
 };
 
 export const changePin = async (oldPin: string, newPin: string) => {
-  const res = await fetch(`${API_URL}/api/auth/change-pin`, {
+  const res = await fetch(`${API_URL}/auth/change-pin`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
