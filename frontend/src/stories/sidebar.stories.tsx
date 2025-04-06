@@ -167,17 +167,14 @@ export const ConfirmLogout: Story = {
     await delay(1000);
     await userEvent.click(confirmButton);
 
-    // Wait for the modal to disappear
     await waitFor(() => {
       expect(screen.queryByText("Confirm Logout")).not.toBeInTheDocument();
     });
 
-    // Ensure redirection happens (in Storybook, MemoryRouter simulates this)
     await waitFor(() => {
       expect(screen.getByText("Login Page")).toBeInTheDocument();
     });
 
-    // Ensure Sidebar is not rendered
     await waitFor(() => {
       expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
     });

@@ -53,23 +53,28 @@ router.post(
     try {
       const { pin } = req.body;
 
+      if (pin.trim() === "") {
+        res.status(400).json({ message: "PIN cannot be empty" });
+        return;
+      }
+
       if (!pin || typeof pin !== "string") {
-        res.status(400).json({ message: "Pin must be a string" });
+        res.status(400).json({ message: "PIN must be a string" });
         return;
       }
 
       if (pin.length !== MAX_PIN_LENGTH) {
-        res.status(400).json({ message: "Pin must be 6 digits" });
+        res.status(400).json({ message: "PIN must be 6 digits" });
         return;
       }
 
       if (!/^\d+$/.test(pin)) {
-        res.status(400).json({ message: "Pin must contain only numbers" });
+        res.status(400).json({ message: "PIN must contain only numbers" });
         return;
       }
 
       if (await isPinSet()) {
-        res.status(400).json({ message: "Pin is already set" });
+        res.status(400).json({ message: "PIN is already set" });
         return;
       }
 
@@ -88,18 +93,23 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
   try {
     const { pin } = req.body;
 
+    if (pin.trim() === "") {
+      res.status(400).json({ message: "PIN cannot be empty" });
+      return;
+    }
+
     if (!pin || typeof pin !== "string") {
-      res.status(400).json({ message: "Pin must be a string" });
+      res.status(400).json({ message: "PIN must be a string" });
       return;
     }
 
     if (pin.length !== MAX_PIN_LENGTH) {
-      res.status(400).json({ message: "Pin must be 6 digits" });
+      res.status(400).json({ message: "PIN must be 6 digits" });
       return;
     }
 
     if (!/^\d+$/.test(pin)) {
-      res.status(400).json({ message: "Pin must contain only numbers" });
+      res.status(400).json({ message: "PIN must contain only numbers" });
       return;
     }
 
@@ -143,7 +153,7 @@ router.put(
         typeof oldPin !== "string" ||
         typeof newPin !== "string"
       ) {
-        res.status(400).json({ message: "Both pins must be strings" });
+        res.status(400).json({ message: "Both PIN must be strings" });
         return;
       }
 
@@ -156,7 +166,7 @@ router.put(
 
       if (oldPin === newPin) {
         res.status(400).json({
-          message: "New pin must be different from old pin",
+          message: "New PIN must be different from old PIN",
         });
         return;
       }
@@ -173,7 +183,7 @@ router.put(
       }
       const isMatch = await bcrypt.compare(oldPin, user.pin);
       if (!isMatch) {
-        res.status(401).json({ message: "Incorrect old pin" });
+        res.status(401).json({ message: "Incorrect old PIN" });
         return;
       }
 
@@ -182,7 +192,7 @@ router.put(
         where: { id: user.id },
         data: { pin: hashedNewPin },
       });
-      res.json({ message: "Pin updated successfully" });
+      res.json({ message: "PIN updated successfully" });
       return;
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
