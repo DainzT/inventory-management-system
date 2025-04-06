@@ -65,7 +65,7 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         });
 
         if (existingItem) {
-            return res.status(409).json({
+            res.status(409).json({
                 success: false,
                 message: 'Item already exists in inventory',
                 error: 'ITEM_EXISTS',
@@ -76,6 +76,7 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
                     quantity: existingItem.quantity
                 }
             });
+            return;
         }
 
         const newItem = await prisma.inventoryItem.create({
