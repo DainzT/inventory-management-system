@@ -67,7 +67,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
   it("should return 400 if no PIN is provided", async () => {
     const response = await request(app).post("/api/auth/login").send({});
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty("message", "Pin must be a string");
+    expect(response.body).toHaveProperty("message", "PIN cannot be empty");
   });
 
   it("should return 400 if PIN is too short", async () => {
@@ -76,7 +76,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
       .send({ pin: "12" });
 
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty("message", "Pin must be 6 digits");
+    expect(response.body).toHaveProperty("message", "PIN must be 6 digits");
   });
 
   it("should return 400 if PIN contains invalid characters", async () => {
@@ -87,7 +87,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty(
       "message",
-      "Pin must contain only numbers"
+      "PIN must contain only numbers"
     );
   });
 
@@ -108,7 +108,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
       .send("invalid body");
 
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty("message", "Pin must be a string");
+    expect(response.body).toHaveProperty("message", "PIN cannot be empty");
   });
 
   it("should return 400 if PIN is null", async () => {
@@ -117,6 +117,6 @@ describe("POST /api/auth/login (Negative Cases)", () => {
       .send({ pin: null });
 
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty("message", "Pin must be a string");
+    expect(response.body).toHaveProperty("message", "PIN cannot be empty");
   });
 });
