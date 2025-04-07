@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
-import { OrderItemProps } from "@/types/fleetorders";
+import { OrderItemProps } from "@/types/fleet-order";
 import UnsavedChangesModal from "../DiscardChangesModal";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 
@@ -43,7 +43,7 @@ const units = [
   "sack",
   "box",
   "liter",
-  "pack"
+  "pack",
 ];
 
 export const ModifyModal: React.FC<ModifyModalProps> = ({
@@ -60,18 +60,19 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const [fleet, setFleet] = useState(order.fleet);
   const [boat, setBoat] = useState(order.boat);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] = useState(false);
+  const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] =
+    useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   const currentStock = 8;
 
   useEffect(() => {
-    const hasChanged = 
-      quantity !== order.quantity || 
-      unit !== order.selectUnit || 
-      fleet !== order.fleet || 
+    const hasChanged =
+      quantity !== order.quantity ||
+      unit !== order.selectUnit ||
+      fleet !== order.fleet ||
       boat !== order.boat;
-    
+
     setHasChanges(hasChanged);
   }, [quantity, unit, fleet, boat, order]);
 
@@ -136,7 +137,6 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                 <Trash2 size={16} />
                 <span>Remove Item</span>
               </button>
-
             </div>
 
             <div>
@@ -146,7 +146,6 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               <p className="text-gray-600">{order.note}</p>
               <p className="text-gray-800">₱{order.unitPrice.toFixed(2)}</p>
             </div>
-
 
             <div>
               <label className="block font-medium mb-2">Quantity</label>
@@ -158,10 +157,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                   >
                     <Minus size={20} />
                   </button>
-                  <div 
-                      data-testid="quantity-display"
-                      className="bg-gray-100 w-12 h-10 flex items-center justify-center"
-                    > 
+                  <div
+                    data-testid="quantity-display"
+                    className="bg-gray-100 w-12 h-10 flex items-center justify-center"
+                  >
                     {quantity}
                   </div>
                   <button
@@ -222,14 +221,11 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Remaining Stock</span>
-                  <span 
-                    data-testid="remaining-stock"
-                    className="font-medium"
-                  >
-                    {remainingStock}
-                  </span>
-                </div>
+                <span className="text-gray-600">Remaining Stock</span>
+                <span data-testid="remaining-stock" className="font-medium">
+                  {remainingStock}
+                </span>
+              </div>
             </div>
             <div className="flex gap-3 mt-2">
               <button
@@ -259,7 +255,6 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           setIsDeleteModalOpen(false);
           onRemove();
           onClose();
-          
         }}
         title="Remove Item"
         message="Are you sure you want to remove this item from your order? This action cannot be undone."

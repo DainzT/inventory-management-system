@@ -57,3 +57,5 @@ model Boat {
   boat_name    String
   AssignedItem AssignedItem[]
 }
+
+

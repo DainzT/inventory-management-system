@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
-import { OrderItemProps } from "@/types/fleetorders";
+import { OrderItemProps } from "@/types/fleet-order";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
 
 const fleetBoats = {
@@ -32,7 +32,7 @@ const Orders: React.FC = () => {
 
   const orders: OrderItemProps[] = [
     {
-      id:1,
+      id: 1,
       productName: "Fishing Reel",
       note: "Spinning reel, corrosion-resistant",
       quantity: 1,
@@ -45,7 +45,7 @@ const Orders: React.FC = () => {
       dateOut: "Jan 15, 2024",
     },
     {
-      id:2,
+      id: 2,
       productName: "Nylon Fishing Line",
       note: "500m, high-tensile strength",
       quantity: 25,
@@ -58,7 +58,7 @@ const Orders: React.FC = () => {
       dateOut: "Jan 20, 2024",
     },
     {
-      id:3,
+      id: 3,
       productName: "Hook",
       note: "small size",
       quantity: 10,
@@ -71,27 +71,19 @@ const Orders: React.FC = () => {
       dateOut: "Jan 30, 2024",
     },
     {
-      id:4,
+      id: 4,
       productName: "Rice",
       note: "Jasmine rice",
       quantity: 1,
-      unitPrice: 130.00,
+      unitPrice: 130.0,
       selectUnit: "kilo",
       unitSize: 1,
-      total: 130.00,
+      total: 130.0,
       fleet: "F/B DONYA DONYA 2X",
       boat: "F/B DC-9",
       dateOut: "Jan 15, 2024",
     },
   ];
-
-  // const handleModify = (id: number) => {
-  //   const order = orders.find((order) => order.id === id);
-  //   if (order) {
-  //     setSelectedOrder(order);
-  //     setIsModalOpen(true);
-  //   }
-  // };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -189,7 +181,7 @@ const Orders: React.FC = () => {
           />
         </div>
 
-        <div className = "-mt-5 scale-97">
+        <div className="-mt-5 scale-97">
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}

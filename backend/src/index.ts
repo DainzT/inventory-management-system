@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/errorMiddleware.js";
 // Routes
 import authRoutes from "./routes/authRouter.js";
 import inventoryItemRoutes from "./routes/inventoryItemRouter.js"
+import assignedItemRoutes from "./routes/assignedItemRouter";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/inventory-item", inventoryItemRoutes)
+app.use("/api/assigned-item", assignedItemRoutes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

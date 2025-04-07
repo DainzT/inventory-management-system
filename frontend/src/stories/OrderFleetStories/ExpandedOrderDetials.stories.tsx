@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ExpandedOrderDetails } from "../../components/OrderFleetDisplay/ExpandedOrderDetails";
-import { OrderItemProps } from "@/types/fleetorders";
+import { OrderItemProps } from "@/types/fleet-order";
 
 const mockOrder: OrderItemProps = {
   id: 1,
