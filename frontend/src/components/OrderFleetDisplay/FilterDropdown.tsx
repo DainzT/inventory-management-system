@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { FilterDropdownProps } from "@/types/fleetorders";
-
+import { FilterDropdownProps } from "@/types/filter-dropdown";
 
 export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   label,
@@ -9,19 +8,19 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   onSelect,
 }) => {
   const [selectedOption, setSelectedOption] = useState(label);
-  const [isOpen, setIsOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSelect = (value: string) => {
     setSelectedOption(value);
     onSelect(value);
-    setIsOpen(false); 
+    setIsOpen(false);
   };
 
   return (
     <div className="relative">
       <div
         className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-4 px-5 pr-8 rounded leading-tight focus:outline-none focus:border-teal-500 cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)} 
+        onClick={() => setIsOpen(!isOpen)}
       >
         {selectedOption}
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -44,7 +43,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
             <li
               key={option}
               className="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-              onClick={() => handleSelect(option)} 
+              onClick={() => handleSelect(option)}
               role="option"
               aria-selected={selectedOption === option}
             >

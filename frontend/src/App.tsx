@@ -29,14 +29,14 @@ const App: React.FC = () => {
                     <Header />
                     <div className="flex flex-1 overflow-hidden">
                       <Sidebar />
-                      <div className="flex-1 p-4 overflow-y-hidden">
+                      <div className="flex-1 p-4 overflow-hidden">
                         <Routes>
                           <Route path="/inventory" element={<Inventory />} />
                           <Route
                             path="/orders"
                             element={
                               <div className="h-full overflow-y-auto">
-                                <Orders/>
+                                <Orders />
                               </div>
                             }
                           />

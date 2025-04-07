@@ -1,5 +1,5 @@
 import React from "react";
-import { OrderItemProps } from "@/types/fleetorders";
+import { OrderItemProps } from "@/types/fleet-order";
 
 interface ExpandedOrderDetailsProps {
   order: OrderItemProps;

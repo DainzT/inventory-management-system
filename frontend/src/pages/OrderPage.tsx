@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
-import { OrderItemProps } from "@/types/fleetorders";
+import { OrderItemProps } from "@/types/fleet-order";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
+import { fetchAssignedItems } from "@/api/orderAPI";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [
@@ -22,6 +23,8 @@ const fleetBoats = {
 };
 
 const Orders: React.FC = () => {
+  const [orders, setOrders] = useState<OrderItemProps[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<OrderItemProps[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
@@ -30,60 +33,52 @@ const Orders: React.FC = () => {
     null
   );
 
-  const orders: OrderItemProps[] = [
-    {
-      id:1,
-      productName: "Fishing Reel",
-      note: "Spinning reel, corrosion-resistant",
-      quantity: 1,
-      unitPrice: 480.0,
-      selectUnit: "piece",
-      unitSize: 2,
-      total: 480.0,
-      fleet: "F/B DONYA DONYA 2X",
-      boat: "F/B Lady Rachelle",
-      dateOut: "Jan 15, 2024",
-    },
-    {
-      id:2,
-      productName: "Nylon Fishing Line",
-      note: "500m, high-tensile strength",
-      quantity: 25,
-      unitPrice: 150.5,
-      selectUnit: "roll",
-      unitSize: 1,
-      total: 3762.5,
-      fleet: "F/B DONYA DONYA 2X",
-      boat: "F/B Mariella",
-      dateOut: "Jan 20, 2024",
-    },
-    {
-      id:3,
-      productName: "Hook",
-      note: "small size",
-      quantity: 10,
-      unitPrice: 12.5,
-      selectUnit: "pack",
-      unitSize: 10,
-      total: 125,
-      fleet: "F/B Doña Librada",
-      boat: "F/B Mariene",
-      dateOut: "Jan 30, 2024",
-    },
-    {
-      id:4,
-      productName: "Rice",
-      note: "Jasmine rice",
-      quantity: 1,
-      unitPrice: 130.00,
-      selectUnit: "kilo",
-      unitSize: 1,
-      total: 130.00,
-      fleet: "F/B DONYA DONYA 2X",
-      boat: "F/B DC-9",
-      dateOut: "Jan 15, 2024",
-    },
-  ];
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetchAssignedItems();
+        console.log("Fetched orders:", response);
+        setOrders(response);
+        setFilteredOrders(response); // Initialize filtered orders with all orders
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    if (orders.length >= 0) {
+      const filteredOrders = orders?.filter((order) => {
+        const matchesSearch = [
+          order.item.name.toLowerCase(),
+          order.item.note.toLowerCase(),
+          order.quantity.toString(),
+          order.item.unitPrice.toString(),
+          order.item.selectUnit.toLowerCase(),
+          order.item.unitSize.toString(),
+          order.total?.toString() || "",
+          order.boat.boat_name.toLowerCase(),
+          order.outDate as string,
+        ].some((field) => field.includes(searchQuery.toLowerCase()));
+
+        const matchesFleet =
+          activeFleet === "All Fleets" ||
+          fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(
+            order.boat.boat_name
+          ) ||
+          order.boat.boat_name === activeFleet;
+
+        const matchesBoat =
+          selectedBoat === "All Boats" || order.boat.boat_name === selectedBoat;
+
+        return matchesSearch && matchesFleet && matchesBoat;
+      });
+
+      setFilteredOrders(filteredOrders);
+    }
+  }, [orders, searchQuery, activeFleet, selectedBoat]);
 
   const handleModify = (id: number) => {
     const order = orders.find((order) => order.id === id);
@@ -135,32 +130,6 @@ const Orders: React.FC = () => {
     }
   };
 
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch = [
-      order.productName.toLowerCase(),
-      order.note.toLowerCase(),
-      order.quantity.toString(),
-      order.unitPrice.toString(),
-      order.selectUnit.toLowerCase(),
-      order.unitSize.toString(),
-      order.total?.toString() || "",
-      order.boat.toLowerCase(),
-      order.dateOut.toLowerCase(),
-    ].some((field) => field.includes(searchQuery.toLowerCase()));
-
-    const matchesFleet =
-      activeFleet === "All Fleets" ||
-      fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(
-        order.boat
-      ) ||
-      order.boat === activeFleet;
-
-    const matchesBoat =
-      selectedBoat === "All Boats" || order.boat === selectedBoat;
-
-    return matchesSearch && matchesFleet && matchesBoat;
-  });
-
   return (
     <div>
       <main className="flex-1">
@@ -189,7 +158,7 @@ const Orders: React.FC = () => {
           />
         </div>
 
-        <div className = "-mt-5 scale-97">
+        <div className="-mt-5 scale-97">
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}

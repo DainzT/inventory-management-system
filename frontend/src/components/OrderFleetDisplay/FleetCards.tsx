@@ -1,5 +1,5 @@
 import React from "react";
-import { FleetCardProps, FleetListProps } from "@/types/fleetorders";
+import { FleetCardProps, FleetListProps } from "@/types/fleet-card";
 
 // Combined component
 export const FleetCard: React.FC<FleetCardProps> = ({
