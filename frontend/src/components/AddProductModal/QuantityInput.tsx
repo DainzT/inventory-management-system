@@ -4,6 +4,7 @@ interface QuantityInputProps {
   onChange: (value: number | "") => void;
   required?: boolean;
   error?: string;
+  disabled?: boolean;
 }
 
 export const QuantityInput = ({
@@ -11,6 +12,7 @@ export const QuantityInput = ({
   onChange,
   required,
   error,
+  disabled = false,
 }: QuantityInputProps) => {
   const handleIncrement = () => {
     onChange((value || 0) + 1);
@@ -38,9 +40,9 @@ export const QuantityInput = ({
     const factor = Math.pow(10, precision);
     return Math.round(num * factor) / factor;
   }
-  
+
   return (
-     <div>
+    <div>
       <label className="text-[16px] font-bold inter-font">
         <span>Quantity </span>
         {required && <span className="text-[#FF5757]">*</span>}
@@ -50,6 +52,7 @@ export const QuantityInput = ({
           type="button"
           onClick={handleDecrement}
           className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
+          disabled={disabled}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
@@ -69,11 +72,13 @@ export const QuantityInput = ({
           step="0.01"
           placeholder="0.00"
           className={`w-[70px] h-[32px] text-center rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1] inter-font`}
+          disabled={disabled}
         />
         <button
           type="button"
           onClick={handleIncrement}
           className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
+          disabled={disabled}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path

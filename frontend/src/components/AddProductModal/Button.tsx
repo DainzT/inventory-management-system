@@ -1,9 +1,10 @@
 interface ButtonProps {
-  variant?: "primary" | "secondary" ;
+  variant?: "primary" | "secondary";
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit";
   className?: string;
+  disabled?: boolean;
 }
 
 export const Button = ({
@@ -12,6 +13,7 @@ export const Button = ({
   onClick,
   className,
   type = "button",
+  disabled = false,
 }: ButtonProps) => {
   const baseStyles = "px-6 py-2 rounded-[5px]";
   const variantStyles = {
@@ -22,7 +24,8 @@ export const Button = ({
     <button
       type={type}
       onClick={onClick}
-      className={`inter-font ${baseStyles} ${variantStyles[variant]} ${className}`}
+      className={`inter-font cursor-pointer ${baseStyles} ${variantStyles[variant]} ${className}`}
+      disabled={disabled}
     >
       {children}
     </button>

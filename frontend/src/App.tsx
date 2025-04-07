@@ -32,7 +32,14 @@ const App: React.FC = () => {
                       <div className="flex-1 p-4 overflow-y-hidden">
                         <Routes>
                           <Route path="/inventory" element={<Inventory />} />
-                          <Route path="/orders" element={<Orders />} />
+                          <Route
+                            path="/orders"
+                            element={
+                              <div className="h-full overflow-y-auto">
+                                <Orders/>
+                              </div>
+                            }
+                          />
                           <Route
                             path="/summary/:fleetName"
                             element={
