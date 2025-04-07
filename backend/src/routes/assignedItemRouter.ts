@@ -10,8 +10,7 @@ const router: Router = express.Router();
 router.use(authenticateToken);
 
 
-// Retrieve all orders
-router.get("/orders", async (req: Request, res: Response) => {
+router.get("/assign-item", async (req: Request, res: Response) => {
     try {
         const orders = await prisma.assignedItem.findMany({
             include: {
@@ -20,7 +19,6 @@ router.get("/orders", async (req: Request, res: Response) => {
                 boat: true,
             },
         });
-
         res.status(200).json({
             success: true,
             data: orders,

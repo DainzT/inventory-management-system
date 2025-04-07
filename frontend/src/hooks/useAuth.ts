@@ -39,7 +39,6 @@ export const useAuth = () => {
         setIsPinSet(data.isPinSet ?? false);
       } catch (err) {
         const error = err as ErrorWithMessage;
-        console.error("Error checking PIN status:", error);
         setError(error.message || "Failed to check PIN status.");
       } finally {
         setLoading(false);

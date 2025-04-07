@@ -4,12 +4,14 @@ interface UnitSelectorProps {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  disabled?: boolean;
 }
 
 export const UnitSelector = ({
   value,
   onChange,
   error,
+  disabled = false,
 }: UnitSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [customUnit, setCustomUnit] = useState("");
@@ -71,11 +73,11 @@ export const UnitSelector = ({
         <span className="text-[#FF5757]">*</span>
       </label>
       <div
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={!disabled ? () => setIsOpen(!isOpen) : undefined}
         className={`mt-2 w-[140px] h-[32px] px-4 flex items-center justify-between rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1] cursor-pointer`}
       >
         <span className={value ? "inter-font" : "text-[#999] inter-font"}>{value || "Unit"}</span>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">  
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M12 15L7 10H17L12 15Z" fill="#1D1B20" />
         </svg>
       </div>

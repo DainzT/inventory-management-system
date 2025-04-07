@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 interface PinInputProps {
@@ -7,10 +7,10 @@ interface PinInputProps {
 }
 
 function PinInput({ pin, setPin }: PinInputProps) {
-  const [showPin, setShowPin] = React.useState(false);
+  const [showPin, setShowPin] = useState(false);
 
   return (
-    <div className="w-96 h-12 bg-foreground rounded-xl flex items-center px-[19px] mb-[24px]">
+    <div className="w-96 h-12 bg-background rounded-xl flex items-center px-[19px] mb-[24px]">
       <label htmlFor="pin-input" className="text-2xl font-bold text-black">
         PIN
       </label>

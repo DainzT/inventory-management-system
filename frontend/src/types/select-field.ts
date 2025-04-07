@@ -8,3 +8,11 @@ export interface SelectFieldProps {
   disabled?: boolean;
   error: string;
 }
+
+export interface SimpleInputProps {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
+}

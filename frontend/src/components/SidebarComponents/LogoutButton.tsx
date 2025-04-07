@@ -1,9 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Portal from "../../utils/Portal";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 
-const LogoutButton = () => {
+const LogoutButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -60,6 +60,7 @@ const LogoutButton = () => {
 
               <div className="flex justify-end gap-2">
                 <button
+                  role="button"
                   onClick={() => setIsOpen(false)}
                   className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
                 >

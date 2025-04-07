@@ -12,15 +12,15 @@ interface EditProductFormProps {
     onSubmit: (data: InventoryItem) => void;
     onDelete: (data: InventoryItem) => void
     onFormChange: (hasChanges: boolean) => void;
-  }
+}
 
-const EditProductForm = ({ 
+const EditProductForm = ({
     initialData,
     onSubmit,
     onDelete,
     onFormChange,
 }: EditProductFormProps) => {
-     const [productData, setProductData] = useState<InventoryItem>({
+    const [productData, setProductData] = useState<InventoryItem>({
         id: initialData.id,
         name: initialData?.name || "",
         note: initialData?.note || "",
@@ -33,26 +33,28 @@ const EditProductForm = ({
         lastUpdated: new Date(),
     });
     const [errors, setErrors] = useState<{ [key in keyof InventoryItem]?: string }>({});
-    
+
     useEffect(() => {
         setProductData((current) => ({
             ...current,
             total: Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)),
         }));
-    }, [productData.quantity, productData.unitPrice,  productData.unitSize]);
-    
-   useEffect(() => {
+    }, [productData.quantity, productData.unitPrice, productData.unitSize]);
+
+    useEffect(() => {
         const changed = Object.keys(productData).some(key => {
-            if (key === 'lastUpdated') return false;
-            return productData[key as keyof InventoryItem] !== initialData[key as keyof InventoryItem];
+            if (key === 'lastUpdated'  || key === 'total') return false;
+            const currentValue = productData[key as keyof InventoryItem];
+            const initialValue = initialData[key as keyof InventoryItem];
+            return currentValue != initialValue
         });
         onFormChange(changed);
     }, [productData, initialData, onFormChange]);
 
     const handleInputChange = (field: keyof InventoryItem, value: string | number) => {
         setProductData((prevData) => ({
-          ...prevData,
-          [field]: value,
+            ...prevData,
+            [field]: value,
         }));
 
         setErrors((prevErrors) => ({
@@ -60,7 +62,7 @@ const EditProductForm = ({
             [field]: "",
         }));
     };
-    
+
     const validateForm = () => {
         const newErrors: { [key in keyof InventoryItem]?: string } = {};
         if (!productData.name.trim()) newErrors.name = "Product name is required.";
@@ -71,18 +73,18 @@ const EditProductForm = ({
         if (!productData.selectUnit.trim() || productData.selectUnit.trim() === "Unit") newErrors.selectUnit = "Please select a unit.";
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; 
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) return;
-        onSubmit(productData); 
+        onSubmit(productData);
     };
 
     return (
-        
-        <form onSubmit={handleFormSubmit}  className="flex flex-col gap-3.5">
+
+        <form onSubmit={handleFormSubmit} className="flex flex-col gap-3.5">
             <InputField
                 label="Product Name"
                 required
@@ -104,13 +106,13 @@ const EditProductForm = ({
                 <QuantityInput
                     required
                     value={productData.quantity}
-                    onChange={(value) => handleInputChange("quantity", value)} 
+                    onChange={(value) => handleInputChange("quantity", value)}
                     error={errors.quantity}
                 />
 
                 <UnitSelector
                     value={productData.selectUnit}
-                    onChange={(value) => handleInputChange("selectUnit", value)} 
+                    onChange={(value) => handleInputChange("selectUnit", value)}
                     error={errors.selectUnit}
                 />
             </div>
@@ -121,20 +123,20 @@ const EditProductForm = ({
                 unit={productData.selectUnit}
                 unitSize={productData.unitSize}
                 quantity={productData.quantity}
-                unitChange={(value)  => handleInputChange("unitSize", value)}
+                unitChange={(value) => handleInputChange("unitSize", value)}
                 onChange={(value) => handleInputChange("unitPrice", value)}
                 error={{
                     unitPrice: errors.unitPrice,
                     unitSize: errors.unitSize,
                 }}
             />
-            <PriceInput 
-                label="Total" 
-                value={productData.total} 
-                readonly 
+            <PriceInput
+                label="Total"
+                value={productData.total}
+                readonly
             />
-            
-           <div className="flex gap-20">
+
+            <div className="flex gap-20">
                 <DeleteButton
                     onClick={() => onDelete(initialData)}
                     className="text-s"
@@ -142,7 +144,7 @@ const EditProductForm = ({
                     Delete
                 </DeleteButton>
                 <div className="flex item-center justify-end ">
-                    <Button 
+                    <Button
                         type="submit"
                         className="text-s h-[3rem]"
                     >

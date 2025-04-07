@@ -6,6 +6,7 @@ interface InputFieldProps {
   onChange: (value: string) => void;
   placeholder?: string;
   error?: string;
+  disabled?: boolean;
 }
 
 export const InputField = ({
@@ -16,6 +17,7 @@ export const InputField = ({
   onChange,
   placeholder,
   error,
+  disabled = false,
 }: InputFieldProps) => {
   const inputStyles =
     `w-full mt-1 px-4 rounded-[8px] border-[1px] border-[#0FE3FF] bg-[#F4F1F1] inter-font  
@@ -24,8 +26,8 @@ export const InputField = ({
   return (
     <div>
       <label className="text-base font-bold inter-font">
-          <span>{label}</span>
-          {required && <span className="text-[#FF5757]">*</span>}
+        <span>{label}</span>
+        {required && <span className="text-[#FF5757]">*</span>}
       </label>
       {type === "textarea" ? (
         <>
@@ -34,9 +36,10 @@ export const InputField = ({
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             className={`${inputStyles} h-[76px] p-4`}
-            style={{ resize: "none"}}
+            style={{ resize: "none" }}
+            disabled={disabled}
           />
-            {error && <p className="absolute text-red-600 text-sm">{error}</p>}
+          {error && <p className="absolute text-red-600 text-sm">{error}</p>}
         </>
       ) : (
         <>
@@ -46,6 +49,7 @@ export const InputField = ({
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             className={`${inputStyles} h-[40px]`}
+            disabled={disabled}
           />
           {error && <p className="absolute text-red-600 text-sm">{error}</p>}
         </>

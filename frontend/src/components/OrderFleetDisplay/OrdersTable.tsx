@@ -25,12 +25,13 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 
   const sortedOrders = [...orders].sort(
-    (a, b) => new Date(a.dateOut).getTime() - new Date(b.dateOut).getTime()
+    (a, b) => new Date(a.outDate).getTime() - new Date(b.outDate).getTime()
   );
 
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
+  
 
   const getFilterOptions = () => {
     switch (activeFleet) {
@@ -97,26 +98,26 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       </div>
 
       <div className="p-5">
-        {sortedOrders.map((order, index) => {
+        {sortedOrders?.map((order, index) => {
           const isSameDateAsPrevious =
-            index > 0 && order.dateOut === sortedOrders[index - 1].dateOut;
+            index > 0 && order.outDate === sortedOrders[index - 1].outDate;
 
           return (
             <React.Fragment key={order.id}>
               {/* used React.Fragment group the row and expanded content */}
               <div className="grid items-center py-4 grid-cols-[170px_190px_280px_115px_140px_135px_110px] bg-white">
                 <div className="text-lg text-gray-600">
-                  {!isSameDateAsPrevious && order.dateOut}
+                  {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
                 </div>
                 <div className="text-lg font-bold text-gray-800">
-                  {order.productName}
+                  {order.item.name}
                 </div>
-                <div className="text-md text-gray-600">{order.note}</div>
+                <div className="text-md text-gray-600">{order.item.note}</div>
                 <div className="text-lg text-gray-800">{order.quantity}</div>
                 <div className="text-lg text-gray-800">
-                  ₱{order.unitPrice.toFixed(2)}
+                  ₱{order.item.unitPrice}
                 </div>
-                <div className="text-lg text-gray-600">{order.boat}</div>
+                <div className="text-lg text-gray-600">{order.boat.boat_name}</div>
 
                 <div className="flex items-center gap-2">
                   <button

@@ -1,13 +1,11 @@
+import { InventoryItem } from "./inventory-item";
+
 export interface OrderItem {
-  name: string;
-  note: string;
+  item_id: InventoryItem
   quantity: number | "";
-  unitPrice: number | "";
-  selectUnit: string;
-  unitSize: number | "";
   total: number | "";
-  fleet: string;
-  boat: string;
+  fleet_name: string;
+  boat_name: string;
   outDate?: Date;
   lastUpdated?: Date;
 }
