@@ -43,8 +43,9 @@ model AssignedItem {
   fleet_id    Int
   fleet       Fleet     @relation(fields: [fleet_id], references: [id])
   boat_id     Int
-  outDate     DateTime      @default(now())
-  lastUpdated DateTime?     @updatedAt
+  boat        Boat      @relation(fields: [boat_id], references: [id])
+  archived    Boolean   @default(false)
+  outDate     DateTime  @default(now())
   lastUpdated DateTime? @updatedAt
 }
 
