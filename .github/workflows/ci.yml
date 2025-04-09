@@ -34,3 +34,8 @@ jobs:
         run: |
           cd frontend
           npm test
+
+      - name: Run backend unit tests
+        run: |
+          cd backend
+          npm test

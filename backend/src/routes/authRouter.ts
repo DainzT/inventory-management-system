@@ -53,12 +53,12 @@ router.post(
     try {
       const { pin } = req.body;
 
-      if (pin.trim() === "") {
+      if (pin === undefined || pin === null || pin === "") {
         res.status(400).json({ message: "PIN cannot be empty" });
         return;
       }
 
-      if (!pin || typeof pin !== "string") {
+      if (typeof pin !== "string") {
         res.status(400).json({ message: "PIN must be a string" });
         return;
       }
@@ -93,12 +93,12 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
   try {
     const { pin } = req.body;
 
-    if (pin.trim() === "") {
+    if (pin === undefined || pin === null || pin === "") {
       res.status(400).json({ message: "PIN cannot be empty" });
       return;
     }
 
-    if (!pin || typeof pin !== "string") {
+    if (typeof pin !== "string") {
       res.status(400).json({ message: "PIN must be a string" });
       return;
     }
