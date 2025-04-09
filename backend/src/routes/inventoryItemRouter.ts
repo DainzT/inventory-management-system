@@ -112,9 +112,9 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
 
 router.post("/assign-item", async (req: Request, res: Response) => {
     try {
-        const { item_id, quantity, fleet_name, boat_name, total, outDate } = req.body;
+        const { item_id, note, name, quantity, unitPrice, selectUnit, unitSize, total, fleet_name, boat_name, outDate } = req.body;
 
-        if (!item_id || !quantity || !fleet_name || !boat_name || !outDate) {
+        if (!item_id || !note || !name || !unitPrice || !selectUnit || !unitSize || !fleet_name || !boat_name || !outDate) {
             res.status(400).json({ error: "Missing required fields" });
             return;
         }
@@ -124,9 +124,8 @@ router.post("/assign-item", async (req: Request, res: Response) => {
             return;
         }
         
-
-        if (!total || typeof total !== 'number' || total <= 0 || total != ((item_id.unitPrice * quantity) / item_id.unitSize)) {
-            res.status(400).json({ error: "Valid total (number > 0 and total == ((item_id.unitPrice * quantity) / item_id.unitSize) is required" });
+        if (!total || typeof total !== 'number' || total <= 0 || total != ((unitPrice * quantity) / unitSize)) {
+            res.status(400).json({ error: "Valid total (number > 0 and total == ((unitPrice * quantity) / unitSize) is required" });
             return;
         }
 
@@ -134,13 +133,13 @@ router.post("/assign-item", async (req: Request, res: Response) => {
             where: { id: item_id.id }
         });
 
-        if (quantity > item!.quantity) {
-            res.status(400).json(`Insufficient stock. Requested: ${quantity}, Available: ${item!.quantity}` );
+        if (!item) {
+            res.status(404).json({ error: "Item not found" });
             return;
         }
 
-        if (!item) {
-            res.status(404).json({ error: "Item not found" });
+        if (quantity > item!.quantity) {
+            res.status(400).json(`Insufficient stock. Requested: ${quantity}, Available: ${item!.quantity}` );
             return;
         }
 
@@ -169,7 +168,10 @@ router.post("/assign-item", async (req: Request, res: Response) => {
 
         const existingAssignment = await prisma.assignedItem.findFirst({
             where: {
-                item_id: item.id,
+                name: name,
+                unitPrice: unitPrice,
+                selectUnit: selectUnit, 
+                unitSize: unitSize,
                 boat_id: boat.id,
             }
         });
@@ -183,7 +185,6 @@ router.post("/assign-item", async (req: Request, res: Response) => {
                     lastUpdated: new Date(outDate),
                 },
                 include: {
-                    item: true,
                     fleet: true,
                     boat: true
                 }
@@ -213,16 +214,19 @@ router.post("/assign-item", async (req: Request, res: Response) => {
 
         const newAssignment = await prisma.assignedItem.create({
             data: {
-                item_id: item.id,
+                name: name,
+                note: note,
+                quantity: Number(quantity),
+                unitPrice: Number(unitPrice),
+                selectUnit: selectUnit,
+                unitSize: Number(unitSize),
+                total: Number(total),
                 fleet_id: fleet.id,
                 boat_id: boat.id,
-                quantity: Number(quantity),
-                total: Number(total),
-                processed: false,
+                archived: false,
                 outDate: new Date(outDate),
             },
             include: {
-                item: true,
                 fleet: true,
                 boat: true
             }

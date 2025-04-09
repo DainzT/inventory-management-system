@@ -116,7 +116,12 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
         total: updatedTotalPrice,
         lastUpdated: new Date()
       },
+      name: String(selectedItem?.name),
+      note: String(selectedItem?.note),
       quantity: Number(quantity),
+      unitPrice: Number(selectedItem?.unitPrice),
+      selectUnit: String(selectedItem?.selectUnit),
+      unitSize: Number(selectedItem?.unitSize),
       total: totalPrice,
       fleet_name: fleet,
       boat_name: boat,
