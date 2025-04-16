@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "NODE_ENV=production node dist/index.js",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
     "build": "tsc",
     "dev": "cross-env NODE_ENV=development nodemon --exec tsx src/index.ts",
     "test": "cross-env NODE_ENV=test dotenv -e .env.test -- jest",
@@ -14,7 +14,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
