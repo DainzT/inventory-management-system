@@ -84,6 +84,7 @@ const Inventory: React.FC = () => {
       setIsAddOpen(false);
     } catch (error) {
       console.error("Failed to add product:", error);
+      
       toast.update("adding-product", {
         render: error instanceof Error ? error.message : "Failed to add product. Please try again.",
         type: "error",
