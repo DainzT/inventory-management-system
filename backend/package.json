@@ -1,9 +1,9 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "start": "node dist/index.js",
     "build": "tsc",
     "dev": "cross-env NODE_ENV=development nodemon --exec tsx src/index.ts",
     "test": "cross-env NODE_ENV=test dotenv -e .env.test -- jest",
@@ -23,7 +23,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "cross-env": "^7.0.3",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
     "typescript": "^5.8.2"
   },
   "devDependencies": {
