@@ -35,7 +35,7 @@ export const fetchInventoryItems = async (
     const response = await apiClient.get<{
       success: boolean;
       data: InventoryItem[]
-    }>('/inventory-item/get-items');
+    }>('/api/inventory-item/get-items');
 
     if (!response.data.success || !Array.isArray(response.data.data)) {
       throw new Error("Invalid API response format");
@@ -58,7 +58,7 @@ export const addInventoryItem = async (
 ): Promise<InventoryItem> => {
   try {
 
-    const response = await apiClient.post('/inventory-item/add-item', item);
+    const response = await apiClient.post('/api/inventory-item/add-item', item);
     return response.data;
     
   } catch (error) {
@@ -72,7 +72,7 @@ export const outInventoryItem = async (
 ): Promise<OrderItem> => {
   try {
 
-    const response = await apiClient.post('/inventory-item/assign-item', item);
+    const response = await apiClient.post('/api/inventory-item/assign-item', item);
     return response.data;
 
   } catch (error) {
