@@ -5,12 +5,14 @@ interface DeleteButtonProps {
     children?: React.ReactNode; 
     onClick?: () => void; 
     className?: string;
+    disabled?: boolean;
   }
 
 export const DeleteButton = ({
     children,
     className,
-    onClick
+    onClick,
+    disabled = false,
 }: DeleteButtonProps) => {
     const [showConfirm, setShowConfirm] = useState(false);
     const handleConfirm = () => {
@@ -31,6 +33,7 @@ export const DeleteButton = ({
             hover:outline-[#CE303F] 
             ${className}
         `}
+        disabled={disabled}
       >
         <svg
             width="16"

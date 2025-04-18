@@ -2,25 +2,21 @@ import express, { Request, Response, Router } from "express";
 import dotenv from "dotenv";
 import prisma from "../lib/prisma";
 import authenticateToken from "../middleware/authMiddleware"
-import { validateAddInventoryItem } from "../middleware/inventoryItemMiddleware";
+import {
+    validateAddInventoryItem,
+    validateFetchInventoryItems,
+    validateAssignInventoryItem,
+    validateEditInventoryItem
+} from "../middleware/inventoryItemMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
 
 router.use(authenticateToken)
 
-router.get("/get-items", async (req: Request, res: Response) => {
+router.get("/get-items", validateFetchInventoryItems, async (req: Request, res: Response) => {
     try {
         const items = await prisma.inventoryItem.findMany();
-
-        if (!items || items.length === 0) {
-            res.status(404).json({
-                success: false,
-                message: "Inventory is empty",
-                error: "INVENTORY_EMPTY"
-            });
-            return;
-        }
 
         res.status(200).json({
             success: true,
@@ -33,7 +29,7 @@ router.get("/get-items", async (req: Request, res: Response) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch items from inventory',
-            error: process.env.NODE_ENV === 'development' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
         });
         return;
 
@@ -44,16 +40,6 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
     try {
 
         const { name, note, quantity, unitPrice, selectUnit, unitSize, total, dateCreated } = req.body;
-
-        if (!total || typeof total !== 'number' || total <= 0 || total != ((unitPrice * quantity) / unitSize)) {
-            res.status(400).json({ error: "Valid total (number > 0 and total == ((unitPrice * quantity) / unitSize) is required" });
-            return;
-        }
-
-        if (!dateCreated || isNaN(Date.parse(dateCreated))) {
-            res.status(400).json({ error: "Valid dateCreated (ISO 8601 format) is required" });
-            return;
-        }
 
         const existingItem = await prisma.inventoryItem.findFirst({
             where: {
@@ -103,45 +89,16 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         res.status(500).json({
             success: false,
             message: 'Failed to add item to inventory',
-            error: process.env.NODE_ENV === 'development' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
         });
         return;
 
     }
 })
 
-router.post("/assign-item", async (req: Request, res: Response) => {
+router.post("/assign-item", validateAssignInventoryItem, async (req: Request, res: Response) => {
     try {
         const { item_id, note, name, quantity, unitPrice, selectUnit, unitSize, total, fleet_name, boat_name, outDate } = req.body;
-
-        if (!item_id || !note || !name || !unitPrice || !selectUnit || !unitSize || !fleet_name || !boat_name || !outDate) {
-            res.status(400).json({ error: "Missing required fields" });
-            return;
-        }
-
-        if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
-            res.status(400).json({ error: "Valid quantity (number > 0) is required" });
-            return;
-        }
-        
-        if (!total || typeof total !== 'number' || total <= 0 || total != ((unitPrice * quantity) / unitSize)) {
-            res.status(400).json({ error: "Valid total (number > 0 and total == ((unitPrice * quantity) / unitSize) is required" });
-            return;
-        }
-
-        const item = await prisma.inventoryItem.findUnique({
-            where: { id: item_id.id }
-        });
-
-        if (!item) {
-            res.status(404).json({ error: "Item not found" });
-            return;
-        }
-
-        if (quantity > item!.quantity) {
-            res.status(400).json(`Insufficient stock. Requested: ${quantity}, Available: ${item!.quantity}` );
-            return;
-        }
 
         const fleet = await prisma.fleet.findFirst({
             where: {
@@ -170,7 +127,7 @@ router.post("/assign-item", async (req: Request, res: Response) => {
             where: {
                 name: name,
                 unitPrice: unitPrice,
-                selectUnit: selectUnit, 
+                selectUnit: selectUnit,
                 unitSize: unitSize,
                 boat_id: boat.id,
             }
@@ -257,7 +214,7 @@ router.post("/assign-item", async (req: Request, res: Response) => {
         res.status(500).json({
             success: false,
             message: 'Failed to assign item',
-            error: process.env.NODE_ENV === 'development' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
         });
         return;
 
@@ -266,7 +223,41 @@ router.post("/assign-item", async (req: Request, res: Response) => {
 
 // router.delete("/remove-item:id")
 
+router.put("/update-item/:id", validateEditInventoryItem, async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const updatedItem = req.body;
 
-// router.put("/update-item:id")
+        const item = await prisma.inventoryItem.update({
+            where: { id: Number(id) },
+            data: {
+                name: updatedItem.name,
+                note: updatedItem.note,
+                quantity: Number(updatedItem.quantity),
+                unitPrice: Number(updatedItem.unitPrice),
+                selectUnit: updatedItem.selectUnit,
+                unitSize: updatedItem.unitSize,
+                total: Number(updatedItem.total),
+                lastUpdated: new Date(updatedItem.lastUpdated),
+            },
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'Inventory item updated successfully.',
+            data: item,
+        });
+        return;
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to edit item',
+            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+        });
+        return;
+    }
+
+});
 
 export default router;

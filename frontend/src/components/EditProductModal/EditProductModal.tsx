@@ -9,6 +9,7 @@ interface EditProductModalProps {
     selectedItem: InventoryItem | null;
     onDeleteItem: (id: number) => void;
     onEditItem: (editItem: InventoryItem) => void;
+    isEditing: boolean;
 }
 
 const EditProductModal = ({
@@ -17,6 +18,7 @@ const EditProductModal = ({
     selectedItem,
     onEditItem,
     onDeleteItem,
+    isEditing,
 }: EditProductModalProps) => {
     const [showUnsavedModal, setShowUnsavedModal] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
@@ -44,6 +46,7 @@ const EditProductModal = ({
                         onClick={handleCloseAttempt}
                         className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
                         aria-label="Close dialog"
+                        disabled={isEditing}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path
@@ -58,16 +61,13 @@ const EditProductModal = ({
                 </header>
                 <div className="h-[1px] bg-[#E0D8D8] my-1" />
                 <EditProductForm
-                    onSubmit={(updatedItem) => {
-                        onEditItem(updatedItem);
-                        setIsOpen(false);
-                    }}
+                    onSubmit={onEditItem}
                     onDelete={(deleteItem) => {
                         onDeleteItem(deleteItem.id);
-                        setIsOpen(false);
                     }}
                     initialData={selectedItem}
                     onFormChange={setHasChanges}
+                    isEditing={isEditing}
                 />
             </article>
             <div

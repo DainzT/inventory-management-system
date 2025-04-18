@@ -9,7 +9,7 @@ import OutItemModal from "@/components/OutItemModal/OutItemModal";
 import { PageTitle } from "@/components/PageTitle";
 
 import { InventoryItem, ItemFormData, OrderItem } from "@/types";
-import { addInventoryItem, fetchInventoryItems, outInventoryItem } from "@/api/inventoryAPI";
+import { addInventoryItem, fetchInventoryItems, outInventoryItem, editInventoryItem } from "@/api/inventoryAPI";
 
 const Inventory: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -21,6 +21,7 @@ const Inventory: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isOuting, setIsOuting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]); // Stores the items in the inventory
 
@@ -84,7 +85,7 @@ const Inventory: React.FC = () => {
       setIsAddOpen(false);
     } catch (error) {
       console.error("Failed to add product:", error);
-      
+
       toast.update("adding-product", {
         render: error instanceof Error ? error.message : "Failed to add product. Please try again.",
         type: "error",
@@ -105,10 +106,10 @@ const Inventory: React.FC = () => {
     });
     try {
       setIsOuting(true);
-      await outInventoryItem(outItem)
+      const res = await outInventoryItem(outItem)
 
       toast.update("assigning-product", {
-        render: "Assigned product to orders",
+        render: res.message,
         type: "success",
         isLoading: false,
         autoClose: 3000,
@@ -120,6 +121,7 @@ const Inventory: React.FC = () => {
       setIsOutOpen(false);
     } catch (error) {
       console.error("Failed to assign product:", error);
+
       toast.update("assigning-product", {
         render: error instanceof Error ? error.message : "Failed to assign product. Please try again.",
         type: "error",
@@ -133,10 +135,41 @@ const Inventory: React.FC = () => {
     }
   };
 
-  const handleEditItem = (updatedItem: InventoryItem) => {
-    setInventoryItems((prevItems) =>
-      prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    );
+  const handleEditItem = async (updatedItem: InventoryItem) => {
+    toast.loading("Updating product...", {
+      position: "top-center",
+      toastId: "editing-product",
+    });
+
+    try {
+      setIsEditing(true);
+      const res = await editInventoryItem(updatedItem)
+
+      toast.update("editing-product", {
+        render: res.message,
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+        hideProgressBar: false,
+      });
+
+      const items = await fetchInventoryItems();
+      setInventoryItems(items);
+      setIsEditOpen(false);
+    } catch (error) {
+      console.error("Failed to Edit product:", error);
+
+      toast.update("editing-product", {
+        render: error instanceof Error ? error.message : "Failed to Edit product. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+        hideProgressBar: false,
+      });
+
+    } finally {
+      setIsEditing(false);
+    }
   };
 
   const handleDeleteItem = (id: number) => {
@@ -215,6 +248,7 @@ const Inventory: React.FC = () => {
         selectedItem={selectedItem}
         onEditItem={(item) => handleEditItem(item)}
         onDeleteItem={(id) => handleDeleteItem(id)}
+        isEditing={isEditing}
       />
     </div>
   );
