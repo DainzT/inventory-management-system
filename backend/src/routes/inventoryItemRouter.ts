@@ -6,7 +6,8 @@ import {
     validateAddInventoryItem,
     validateFetchInventoryItems,
     validateAssignInventoryItem,
-    validateEditInventoryItem
+    validateEditInventoryItem,
+    validateDeleteInventoryItem,
 } from "../middleware/inventoryItemMiddleware";
 
 dotenv.config();
@@ -221,7 +222,29 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
     }
 });
 
-// router.delete("/remove-item:id")
+router.delete("/remove-item/:id", validateDeleteInventoryItem, async (req: Request, res: Response) => {
+    try {
+        const {id} = req.params
+
+        const deletedItem = await prisma.inventoryItem.delete({
+            where: {id: Number(id)}
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Item deleted successfully",
+            data: deletedItem,
+        });
+        return;
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete item",
+            error:  process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+        });
+    }
+});
 
 router.put("/update-item/:id", validateEditInventoryItem, async (req: Request, res: Response) => {
     try {

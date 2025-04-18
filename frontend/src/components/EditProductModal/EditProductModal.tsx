@@ -10,6 +10,7 @@ interface EditProductModalProps {
     onDeleteItem: (id: number) => void;
     onEditItem: (editItem: InventoryItem) => void;
     isEditing: boolean;
+    isDeleting: boolean;
 }
 
 const EditProductModal = ({
@@ -19,6 +20,7 @@ const EditProductModal = ({
     onEditItem,
     onDeleteItem,
     isEditing,
+    isDeleting,
 }: EditProductModalProps) => {
     const [showUnsavedModal, setShowUnsavedModal] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
@@ -68,6 +70,7 @@ const EditProductModal = ({
                     initialData={selectedItem}
                     onFormChange={setHasChanges}
                     isEditing={isEditing}
+                    isDeleting={isDeleting}
                 />
             </article>
             <div

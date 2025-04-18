@@ -6,6 +6,7 @@ interface DeleteButtonProps {
     onClick?: () => void; 
     className?: string;
     disabled?: boolean;
+    isDeleting: boolean;
   }
 
 export const DeleteButton = ({
@@ -13,11 +14,11 @@ export const DeleteButton = ({
     className,
     onClick,
     disabled = false,
+    isDeleting = false,
 }: DeleteButtonProps) => {
     const [showConfirm, setShowConfirm] = useState(false);
     const handleConfirm = () => {
-      setShowConfirm(false); 
-      onClick?.(); 
+      onClick?.();
   };
 
   return (
@@ -56,7 +57,9 @@ export const DeleteButton = ({
       <DeleteConfirmationModal
         isOpen={showConfirm}
         onClose={() => setShowConfirm(false)}
-        onConfirm={handleConfirm} 
+        onConfirm={handleConfirm}
+        isDeleting={isDeleting}
+        disabled={isDeleting}
       />
     </>
   );

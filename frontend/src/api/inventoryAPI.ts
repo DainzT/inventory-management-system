@@ -1,36 +1,10 @@
-import { AxiosError } from "axios";
 import apiClient from "./apiClient";
+import { handleApiError } from "./handleAPIerror";
 import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 
 type InventoryResponse = {
   message: string;
 };
-
-const handleApiError = (error: unknown) => {
-  const axiosError = error as AxiosError<{ error?: string; message?: string }>;
-
-  if (axiosError.response) {
-    // Client Side Error or Server Side Error
-    // HTTP STATUS 400-499 (4xx: Client error),  HTTP STATUS 500-599 (5xx: Server error)
-    const errorMessage =
-      axiosError.response.data?.message ||
-      axiosError.response.data?.error ||
-      `Request failed with status ${axiosError.response.status}`;
-    console.error("API Error:", errorMessage);
-    throw new Error(errorMessage);
-
-  } else if (axiosError.request) {
-    // Server Side Error
-    // Request sent but server did not respond.
-    console.error("No response received from server");
-    throw new Error("No response received from server");
-
-  } else {
-    // The request was never sent due to incorrect setup (e.g., invalid URL, request aborted)
-    console.error("Request setup error:", axiosError.message);
-    throw new Error(`Request setup error: ${axiosError.message}`);
-  }
-}
 
 export const fetchInventoryItems = async (
 ): Promise<InventoryItem[]> => {
@@ -52,6 +26,16 @@ export const fetchInventoryItems = async (
     }));
 
   } catch (error) {
+    
+    const err = error as Error & { response?: { status: number }; message?: string };
+
+    if (
+      err.response?.status === 404 ||
+      err.message?.includes("Inventory is empty")
+    ) {
+      return [];
+    }
+
     return handleApiError(error);
 
   }
@@ -98,3 +82,17 @@ export const editInventoryItem = async (
 
   }
 };
+
+export const deleteInventoryitem = async (
+  id: number
+): Promise<InventoryResponse> => {
+  try {
+
+    const response = await apiClient.delete(`/inventory-item/remove-item/${id}`);
+    return response.data;
+
+  } catch (error) {
+    return handleApiError(error);
+
+  }
+}

@@ -164,6 +164,28 @@ export const validateAssignInventoryItem = async (
     next()
 }
 
+export const validateDeleteInventoryItem = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const {id} = req.params
+
+    const existingItem = await prisma.inventoryItem.findUnique({
+        where: { id: Number(id) }
+    });
+
+    if (!existingItem) {
+        res.status(404).json({
+            message: "Nonexistent Item could not be delete",
+            error: "Item not found"
+        });
+        return;
+    }
+
+    next();
+}
+
 export const validateEditInventoryItem = async (
     req: Request,
     res: Response,

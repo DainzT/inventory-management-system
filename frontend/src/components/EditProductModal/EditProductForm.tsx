@@ -14,6 +14,7 @@ interface EditProductFormProps {
     onDelete: (data: InventoryItem) => void
     onFormChange: (hasChanges: boolean) => void;
     isEditing: boolean;
+    isDeleting: boolean;
 }
 
 const EditProductForm = ({
@@ -22,6 +23,7 @@ const EditProductForm = ({
     onDelete,
     onFormChange,
     isEditing,
+    isDeleting,
 }: EditProductFormProps) => {
     const [productData, setProductData] = useState<InventoryItem>({
         id: initialData.id,
@@ -147,9 +149,12 @@ const EditProductForm = ({
 
             <div className="flex gap-20">
                 <DeleteButton
-                    onClick={() => onDelete(initialData)}
+                    onClick={() => {
+                        onDelete(initialData)
+                    }}
                     className="text-s"
                     disabled={isEditing}
+                    isDeleting={isDeleting}
                 >
                     Delete
                 </DeleteButton>
