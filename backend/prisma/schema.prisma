@@ -15,32 +15,38 @@ model User {
 }
 
 model InventoryItem {
-  id           Int            @id @default(autoincrement())
-  name         String
-  note         String
-  quantity     Float
-  unitPrice    Float
-  selectUnit   String
-  unitSize     Float
-  total        Float
-  dateCreated  DateTime       @default(now())
-  lastUpdated  DateTime?      @updatedAt
-  AssignedItem AssignedItem[]
+  id          Int       @id @default(autoincrement())
+  name        String
+  note        String
+  quantity    Float
+  unitPrice   Float
+  selectUnit  String
+  unitSize    Float
+  total       Float
+  dateCreated DateTime  @default(now())
+  lastUpdated DateTime? @updatedAt
 }
 
 model AssignedItem {
-  id          Int           @id @default(autoincrement())
-  item_id     Int
-  item        InventoryItem @relation(fields: [item_id], references: [id])
+  id         Int    @id @default(autoincrement())
+
+  // Snapshot of inventory Item
+  name       String
+  note       String
+  quantity   Float
+  unitPrice  Float
+  selectUnit String
+  unitSize   Float
+  total      Float
+
+  // Assignment metadata
   fleet_id    Int
-  fleet       Fleet         @relation(fields: [fleet_id], references: [id])
+  fleet       Fleet     @relation(fields: [fleet_id], references: [id])
   boat_id     Int
-  boat        Boat          @relation(fields: [boat_id], references: [id])
-  processed   Boolean       @default(false)
-  quantity    Float
-  total       Float
-  outDate     DateTime      @default(now())
-  lastUpdated DateTime?     @updatedAt
+  boat        Boat      @relation(fields: [boat_id], references: [id])
+  archived    Boolean   @default(false)
+  outDate     DateTime  @default(now())
+  lastUpdated DateTime? @updatedAt
 }
 
 model Fleet {
