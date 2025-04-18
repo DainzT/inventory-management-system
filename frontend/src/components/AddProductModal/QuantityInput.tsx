@@ -51,7 +51,7 @@ export const QuantityInput = ({
         <button
           type="button"
           onClick={handleDecrement}
-          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
+          className={`w-[32px] h-[32px] cursor-pointer flex items-center justify-center rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
           disabled={disabled}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -77,7 +77,7 @@ export const QuantityInput = ({
         <button
           type="button"
           onClick={handleIncrement}
-          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
+          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px] cursor-pointer ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
           disabled={disabled}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">

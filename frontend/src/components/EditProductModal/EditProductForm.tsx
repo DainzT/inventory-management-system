@@ -6,12 +6,15 @@ import { QuantityInput } from "../AddProductModal/QuantityInput";
 import { UnitSelector } from "../AddProductModal/UnitSelector";
 import DeleteButton from "./DeleteButton";
 import { InventoryItem } from "@/types";
+import { ClipLoader } from "react-spinners";
 
 interface EditProductFormProps {
     initialData: InventoryItem;
     onSubmit: (data: InventoryItem) => void;
     onDelete: (data: InventoryItem) => void
     onFormChange: (hasChanges: boolean) => void;
+    isEditing: boolean;
+    isDeleting: boolean;
 }
 
 const EditProductForm = ({
@@ -19,6 +22,8 @@ const EditProductForm = ({
     onSubmit,
     onDelete,
     onFormChange,
+    isEditing,
+    isDeleting,
 }: EditProductFormProps) => {
     const [productData, setProductData] = useState<InventoryItem>({
         id: initialData.id,
@@ -43,7 +48,7 @@ const EditProductForm = ({
 
     useEffect(() => {
         const changed = Object.keys(productData).some(key => {
-            if (key === 'lastUpdated'  || key === 'total') return false;
+            if (key === 'lastUpdated' || key === 'total') return false;
             const currentValue = productData[key as keyof InventoryItem];
             const initialValue = initialData[key as keyof InventoryItem];
             return currentValue != initialValue
@@ -92,6 +97,7 @@ const EditProductForm = ({
                 onChange={(value) => handleInputChange("name", value)}
                 placeholder={"Enter product name"}
                 error={errors.name}
+                disabled={isEditing}
             />
             <InputField
                 label="Note"
@@ -101,6 +107,7 @@ const EditProductForm = ({
                 onChange={(value) => handleInputChange("note", value)}
                 placeholder={"Enter note"}
                 error={errors.note}
+                disabled={isEditing}
             />
             <div className="flex gap-6">
                 <QuantityInput
@@ -108,12 +115,14 @@ const EditProductForm = ({
                     value={productData.quantity}
                     onChange={(value) => handleInputChange("quantity", value)}
                     error={errors.quantity}
+                    disabled={isEditing}
                 />
 
                 <UnitSelector
                     value={productData.selectUnit}
                     onChange={(value) => handleInputChange("selectUnit", value)}
                     error={errors.selectUnit}
+                    disabled={isEditing}
                 />
             </div>
             <PriceInput
@@ -129,26 +138,40 @@ const EditProductForm = ({
                     unitPrice: errors.unitPrice,
                     unitSize: errors.unitSize,
                 }}
+                disabled={isEditing}
             />
             <PriceInput
                 label="Total"
                 value={productData.total}
+                disabled={isEditing}
                 readonly
             />
 
             <div className="flex gap-20">
                 <DeleteButton
-                    onClick={() => onDelete(initialData)}
+                    onClick={() => {
+                        onDelete(initialData)
+                    }}
                     className="text-s"
+                    disabled={isEditing}
+                    isDeleting={isDeleting}
                 >
                     Delete
                 </DeleteButton>
                 <div className="flex item-center justify-end ">
                     <Button
                         type="submit"
-                        className="text-s h-[3rem]"
+                        className="text-s h-[3rem] w-[11rem]"
+                        disabled={isEditing}
                     >
-                        Confirm Changes
+                        {isEditing ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <ClipLoader color="#ffffff" size={20} className="mr-2" />
+                                Updating...
+                            </div>
+                        ) : (
+                            "Confirm Changes"
+                        )}
                     </Button>
                 </div>
             </div>

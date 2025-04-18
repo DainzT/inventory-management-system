@@ -17,11 +17,13 @@ interface YearSelectorProps {
           {availableYears.map((year) => (
             <button
               key={year}
-              className={`px-4 py-3 text-base rounded font-medium ${
-                selectedYear === year 
-                  ? 'bg-cyan-900 text-white' 
-                  : 'outline-1 text-zinc-800 bg-[#fff]'
-              }`}
+              className={`px-4 py-3 text-base rounded font-medium cursor-pointer
+                transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]
+                border ${
+                  selectedYear === year
+                    ? 'bg-cyan-900 text-white border-cyan-900 hover:bg-cyan-800 hover:border-cyan-800'
+                    : 'border-zinc-400 text-zinc-700 bg-[#fff] hover:bg-zinc-100 hover:border-zinc-600'
+                }`}
               onClick={() => onYearSelect(year)}
             >
               {year}

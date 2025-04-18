@@ -20,10 +20,11 @@ export const InventoryTable = ({
 
   return (
       <section>  
-        {inventoryItems.map((item) => (
+        {inventoryItems.map((item, index) => (
           <TableRow
             key={item.id}
             item={item}
+            index={index}
             onOut={() => onOut(item)}
             onEdit={() => onEdit(item)}
             isExpanded={expandedItem === item.id}
