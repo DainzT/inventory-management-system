@@ -5,6 +5,7 @@ import { ChevronIcon } from "./ChevronIcon";
 
 interface TableRowProps {
     item: InventoryItem;
+    index: number;
     isExpanded: boolean;
     onToggle: (id: number) => void;
     onOut?: () => void;
@@ -13,6 +14,7 @@ interface TableRowProps {
 
   export function TableRow({
     item,
+    index,
     isExpanded,
     onToggle,
     onOut,
@@ -22,7 +24,7 @@ interface TableRowProps {
       <article>
         <div className="flex items-center p-[24px] border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]">
           <div className="w-[60px] text-[18px] text-[#1F2937]">
-            {item.id}
+            {index + 1}
           </div>
           <div className="w-[192px] text-[18px] font-bold text-[#1F2937]">
             {item.name}

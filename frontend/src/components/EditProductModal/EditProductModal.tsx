@@ -46,7 +46,7 @@ const EditProductModal = ({
                     </h1>
                     <button
                         onClick={handleCloseAttempt}
-                        className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
+                        className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10 cursor-pointer"
                         aria-label="Close dialog"
                         disabled={isEditing}
                     >

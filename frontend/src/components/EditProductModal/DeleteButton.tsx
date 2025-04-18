@@ -30,7 +30,7 @@ export const DeleteButton = ({
             flex items-center gap-[2px] px-[10px]   
             text-red-500 rounded-[4px] font-medium transition-transform
             hover:translate-y-[-1px] text-sm
-            hover:outline-1
+            hover:outline-1 cursor-pointer
             hover:outline-[#CE303F] 
             ${className}
         `}

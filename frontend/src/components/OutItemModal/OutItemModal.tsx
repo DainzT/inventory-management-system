@@ -223,7 +223,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
           onClick={handleAssign}
           className="
             flex absolute right-6 bottom-6 gap-2 justify-center items-center h-10 text-white
-            bg-[#1B626E] rounded-md w-24 transition-colors hover:bg-[#297885] active:bg-[#145965]
+            bg-[#1B626E] rounded-md w-24 transition-colors hover:bg-[#297885] active:bg-[#145965] cursor-pointer
           "
           disabled={isOuting}
         >

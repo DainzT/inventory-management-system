@@ -229,7 +229,7 @@ router.delete("/remove-item/:id", validateDeleteInventoryItem, async (req: Reque
         const deletedItem = await prisma.inventoryItem.delete({
             where: {id: Number(id)}
         })
-
+        
         res.status(200).json({
             success: true,
             message: "Item deleted successfully",

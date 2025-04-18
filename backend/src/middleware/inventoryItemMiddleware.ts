@@ -170,7 +170,7 @@ export const validateDeleteInventoryItem = async (
     next: NextFunction
 ) => {
     const {id} = req.params
-
+    
     const existingItem = await prisma.inventoryItem.findUnique({
         where: { id: Number(id) }
     });

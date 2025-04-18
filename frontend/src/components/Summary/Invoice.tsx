@@ -1,4 +1,4 @@
-import { Boat, InventoryItem, Order } from "@/types";
+import { GroupedOrders, Order } from "@/types";
 import { InvoiceHeader } from "./InvoiceHeader";
 import { InvoiceTable } from "./InvoiceTable";
 import { InvoiceSummary } from "./InvoiceSummary";
@@ -23,46 +23,54 @@ export const Invoice = ({
     fleetName,
 }: InvoiceProps) => {
     const [currentPage, setCurrentPage] = useState(0);
-    const itemSummary = orders
-        .reduce((acc, order) => {
-            const groupKey = `${order.outDate.toISOString()}_${order.item_id.id}`;
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-            if (!acc[groupKey]) {
-                acc[groupKey] = {
-                    item: order.item_id,
-                    outDate: order.outDate,
-                    totalQuantity: order.quantity,
-                    totalPrice: order.total,
-                    boats: [order.boat_id],
-                    orders: [order],
-                };
-            } else {
-                acc[groupKey].totalQuantity += order.quantity;
-                acc[groupKey].totalPrice += order.total;
-                if (!acc[groupKey].boats.some(b => b.id === order.boat_id.id)) {
-                    acc[groupKey].boats.push(order.boat_id);
-                }
-                acc[groupKey].orders.push(order);
-            }
-            return acc;
-        }, {} as Record<string, {
-            item: InventoryItem;
-            boats: Boat[];
-            outDate: Date;
-            totalQuantity: number;
-            totalPrice: number;
-            orders: Order[];
-        }>);
-
-    const sortedItems = Object.values(itemSummary).sort(
-        (a, b) => a.outDate.getTime() - b.outDate.getTime()
+    const sortedOrders = [...orders].sort((a, b) =>
+        new Date(a.outDate).getTime() - new Date(b.outDate).getTime()
     );
 
-    const ordersPerPage = 7;
-    const totalPages = Math.ceil(Object.values(itemSummary).length / ordersPerPage);
+    const groupedByBoat = sortedOrders.reduce((acc: Record<number, GroupedOrders>, order) => {
+        if (!acc[order.boat_id.id]) {
+            acc[order.boat_id.id] = {
+                boatId: order.boat_id.id,
+                boatName: order.boat_id.name,
+                orders: [],
+            };
+        }
+        acc[order.boat_id.id].orders.push(order);
+        return acc;
+    }, {});
+
+    const boatGroups = Object.values(groupedByBoat).sort((a, b) =>
+        a.boatName.localeCompare(b.boatName)
+    );
+
+    const allOrders = boatGroups.flatMap(group => group.orders);
+
+    console.log(boatGroups)
+
+    const ordersPerPage = 6;
+    const totalPages = Math.ceil(allOrders.length / ordersPerPage);
     const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isManualScroll, setIsManualScroll] = useState(false);
+
+    const getPageOrders = (pageIndex: number) => {
+        const startIndex = pageIndex * ordersPerPage;
+        const pageOrders = allOrders.slice(startIndex, startIndex + ordersPerPage);
+
+        return pageOrders.reduce((acc: Record<number, GroupedOrders>, order) => {
+            if (!acc[order.boat_id.id]) {
+                acc[order.boat_id.id] = {
+                    boatId: order.boat_id.id,
+                    boatName: order.boat_id.name,
+                    orders: [],
+                };
+            }
+            acc[order.boat_id.id].orders.push(order);
+            return acc;
+        }, {});
+    };
 
     const handleScroll = (event: SyntheticEvent<HTMLDivElement>) => {
         if (isManualScroll) {
@@ -86,45 +94,52 @@ export const Invoice = ({
 
     useEffect(() => {
         setCurrentPage(0);
-    }, [Object.keys(itemSummary).length]);
+    }, [boatGroups.length]);
 
     const handleDownloadPDF = async () => {
         const element = pageRefs.current
 
         if (!element) return;
 
-        const pdf = new jsPDF({
-            orientation: "portrait",
-            unit: "px",
-            format: 'a4',
-        });
-
-
-        for (let pageNum = 0; pageNum < totalPages; pageNum++) {
-            const pageElement = pageRefs.current[pageNum];
-            if (!pageElement) continue;
-
-            if (pageNum > 0) pdf.addPage();
-
-            const canvas = await html2canvas(pageElement, {
-                useCORS: true,
-                scale: 2,
-                logging: true,
+        setIsGeneratingPDF(true);
+        try {
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "px",
+                format: 'a4',
             });
 
-            const data = canvas.toDataURL('image/png')
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            const imgWidth = canvas.width;
-            const imgHeight = canvas.height;
-            const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
-            const width = imgWidth * ratio;
-            const height = imgHeight * ratio;
 
-            pdf.addImage(data, "PNG", 0, 0, width, height);
+            for (let pageNum = 0; pageNum < totalPages; pageNum++) {
+                const pageElement = pageRefs.current[pageNum];
+                if (!pageElement) continue;
+
+                if (pageNum > 0) pdf.addPage();
+
+                const canvas = await html2canvas(pageElement, {
+                    useCORS: true,
+                    scale: 2,
+                    logging: true,
+                });
+
+                const data = canvas.toDataURL('image/png')
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+                const width = imgWidth * ratio;
+                const height = imgHeight * ratio;
+
+                pdf.addImage(data, "PNG", 0, 0, width, height);
+            }
+
+            pdf.save(`invoice_${selectedMonth}_${selectedYear}.pdf`)
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+        } finally {
+            setIsGeneratingPDF(false);
         }
-
-        pdf.save(`invoice_${selectedMonth}_${selectedYear}.pdf`)
     }
 
     const scrollToPage = (pageIndex: number) => {
@@ -151,7 +166,7 @@ export const Invoice = ({
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 0}
-                    className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50 hover:bg-gray-300 transition-colors"
+                    className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50 hover:bg-gray-300 transition-colors cursor-pointer"
                 >
                     Previous
                 </button>
@@ -163,7 +178,7 @@ export const Invoice = ({
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages - 1}
-                    className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50 hover:bg-gray-300 transition-colors"
+                    className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50 hover:bg-gray-300 transition-colors cursor-pointer"
                 >
                     Next
                 </button>
@@ -185,11 +200,9 @@ export const Invoice = ({
                 ref={containerRef}
                 onScroll={handleScroll}
             >
-                {sortedItems.length > 0 ? (
+                {allOrders.length > 0 ? (
                     Array.from({ length: totalPages }).map((_, pageIndex) => {
-                        const startIndex = pageIndex * ordersPerPage;
-                        const endIndex = startIndex + ordersPerPage;
-                        const pageItems = sortedItems.slice(startIndex, endIndex);
+                        const pageGroups = Object.values(getPageOrders(pageIndex));
                         return (
                             <div
                                 key={pageIndex}
@@ -209,7 +222,7 @@ export const Invoice = ({
                                         selectedYear={selectedYear}
                                     />
                                     <div className="flex-grow">
-                                        <InvoiceTable itemSummary={pageItems} />
+                                        <InvoiceTable itemSummary={pageGroups} />
                                     </div>
                                     {pageIndex === totalPages - 1 && (
                                         <div className="mt-auto">
@@ -247,7 +260,7 @@ export const Invoice = ({
                             />
 
                             <div className="flex-grow">
-                                <InvoiceTable itemSummary={sortedItems} />
+                                <InvoiceTable itemSummary={boatGroups} />
                             </div>
 
                             <div className="mt-auto">
@@ -260,7 +273,10 @@ export const Invoice = ({
                 )}
             </div>
             <div className="mt-6">
-                <DownloadButton onDownload={handleDownloadPDF} />
+                <DownloadButton 
+                    onDownload={handleDownloadPDF}
+                    isLoading={isGeneratingPDF}
+                />
             </div>
         </div>
     );
