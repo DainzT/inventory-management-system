@@ -56,6 +56,5 @@ export const validateAddInventoryItem = (
         return;
     }
 
-
     next()
 }
