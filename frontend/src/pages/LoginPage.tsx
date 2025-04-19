@@ -32,13 +32,9 @@ const LoginPage: React.FC = () => {
     setError("");
 
     try {
-      const response: LoginResponse = await login(pin);
-      if (response.token) {
-        localStorage.setItem("token", response.token);
-        navigate("/inventory");
-      } else {
-        setError(response.message || "Invalid PIN");
-      }
+      await login(pin);
+      console.log("Login successful");
+      navigate("/inventory");
     } catch (err: unknown) {
       if (isApiError(err)) {
         setError(err.message);

@@ -52,7 +52,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
       .send({ pin: "654321" });
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("token", "mocked-jwt-token");
+    expect(response.body).toHaveProperty("accessToken", "mocked-jwt-token");
   });
 
   it("should return 401 for incorrect PIN", async () => {
