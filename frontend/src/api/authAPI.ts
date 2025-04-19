@@ -1,7 +1,9 @@
 const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 export const checkPin = async () => {
-  const res = await fetch(`${API_URL}/auth/check-pin`);
+  const res = await fetch(`${API_URL}/auth/check-pin`, {
+    credentials: "include",
+  });
   return res.json();
 };
 
@@ -10,6 +12,7 @@ export const setupPin = async (pin: string) => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ pin }),
+    credentials: "include",
   });
   return res.json();
 };
@@ -21,6 +24,7 @@ export const login = async (
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ pin }),
+    credentials: "include",
   });
 
   if (!res.ok) {
@@ -36,9 +40,23 @@ export const changePin = async (oldPin: string, newPin: string) => {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
     body: JSON.stringify({ oldPin, newPin }),
+    credentials: "include",
   });
+  return res.json();
+};
+
+export const refreshToken = async () => {
+  const res = await fetch(`${API_URL}/auth/refresh-token`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to refresh token");
+  }
+
   return res.json();
 };

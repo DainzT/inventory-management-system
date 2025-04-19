@@ -11,6 +11,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -33,4 +35,9 @@ jobs:
       - name: Run frontend unit tests
         run: |
           cd frontend
+          npm test
+
+      - name: Run backend unit tests
+        run: |
+          cd backend
           npm test

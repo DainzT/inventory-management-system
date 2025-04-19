@@ -205,7 +205,6 @@ export const Login: Story = {
     await userEvent.click(loginButton);
     await delay(2000);
     await waitFor(() => {
-      expect(window.localStorage.getItem("token")).toBeTruthy();
       expect(screen.getByText(/Main Inventory/i)).toBeInTheDocument();
     });
   },

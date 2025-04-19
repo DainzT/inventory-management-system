@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
 
-const authenticateAdmin = (
+export const authenticateAdmin = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -25,4 +25,16 @@ const authenticateAdmin = (
   }
 };
 
-export default authenticateAdmin;
+export const verifyAccessToken = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(" ")[1];
+
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_SECRET!, (err, decoded) => {
+    if (err) return res.sendStatus(403);
+
+    (req as any).userId = (decoded as any).userId;
+    next();
+  });
+};
