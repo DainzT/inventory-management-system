@@ -36,8 +36,31 @@ router.post(
         return;
       }
 
-      const hashedPin = await bcrypt.hash("123456", 10);
-      await prisma.user.create({ data: { pin: hashedPin } });
+      const { pin, backupPin, securityQuestions } = req.body;
+
+      if (
+        !pin ||
+        !backupPin ||
+        !securityQuestions ||
+        securityQuestions.length !== 3
+      ) {
+        res.status(400).json({
+          message: "All fields are required including 3 security questions",
+        });
+        return;
+      }
+
+      const hashedPin = await bcrypt.hash(pin, 10);
+      const hashedBackupPin = await bcrypt.hash(backupPin, 10);
+
+      await prisma.user.create({
+        data: {
+          pin: hashedPin,
+          backupPin: hashedBackupPin,
+          securityQuestions,
+        },
+      });
+
       res.json({ message: "Admin account created successfully" });
     } catch (error) {
       console.error("Error creating admin:", error);
@@ -226,5 +249,101 @@ router.get("/check-pin", async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+router.post("/logout", async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.clearCookie("refresh_token");
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post(
+  "/reset-pin-input",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { backupPin, securityAnswers, newPin } = req.body;
+
+      if (!backupPin || !securityAnswers || !newPin) {
+        res.status(400).json({ message: "All fields are required" });
+        return;
+      }
+
+      const user = await prisma.user.findFirst();
+      if (!user) {
+        res.status(404).json({ message: "No user account found" });
+        return;
+      }
+
+      if (!user.backupPin) {
+        res.status(500).json({ message: "Backup PIN is not set for the user" });
+        return;
+      }
+
+      const isBackupPinMatch = await bcrypt.compare(backupPin, user.backupPin);
+      if (!isBackupPinMatch) {
+        res.status(401).json({ message: "Invalid backup PIN" });
+        return;
+      }
+
+      const storedQuestions = user.securityQuestions as
+        | { question: string; answer: string }[]
+        | null;
+
+      if (!storedQuestions || !Array.isArray(storedQuestions)) {
+        res
+          .status(500)
+          .json({ message: "Security questions are not properly set" });
+        return;
+      }
+
+      const isSecurityAnswersMatch = storedQuestions.every((q, i) => {
+        return (
+          q.answer.trim().toLowerCase() ===
+          (securityAnswers[i]?.answer || "").trim().toLowerCase()
+        );
+      });
+
+      if (!isSecurityAnswersMatch) {
+        res.status(401).json({ message: "Invalid security answers" });
+        return;
+      }
+
+      const hashedNewPin = await bcrypt.hash(newPin, 10);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { pin: hashedNewPin },
+      });
+
+      res.json({ message: "PIN reset successfully" });
+    } catch (error) {
+      console.error("Forgot PIN error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.get(
+  "/security-questions",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const admin = await prisma.user.findFirst();
+      if (!admin) {
+        res.status(404).json({ message: "Admin not found" });
+        return;
+      }
+
+      res.json({
+        questions: Array.isArray(admin.securityQuestions)
+          ? admin.securityQuestions
+          : [],
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch questions" });
+    }
+  }
+);
 
 export default router;

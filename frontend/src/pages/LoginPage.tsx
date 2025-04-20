@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Logo } from "@/components/SidebarComponents/Logo";
 import PinInput from "@/components/AuthComponents/PinInput";
 import { ClipLoader } from "react-spinners";
-import { login } from "@/api/authAPI";
+import { login, checkAdminExists } from "@/api/authAPI";
 import ChangePin from "@/components/AuthComponents/ChangePin";
+import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
+import ForgotPin from "@/components/AuthComponents/ForgotPin";
 
 interface LoginResponse {
   token?: string;
@@ -21,11 +23,26 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showChangePin, setShowChangePin] = useState(false);
+  const [showCreateAdmin, setShowCreateAdmin] = useState(false);
+  const [showForgotPin, setShowForgotPin] = useState(false);
+
   const navigate = useNavigate();
 
   function isApiError(error: unknown): error is ApiError {
     return typeof error === "object" && error !== null && "message" in error;
   }
+
+  useEffect(() => {
+    const fetchAdminStatus = async () => {
+      try {
+        const exists = await checkAdminExists();
+        setShowCreateAdmin(!exists);
+      } catch (err) {
+        console.error("Failed to check admin status", err);
+      }
+    };
+    fetchAdminStatus();
+  }, []);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -33,7 +50,6 @@ const LoginPage: React.FC = () => {
 
     try {
       await login(pin);
-      console.log("Login successful");
       navigate("/inventory");
     } catch (err: unknown) {
       if (isApiError(err)) {
@@ -47,6 +63,10 @@ const LoginPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (showCreateAdmin) {
+    return <CreateAdmin onSuccess={() => setShowCreateAdmin(false)} />;
+  }
 
   return (
     <main className="flex flex-col items-center justify-start h-screen w-screen bg-white">
@@ -62,11 +82,23 @@ const LoginPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setShowChangePin(true)}
-          className="mt-2 mb-4 text-sm text-cyan-700 underline hover:text-cyan-900"
+          className="mt-2 text-sm text-cyan-700 underline hover:text-cyan-900"
         >
           Change PIN?
         </button>
         {showChangePin && <ChangePin onClose={() => setShowChangePin(false)} />}
+
+        <div className="mb-3">
+          <button
+            type="button"
+            onClick={() => setShowForgotPin(true)}
+            className="mt-2 mb-4 text-sm text-cyan-700 underline hover:text-cyan-900"
+          >
+            Forgot PIN?
+          </button>
+        </div>
+
+        {showForgotPin && <ForgotPin onClose={() => setShowForgotPin(false)} />}
 
         <button
           onClick={handleLogin}

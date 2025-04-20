@@ -25,7 +25,11 @@ export const authenticateAdmin = (
   }
 };
 
-export const verifyAccessToken = (req: Request, res: Response, next: NextFunction) => {
+export const verifyAccessToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(" ")[1];
 
