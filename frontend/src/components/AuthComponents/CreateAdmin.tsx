@@ -31,7 +31,15 @@ const CreateAdmin: React.FC<CreateAdminProps> = ({ onSuccess }) => {
     }
 
     try {
-      await createAdmin({ pin, confirmPin, backupPin, securityQuestions });
+      await createAdmin({
+        pin,
+        confirmPin,
+        backupPin,
+        securityQuestions: securityQuestions.map(({ question, answer }) => ({
+          question,
+          securityAnswers: answer,
+        })),
+      });
       onSuccess();
     } catch (err: any) {
       setError(err.message || "Failed to create admin.");
