@@ -45,10 +45,10 @@ const Sidebar: React.FC = () => {
   return (
     <>
       <button
-        className="fixed top-4 left-4 z-50 p-2 bg-gray-200 rounded-lg md:hidden"
+        className="fixed top-4 left-4 z-50 p-2 bg-gray-200/90 rounded-lg md:hidden"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
-        {isSidebarOpen ? <HiX size={24} /> : <HiMenu size={24} />}
+        {isSidebarOpen ? <HiX size={20} /> : <HiMenu size={20} />}
       </button>
 
       <aside
@@ -56,7 +56,7 @@ const Sidebar: React.FC = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
-        <div className="h-full flex flex-col flex-grow overflow-y-auto">
+        <div className="h-full flex flex-col flex-grow overflow-y-auto ">
           <nav className="flex flex-col items-center justify-centers w-full h-full gap-1">
             <Logo width={12} height={12} />
             {navigationItems.map((item) => (

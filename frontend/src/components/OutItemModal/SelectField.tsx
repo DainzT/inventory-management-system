@@ -32,7 +32,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className={`
           flex justify-between items-center px-4 w-full h-12 rounded-lg border-[1px] 
-          bg-[#F4F1F1] inter-font ${error ? "border-red-500" : "border-[#0FE3FF]"}
+          bg-[#F4F1F1] inter-font ${error ? "border-red-500" : "border-[#0FE3FF] cursor-pointer"}
         `}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
