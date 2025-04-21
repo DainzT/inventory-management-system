@@ -3,13 +3,12 @@ import axios from "axios";
 const apiClient = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api`,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("access_token");
-
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -18,3 +17,7 @@ apiClient.interceptors.request.use((config) => {
 });
 
 export default apiClient;
+
+
+
+
