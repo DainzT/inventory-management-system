@@ -104,18 +104,17 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
 
           return (
             <React.Fragment key={order.id}>
-              {/* used React.Fragment group the row and expanded content */}
               <div className="grid items-center py-4 grid-cols-[170px_190px_280px_115px_140px_135px_110px] bg-white">
                 <div className="text-lg text-gray-600">
                   {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
                 </div>
                 <div className="text-lg font-bold text-gray-800">
-                  {order.item.name}
+                  {order.name}
                 </div>
-                <div className="text-md text-gray-600">{order.item.note}</div>
+                <div className="text-md text-gray-600">{order.note}</div>
                 <div className="text-lg text-gray-800">{order.quantity}</div>
                 <div className="text-lg text-gray-800">
-                  ₱{order.item.unitPrice}
+                  ₱{order.unitPrice}
                 </div>
                 <div className="text-lg text-gray-600">{order.boat.boat_name}</div>
 

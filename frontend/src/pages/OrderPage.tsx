@@ -52,12 +52,12 @@ const Orders: React.FC = () => {
     if (orders.length >= 0) {
       const filteredOrders = orders?.filter((order) => {
         const matchesSearch = [
-          order.item.name.toLowerCase(),
-          order.item.note.toLowerCase(),
+          order.name.toLowerCase(),
+          order.note.toLowerCase(),
           order.quantity.toString(),
-          order.item.unitPrice.toString(),
-          order.item.selectUnit.toLowerCase(),
-          order.item.unitSize.toString(),
+          order.unitPrice.toString(),
+          order.selectUnit.toLowerCase(),
+          order.unitSize.toString(),
           order.total?.toString() || "",
           order.boat.boat_name.toLowerCase(),
           order.outDate as string,
