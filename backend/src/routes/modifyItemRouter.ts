@@ -11,8 +11,10 @@ router.use(authenticateToken);
 router.get("/assigned-items", async (req: Request, res: Response) => {
     try {
         const assignedItems = await prisma.assignedItem.findMany({
+            where: {
+                archived: false
+            },
             include: {
-                item: true,
                 fleet: true,
                 boat: true
             },
@@ -61,8 +63,12 @@ router.get("/get-fleets-boats", async (req: Request, res: Response) => {
         });
 
         const formattedFleets = fleets.map(fleet => ({
+            id: fleet.id,
             fleet_name: fleet.fleet_name,
-            boats: fleet.Boat.map(boat => boat.boat_name)
+            boats: fleet.Boat.map(boat => ({
+                id: boat.id,
+                boat_name: boat.boat_name
+            }))
         }));
 
         res.status(200).json({
@@ -85,7 +91,7 @@ router.get("/get-fleets-boats", async (req: Request, res: Response) => {
 router.put("/update/:id", async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
-        const { quantity, fleet_id, boat_id, processed } = req.body;
+        const { quantity, fleet_id, boat_id, archived } = req.body;
 
         if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
             res.status(400).json({ error: "Valid quantity (number > 0) is required" });
@@ -93,8 +99,7 @@ router.put("/update/:id", async (req: Request, res: Response) => {
         }
 
         const existingAssignment = await prisma.assignedItem.findUnique({
-            where: { id },
-            include: { item: true }
+            where: { id }
         });
 
         if (!existingAssignment) {
@@ -116,55 +121,21 @@ router.put("/update/:id", async (req: Request, res: Response) => {
             }
         }
 
-        if (quantity > existingAssignment.quantity) {
-            const inventoryItem = await prisma.inventoryItem.findUnique({
-                where: { id: existingAssignment.item_id }
-            });
-
-            if (!inventoryItem) {
-                res.status(404).json({ error: "Inventory item not found" });
-                return;
-            }
-
-            const quantityDifference = quantity - existingAssignment.quantity;
-            if (quantityDifference > inventoryItem.quantity) {
-                res.status(400).json({ 
-                    error: "Insufficient stock",
-                    available: inventoryItem.quantity,
-                    requested: quantityDifference
-                });
-                return;
-            }
-        }
-
         const updatedAssignment = await prisma.assignedItem.update({
             where: { id },
             data: {
                 quantity: Number(quantity),
-                fleet_id: fleet_id ? Number(fleet_id) : undefined,
-                boat_id: boat_id ? Number(boat_id) : undefined,
-                processed: processed !== undefined ? Boolean(processed) : undefined,
+                fleet_id: fleet_id ? Number(fleet_id) : existingAssignment.fleet_id,
+                boat_id: boat_id ? Number(boat_id) : existingAssignment.boat_id,
+                archived: archived !== undefined ? Boolean(archived) : existingAssignment.archived,
                 lastUpdated: new Date(),
-                total: (Number(existingAssignment.item.unitPrice) * quantity) / Number(existingAssignment.item.unitSize)
+                total: (Number(existingAssignment.unitPrice) * quantity) / Number(existingAssignment.unitSize)
             },
             include: {
-                item: true,
                 fleet: true,
                 boat: true
             }
         });
-
-        if (quantity !== existingAssignment.quantity) {
-            const quantityDifference = existingAssignment.quantity - quantity;
-            await prisma.inventoryItem.update({
-                where: { id: existingAssignment.item_id },
-                data: {
-                    quantity: {
-                        increment: quantityDifference
-                    }
-                }
-            });
-        }
 
         res.status(200).json({
             success: true,
@@ -184,7 +155,7 @@ router.put("/update/:id", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/mark-processed/:id", async (req: Request, res: Response) => {
+router.put("/archive/:id", async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
 
@@ -200,11 +171,10 @@ router.put("/mark-processed/:id", async (req: Request, res: Response) => {
         const updatedAssignment = await prisma.assignedItem.update({
             where: { id },
             data: {
-                processed: true,
+                archived: true,
                 lastUpdated: new Date()
             },
             include: {
-                item: true,
                 fleet: true,
                 boat: true
             }
@@ -212,16 +182,16 @@ router.put("/mark-processed/:id", async (req: Request, res: Response) => {
 
         res.status(200).json({
             success: true,
-            message: 'Assigned item marked as processed',
+            message: 'Assigned item archived successfully',
             data: updatedAssignment
         });
         return;
 
     } catch (error) {
-        console.error('Error marking assigned item as processed:', error);
+        console.error('Error archiving assigned item:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to mark assigned item as processed',
+            message: 'Failed to archive assigned item',
             error: process.env.NODE_ENV === 'development' ? error : undefined,
         });
         return;
@@ -233,24 +203,12 @@ router.delete("/delete/:id", async (req: Request, res: Response) => {
         const id = parseInt(req.params.id);
 
         const existingAssignment = await prisma.assignedItem.findUnique({
-            where: { id },
-            include: { item: true }
+            where: { id }
         });
 
         if (!existingAssignment) {
             res.status(404).json({ error: "Assigned item not found" });
             return;
-        }
-
-        if (!existingAssignment.processed) {
-            await prisma.inventoryItem.update({
-                where: { id: existingAssignment.item_id },
-                data: {
-                    quantity: {
-                        increment: existingAssignment.quantity
-                    }
-                }
-            });
         }
 
         await prisma.assignedItem.delete({
@@ -259,8 +217,7 @@ router.delete("/delete/:id", async (req: Request, res: Response) => {
 
         res.status(200).json({
             success: true,
-            message: 'Assigned item deleted successfully',
-            restoredQuantity: !existingAssignment.processed ? existingAssignment.quantity : 0
+            message: 'Assigned item deleted successfully'
         });
         return;
 
