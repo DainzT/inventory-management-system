@@ -110,12 +110,12 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
                 </div>
                 <div className="text-lg font-bold text-gray-800">
-                  {order.item.name}
+                  {order.name}
                 </div>
-                <div className="text-md text-gray-600">{order.item.note}</div>
+                <div className="text-md text-gray-600">{order.note}</div>
                 <div className="text-lg text-gray-800">{order.quantity}</div>
                 <div className="text-lg text-gray-800">
-                  ₱{order.item.unitPrice}
+                  ₱{order.unitPrice}
                 </div>
                 <div className="text-lg text-gray-600">{order.boat.boat_name}</div>
 

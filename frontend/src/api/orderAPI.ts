@@ -15,7 +15,7 @@ export const fetchAssignedItems = async (): Promise<OrderItemProps[]> => {
 
     return response.data.data.map((item) => ({
       ...item,
-      dateOut: item.dateOut,
+      dateOut: item.outDate,
     }));
   } catch (error) {
     const axiosError = error as AxiosError<{
@@ -24,14 +24,18 @@ export const fetchAssignedItems = async (): Promise<OrderItemProps[]> => {
     }>;
 
     if (axiosError.response) {
+      const status = axiosError.response.status;
       const errorMessage =
         axiosError.response.data?.message ||
         axiosError.response.data?.error ||
-        `Request failed with status ${axiosError.response.status}`;
-      console.error("API Error:", errorMessage);
+        `Request failed with status ${status}`;
+      console.error(`API Error [Status ${status}]:`, errorMessage);
       throw new Error(errorMessage);
     } else if (axiosError.request) {
-      console.error("No response received from server");
+      console.error(
+        "No response received from server. Request details:",
+        axiosError.request
+      );
       throw new Error("No response received from server");
     } else {
       console.error("Request setup error:", axiosError.message);

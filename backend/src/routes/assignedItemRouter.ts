@@ -14,7 +14,6 @@ router.get("/assign-item", async (req: Request, res: Response) => {
     try {
         const orders = await prisma.assignedItem.findMany({
             include: {
-                item: true,
                 fleet: true,
                 boat: true,
             },
