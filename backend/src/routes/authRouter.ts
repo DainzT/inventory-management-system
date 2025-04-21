@@ -7,11 +7,11 @@ import prisma from "../lib/prisma";
 dotenv.config();
 const router: Router = express.Router();
 
-const SECRET_KEY = process.env.JWT_SECRET;
-const REFRESH_SECRET = process.env.REFRESH_SECRET;
-if (!SECRET_KEY || !REFRESH_SECRET) {
+const ACCESS_SECRET = process.env.ACCESS_SECRET!;
+const REFRESH_SECRET = process.env.REFRESH_SECRET!;
+if (!ACCESS_SECRET || !REFRESH_SECRET) {
   throw new Error(
-    "JWT_SECRET or REFRESH_SECRET environment variable is not set"
+    "ACCESS_SECRET or REFRESH_SECRET environment variable is not set"
   );
 }
 
@@ -146,7 +146,7 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const accessToken = jwt.sign({ userId: user.id }, SECRET_KEY, {
+    const accessToken = jwt.sign({ userId: user.id }, ACCESS_SECRET, {
       expiresIn: "15m",
     });
     const refreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, {
@@ -239,8 +239,11 @@ router.get("/check-pin", async (req: Request, res: Response): Promise<void> => {
     }
 
     try {
-      jwt.verify(refreshToken, REFRESH_SECRET);
-      res.json({ isPinSet: true, isAuthenticated: true });
+      const accessToken = jwt.sign({ userId: user.id }, ACCESS_SECRET, {
+        expiresIn: "15m",
+      });
+
+      res.json({ isPinSet: true, isAuthenticated: true, token: accessToken });
     } catch (error) {
       res.json({ isPinSet: true, isAuthenticated: false });
     }

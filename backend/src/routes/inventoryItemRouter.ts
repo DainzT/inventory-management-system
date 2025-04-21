@@ -1,13 +1,13 @@
 import express, { Request, Response, Router } from "express";
 import dotenv from "dotenv";
 import prisma from "../lib/prisma";
-import { authenticateAdmin } from "../middleware/authMiddleware";
+import { authenticateToken } from "../middleware/authMiddleware";
 import { validateAddInventoryItem } from "../middleware/inventoryItemMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
 
-router.use(authenticateAdmin);
+router.use(authenticateToken);
 
 router.get("/get-items", async (req: Request, res: Response) => {
   try {

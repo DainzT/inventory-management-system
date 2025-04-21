@@ -37,8 +37,8 @@ export const useAuth = () => {
         const data = await checkPin();
         setIsPinSet(data.isPinSet ?? false);
         if (data.isAuthenticated) {
-          sessionStorage.setItem(TOKEN_KEY, "valid, IT HAS WORKED");
-          setToken("valid");
+          sessionStorage.setItem(TOKEN_KEY, data.token);
+          setToken(data.token);
         }
       } catch (err) {
         const error = err as ErrorWithMessage;
