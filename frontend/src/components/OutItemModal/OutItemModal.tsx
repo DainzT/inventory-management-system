@@ -8,6 +8,7 @@ import { MdAdd } from "react-icons/md";
 import ItemDetails from "./ItemDetails";
 import { ClipLoader } from "react-spinners";
 import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
+import { roundTo } from "@/utils/RoundTo";
 
 interface OutItemModalProps {
   isOpen: boolean,
@@ -107,7 +108,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
     const remainingStock = Number(selectedItem?.quantity) - Number(quantity);
 
     const updatedTotalPrice =
-      Number(selectedItem?.unitPrice) * (remainingStock / Number(selectedItem?.unitSize));
+      roundTo(Number(selectedItem?.unitPrice) * (remainingStock / Number(selectedItem?.unitSize)), 2);
 
     const outItem: OrderItem = {
       item_id: {
