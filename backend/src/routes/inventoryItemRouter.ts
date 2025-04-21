@@ -280,7 +280,6 @@ router.put("/update-item/:id", validateEditInventoryItem, async (req: Request, r
         });
         return;
     }
-
 });
 
 export default router;
