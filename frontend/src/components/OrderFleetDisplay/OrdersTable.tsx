@@ -104,7 +104,6 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
 
           return (
             <React.Fragment key={order.id}>
-              {/* used React.Fragment group the row and expanded content */}
               <div className="grid items-center py-4 grid-cols-[170px_190px_280px_115px_140px_135px_110px] bg-white">
                 <div className="text-lg text-gray-600">
                   {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
