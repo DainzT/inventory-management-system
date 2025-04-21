@@ -43,7 +43,7 @@ export const InventoryButton = ({
 
   if (variant === "actions") {
     return (
-      <div className="flex justify-center gap-[10px]">
+      <div className="item-center flex flex-1 justify-center gap-[10px]">
         <button
           onClick={onOut}
           className="
@@ -63,7 +63,7 @@ export const InventoryButton = ({
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-[16px] text-white">Out</span>
+          <span className="text-[16px] text-white flex-1">Out</span>
         </button>
         <button
           onClick={onEdit}

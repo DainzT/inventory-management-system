@@ -11,7 +11,7 @@ interface DeleteConfirmationModalProps {
   confirmButtonText?: string;
   cancelButtonText?: string;
   isDeleting?: boolean;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({

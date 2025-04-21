@@ -49,6 +49,7 @@ export const useInventory = () => {
     };
 
     const handleAddProduct = async (newProduct: ItemFormData) => {
+        console.log(newProduct)
         showLoadingToast("adding-product", "Adding product...");
         try {
             setIsAdding(true);

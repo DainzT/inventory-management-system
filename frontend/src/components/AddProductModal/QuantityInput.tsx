@@ -1,3 +1,4 @@
+import { roundTo } from "@/utils/RoundTo";
 
 interface QuantityInputProps {
   value: number | "";
@@ -35,11 +36,6 @@ export const QuantityInput = ({
       }
     }
   };
-
-  function roundTo(num: number, precision: number): number {
-    const factor = Math.pow(10, precision);
-    return Math.round(num * factor) / factor;
-  }
 
   return (
     <div>

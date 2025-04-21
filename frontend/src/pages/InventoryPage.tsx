@@ -60,7 +60,7 @@ const Inventory: React.FC = () => {
 
     return matchesSearch;
   });
-
+  
   return (
     <div className="flex-1 p-0 ">
       <ToastContainer

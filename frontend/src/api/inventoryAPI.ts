@@ -1,5 +1,5 @@
 import apiClient from "./apiClient";
-import { handleApiError } from "./handleAPIerror";
+import { handleApiError } from "./handleApiError";
 import { InventoryItem, ItemFormData, OrderItem } from "@/types";
 
 type InventoryResponse = {

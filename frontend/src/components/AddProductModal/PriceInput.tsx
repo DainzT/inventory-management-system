@@ -1,3 +1,4 @@
+import { roundTo } from "@/utils/RoundTo";
 
 interface PriceInputProps {
   label: string;
@@ -54,11 +55,6 @@ export const PriceInput = ({
     }
   };
 
-  function roundTo(num: number, precision: number): number {
-    const factor = Math.pow(10, precision);
-    return Math.round(num * factor) / factor;
-  }
-
   return (
     <div>
       <label className="text-[16px] font-bold inter-font">
@@ -69,7 +65,7 @@ export const PriceInput = ({
         <span className="absolute left-4 top-[8px] text-[#666] inter-font">₱</span>
         <input
           type="number"
-          value={value !== "" ? roundTo(value, 2) : ""}
+          value={value !== "" ? roundTo(value,2) : ""}
           onChange={handleChange}
           placeholder="0.00"
           min="0"

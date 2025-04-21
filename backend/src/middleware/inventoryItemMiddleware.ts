@@ -77,7 +77,7 @@ export const validateAddInventoryItem = (
         return;
     }
 
-    if (!total || typeof total !== 'number' || total <= 0 || total != ((unitPrice * quantity) / unitSize)) {
+    if (!total || typeof total !== 'number' || total <= 0 || total !== ((unitPrice * quantity) / unitSize)) {
         res.status(400).json({
             message: "Incorrect computed total",
             error: "Valid total (number > 0 and total == ((unitPrice * quantity) / unitSize) is required"

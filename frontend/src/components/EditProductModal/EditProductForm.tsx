@@ -8,6 +8,8 @@ import DeleteButton from "./DeleteButton";
 import { InventoryItem } from "@/types";
 import { ClipLoader } from "react-spinners";
 
+import { roundTo } from "@/utils/RoundTo";
+
 interface EditProductFormProps {
     initialData: InventoryItem;
     onSubmit: (data: InventoryItem) => void;
@@ -42,7 +44,7 @@ const EditProductForm = ({
     useEffect(() => {
         setProductData((current) => ({
             ...current,
-            total: Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)),
+            total: roundTo(Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)), 2),
         }));
     }, [productData.quantity, productData.unitPrice, productData.unitSize]);
 

@@ -63,15 +63,39 @@ export const InvoiceTable = ({
                       year: 'numeric'
                     }).replace(/\//g, '/')}
                   </div>
-                  <div className="mr-3 px-3 py-4 border-r text-center border-gray-400">{order.name}</div>
-                  <div className="text-stone-500 px-3 py-4 border-r border-gray-400">{order.note}</div>
-                  <div className="text-center px-2 py-4 border-r border-gray-400">
+                  <div
+                    className="
+                      mr-3 px-3 py-4 border-r text-center border-gray-400  
+                      shrink-0 break-all overflow-hidden hyphens-auto
+                    ">
+                    {order.name}
+                  </div>
+                  <div 
+                    className="
+                      text-stone-500 px-3 py-4 border-r border-gray-400
+                      shrink-0 break-all overflow-hidden hyphens-auto
+                  ">
+                    {order.note}
+                  </div>
+                  <div
+                    className="
+                      text-center px-2 py-4 border-r border-gray-400
+                      shrink-0 break-all overflow-hidden hyphens-auto
+                  ">
                     {order.quantity} {pluralize(order.selectUnit, order.quantity)}
                   </div>
-                  <div className="px-4 py-4 border-r border-gray-400">
+                  <div
+                    className="
+                      px-4 py-4 border-r border-gray-400
+                      shrink-0 break-all overflow-hidden hyphens-auto
+                  ">
                     ₱{Number(order.unitPrice).toFixed(2)} / {order.unitSize} {pluralize(order.selectUnit, order.unitSize)}
                   </div>
-                  <div className="text-center px-3 py-4 border-r border-gray-400">
+                  <div
+                    className="
+                      text-center px-3 py-4 border-r border-gray-400
+                      shrink-0 break-all overflow-hidden hyphens-auto  
+                  ">
                     ₱{(order.total).toFixed(2)}
                   </div>
                 </div>
