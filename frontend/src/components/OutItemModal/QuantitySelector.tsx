@@ -59,7 +59,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
       <div className="flex gap-2 items-center">
         <button
           className={`
-            flex justify-center items-center w-8 h-8 rounded-lg border  border-solid bg-zinc-100 
+            flex justify-center items-center w-8 h-8 rounded-lg border  border-solid bg-zinc-100  cursor-pointer
             ${error ? "border-red-500" : "border-[#0FE3FF]"}
           `}
           onClick={decrementQuantity}
@@ -76,7 +76,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           step="0.01"
           placeholder="0.00"
           className={`
-            px-2 flex justify-center items-center w-16 h-8 rounded-lg border border-solid bg-zinc-100 text-black inter-font
+            px-2 flex justify-center items-center w-16 h-8 rounded-lg border border-solid bg-zinc-100 text-black inter-font 
             ${error ? "border-red-500" : "border-[#0FE3FF]"}
           `}
           aria-live="polite"
@@ -85,7 +85,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
         
         <button
           className={`
-            flex justify-center items-center w-8 h-8 rounded-lg border border-solid bg-zinc-100
+            flex justify-center items-center w-8 h-8 rounded-lg border border-solid bg-zinc-100 cursor-pointer
             ${error ? "border-red-500" : "border-[#0FE3FF]"}
           `}
           onClick={incrementQuantity}

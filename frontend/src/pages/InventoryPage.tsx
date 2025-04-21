@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import InventoryManagementTable from "@/components/InventoryManagementTable/InventoryManagementTable";
@@ -8,142 +8,37 @@ import AddProductModal from "@/components/AddProductModal/AddProductModal";
 import OutItemModal from "@/components/OutItemModal/OutItemModal";
 import { PageTitle } from "@/components/PageTitle";
 
-import { InventoryItem, ItemFormData, OrderItem } from "@/types";
-import { addInventoryItem, fetchInventoryItems, outInventoryItem } from "@/api/inventoryAPI";
+import { InventoryItem} from "@/types";
+import { useInventory } from "@/hooks/useInventory";
 
 const Inventory: React.FC = () => {
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isOutOpen, setIsOutOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
-  const [isOuting, setIsOuting] = useState(false);
-
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]); // Stores the items in the inventory
+  const {
+    inventoryItems,
+    isLoading,
+    isAdding,
+    isOuting,
+    isEditing,
+    isDeleting,
+    isAddOpen,
+    isOutOpen,
+    isEditOpen,
+    setIsAddOpen,
+    setIsOutOpen,
+    setIsEditOpen,
+    loadInventoryItems,
+    handleAddProduct,
+    handleOutItem,
+    handleEditItem,
+    handleDeleteItem,
+  } = useInventory();
 
   useEffect(() => {
-    const loadInventoryItems = async () => {
-      toast.loading("Loading inventory...", {
-        position: "top-center",
-        toastId: "loading-inventory",
-      });
-      try {
-        setIsLoading(true);
-        const items = await fetchInventoryItems();
-
-        toast.update("loading-inventory", {
-          render: `Loaded ${items.length} ${items.length > 1 ? "items" : "item"} successfully`,
-          type: "success",
-          isLoading: false,
-          autoClose: 2000,
-          hideProgressBar: false,
-        });
-
-        setInventoryItems(items);
-      } catch (error) {
-        console.error("Failed to fetch inventory items:", error);
-
-        toast.update("loading-inventory", {
-          render: error instanceof Error ? error.message : "Failed to load inventory",
-          type: "error",
-          isLoading: false,
-          autoClose: 3000,
-          hideProgressBar: false,
-        });
-
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadInventoryItems();
-  }, []);
+  }, [])
 
-  const handleAddProduct = async (newProduct: ItemFormData) => {
-    toast.loading("Adding product...", {
-      position: "top-center",
-      toastId: "adding-product",
-    });
-    try {
-      setIsAdding(true);
-      await addInventoryItem(newProduct);
-
-      toast.update("adding-product", {
-        render: "Product added successfully!",
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-        hideProgressBar: false,
-      });
-
-      const items = await fetchInventoryItems();
-      setInventoryItems(items);
-      setIsAddOpen(false);
-    } catch (error) {
-      console.error("Failed to add product:", error);
-      
-      toast.update("adding-product", {
-        render: error instanceof Error ? error.message : "Failed to add product. Please try again.",
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-        hideProgressBar: false,
-      });
-
-    } finally {
-      setIsAdding(false);
-    }
-  };
-
-  const handleOutItem = async (outItem: OrderItem) => {
-    toast.loading("Assigning product...", {
-      position: "top-center",
-      toastId: "assigning-product",
-    });
-    try {
-      setIsOuting(true);
-      await outInventoryItem(outItem)
-
-      toast.update("assigning-product", {
-        render: "Assigned product to orders",
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-        hideProgressBar: false,
-      });
-
-      const items = await fetchInventoryItems();
-      setInventoryItems(items);
-      setIsOutOpen(false);
-    } catch (error) {
-      console.error("Failed to assign product:", error);
-      toast.update("assigning-product", {
-        render: error instanceof Error ? error.message : "Failed to assign product. Please try again.",
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-        hideProgressBar: false,
-      });
-
-    } finally {
-      setIsOuting(false);
-    }
-  };
-
-  const handleEditItem = (updatedItem: InventoryItem) => {
-    setInventoryItems((prevItems) =>
-      prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    );
-  };
-
-  const handleDeleteItem = (id: number) => {
-    setInventoryItems((prevItems) =>
-      prevItems.filter((item) => item.id !== id)
-    );
-  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -165,7 +60,7 @@ const Inventory: React.FC = () => {
 
     return matchesSearch;
   });
-
+  
   return (
     <div className="flex-1 p-0 ">
       <ToastContainer
@@ -215,6 +110,8 @@ const Inventory: React.FC = () => {
         selectedItem={selectedItem}
         onEditItem={(item) => handleEditItem(item)}
         onDeleteItem={(id) => handleDeleteItem(id)}
+        isEditing={isEditing}
+        isDeleting={isDeleting}
       />
     </div>
   );
