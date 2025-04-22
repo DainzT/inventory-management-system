@@ -43,3 +43,20 @@ export const fetchAssignedItems = async (): Promise<OrderItemProps[]> => {
     }
   }
 };
+
+export const updateArchivedStatus = async (orders: OrderItemProps[]) => {
+  try {
+    const response = await apiClient.post("/assigned-item/update-archive", {
+      orders,
+    });
+
+    if (!response.data.success) {
+      throw new Error("Failed to update archived status");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating archived status:", error);
+    throw error;
+  }
+};
