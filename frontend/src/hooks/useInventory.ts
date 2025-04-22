@@ -13,7 +13,7 @@ export const useInventory = () => {
     const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);;
     const [isAdding, setIsAdding] = useState(false);
-    const [isOuting, setIsOuting] = useState(false);
+    const [isAssigning, setIsAssigning] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isAddOpen, setIsAddOpen] = useState(false);
@@ -73,7 +73,7 @@ export const useInventory = () => {
     const handleOutItem = async (outItem: OrderItem) => {
         showLoadingToast("assigning-product", "Assigning product...");
         try {
-            setIsOuting(true);
+            setIsAssigning(true);
             const res = await outInventoryItem(outItem)
 
             showSuccessToast("assigning-product", res.message);
@@ -88,7 +88,7 @@ export const useInventory = () => {
             showErrorToast("assigning-product", message);
 
         } finally {
-            setIsOuting(false);
+            setIsAssigning(false);
         }
     };
 
@@ -143,7 +143,7 @@ export const useInventory = () => {
         inventoryItems,
         isLoading,
         isAdding,
-        isOuting,
+        isAssigning,
         isEditing,
         isDeleting,
         isAddOpen,

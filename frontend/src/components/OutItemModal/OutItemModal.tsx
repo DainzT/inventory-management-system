@@ -15,7 +15,7 @@ interface OutItemModalProps {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   selectedItem: InventoryItem | null;
   onOutItem: (outItem: OrderItem) => void;
-  isOuting?: boolean;
+  isAssigning?: boolean;
 }
 
 const OutItemModal: React.FC<OutItemModalProps> = ({
@@ -23,7 +23,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
   setIsOpen,
   selectedItem,
   onOutItem,
-  isOuting,
+  isAssigning,
 }) => {
   const [fleet, setFleet] = useState<string>("");
   const [boat, setBoat] = useState<string>("");
@@ -161,7 +161,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
             onClick={handleCloseAttempt}
             className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
             aria-label="Close dialog"
-            disabled={isOuting}
+            disabled={isAssigning}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
@@ -184,7 +184,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
             onChange={handleFleetChange}
             options={fleetOptions}
             error={errors.fleet}
-            disabled={isOuting}
+            disabled={isAssigning}
             required
           />
         </div>
@@ -198,7 +198,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
               onChange={handleBoatChange}
               options={boatOptions}
               error={errors.boat}
-              disabled={!fleet || isOuting}
+              disabled={!fleet || isAssigning}
             />
           </div>
         )}
@@ -210,7 +210,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
             maxQuantity={Number(selectedItem?.quantity)}
             unitSize={Number(selectedItem?.unitSize)}
             error={errors.quantity}
-            disabled={isOuting}
+            disabled={isAssigning}
           />
         </div>
 
@@ -224,14 +224,14 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
           onClick={handleAssign}
           className="
             flex absolute right-6 bottom-6 gap-2 justify-center items-center h-10 text-white
-            bg-[#1B626E] rounded-md w-24 transition-colors hover:bg-[#297885] active:bg-[#145965] cursor-pointer
+            bg-[#1B626E] rounded-md w-28 transition-colors hover:bg-[#297885] active:bg-[#145965] cursor-pointer
           "
-          disabled={isOuting}
+          disabled={isAssigning}
         >
-          {isOuting ? (
+          {isAssigning ? (
             <div className="flex items-center justify-center">
               <ClipLoader color="#ffffff" size={20} className="mr-2" />
-              Outing...
+              Assigning...
             </div>
           ) : (
             <>
@@ -243,7 +243,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
       </article>
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-        onClick={!isOuting ? handleCloseAttempt : undefined}
+        onClick={!isAssigning ? handleCloseAttempt : undefined}
         aria-hidden="true"
       />
       <UnsavedChangesModal
