@@ -1,0 +1,23 @@
+name: File Naming Convention
+
+on:
+  pull_request:
+    paths:
+      - '**/*.ts'
+      - '**/*.tsx'
+
+jobs:
+  check-file-names:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Run naming convention check
+        run: node scripts/checkNamingConvention.js
