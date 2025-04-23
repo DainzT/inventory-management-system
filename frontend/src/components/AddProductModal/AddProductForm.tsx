@@ -7,6 +7,8 @@ import { UnitSelector } from "./UnitSelector";
 import { ItemFormData } from "@/types";
 import { ClipLoader } from "react-spinners";
 
+import { roundTo } from "@/utils/RoundTo";
+
 interface ProductFormProps {
     onSubmit: (data: ItemFormData) => void;
     onFormChange: (hasChanges: boolean) => void;
@@ -36,10 +38,11 @@ const AddProductForm = ({
     useEffect(() => {
         setProductData((current) => ({
             ...current,
-            total: Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)),
+            total: roundTo(Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)), 2),
         }));
     }, [productData.quantity, productData.unitPrice, productData.unitSize]);
 
+    console.log(productData.total)
     useEffect(() => {
         const hasChanges = Object.keys(productData).some(key => {
             if (key === 'dateCreated' || key === 'total') return false;

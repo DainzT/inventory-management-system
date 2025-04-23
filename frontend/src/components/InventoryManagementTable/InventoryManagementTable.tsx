@@ -39,9 +39,15 @@ const InventoryManagementTable = ({
   };
 
   return (
-    <main className="p-[30px] max-lg:p-[15px] h-[calc(100vh-135px)]">
-      <section className="w-full h-[calc(100vh-140px)] rounded-[12px] border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]">
-        <div className="p-[24px] flex items-center gap-[10px]">
+    <main className="p-[30px] max-sm:p-0 max-lg:p-[15px] h-[calc(100vh-135px)] ">
+      <section className="
+        w-[calc(100vw+170px)]  sm:w-full md:w-[calc(100vw)] lg:w-full
+        h-[calc(100vh-140px)] rounded-[5px] border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]
+      ">
+        <div className="
+          w-[calc(100vw+170px)]  sm:w-full md:w-[calc(100vw)] lg:w-full
+          p-2 sm:p-[24px] flex items-center gap-[10px]
+        ">
           <SearchBar placeholder="Search Items..." onSearch={onSearch} />
           <InventoryButton
             variant="add"
@@ -49,7 +55,12 @@ const InventoryManagementTable = ({
           />
         </div>
         <TableHeader />
-        <div className=" flex flex-col h-[calc(100vh-380px)] overflow-x-hidden overflow-auto">
+        <div className="
+          flex flex-col 
+          h-[calc(100vh-300px)] sm:h-[calc(100vh-360px)] md:h-[calc(100vh-360px)] lg:h-[calc(100vh-380px)]
+          w-[calc(100vw+170px)] sm:w-full md:w-[calc(100vw)] lg:w-full
+          overflow-x-hidden overflow-auto
+        ">
           {isLoading && (
             <div className="relative flex justify-center items-center mt-40 mr-5 ml-3">
               <ClipLoader size={60} color="#36D7B7" loading={isLoading} />
@@ -68,7 +79,10 @@ const InventoryManagementTable = ({
             onEdit={(item) => handleEditItemClick(item)}
           />
         </div>
-        <div className="p-3 px-6 border-t border-gray-200 bg-gray-50 text-sm text-gray-500">
+        <div className="
+          p-3 px-6 border-t border-gray-200 bg-gray-50 text-sm text-gray-500 
+          w-[calc(100vw+170px)] sm:w-full md:w-[calc(100vw)] lg:w-full
+        ">
           <div className="flex justify-between items-center">
             <span>
               {inventoryItems.length} {inventoryItems.length === 1 ? 'item' : 'items total'}

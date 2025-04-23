@@ -5,17 +5,20 @@ interface DeleteButtonProps {
     children?: React.ReactNode; 
     onClick?: () => void; 
     className?: string;
+    disabled?: boolean;
+    isDeleting: boolean;
   }
 
 export const DeleteButton = ({
     children,
     className,
-    onClick
+    onClick,
+    disabled = false,
+    isDeleting = false,
 }: DeleteButtonProps) => {
     const [showConfirm, setShowConfirm] = useState(false);
     const handleConfirm = () => {
-      setShowConfirm(false); 
-      onClick?.(); 
+      onClick?.();
   };
 
   return (
@@ -27,10 +30,11 @@ export const DeleteButton = ({
             flex items-center gap-[2px] px-[10px]   
             text-red-500 rounded-[4px] font-medium transition-transform
             hover:translate-y-[-1px] text-sm
-            hover:outline-1
+            hover:outline-1 cursor-pointer
             hover:outline-[#CE303F] 
             ${className}
         `}
+        disabled={disabled}
       >
         <svg
             width="16"
@@ -53,7 +57,9 @@ export const DeleteButton = ({
       <DeleteConfirmationModal
         isOpen={showConfirm}
         onClose={() => setShowConfirm(false)}
-        onConfirm={handleConfirm} 
+        onConfirm={handleConfirm}
+        isDeleting={isDeleting}
+        disabled={isDeleting}
       />
     </>
   );

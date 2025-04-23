@@ -1,38 +1,64 @@
 import React from "react";
 import {
   BrowserRouter as Router,
-  Routes,
   Route,
+  Routes,
   Navigate,
 } from "react-router-dom";
-
-import ProtectedRoute from "./components/ProtectedRoutes";
-import PageLayout from "./pages/PageLayout";
-import LoginPage from "./pages/LoginPage";
+import Header from "./components/Header";
+import Sidebar from "@/components/Sidebar";
 import Inventory from "./pages/InventoryPage";
 import Orders from "./pages/OrderPage";
 import Summary from "./pages/SummaryPage";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoutes";
 
 const App: React.FC = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <PageLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="inventory" element={<Inventory />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="summary/:fleetName" element={<Summary />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+      <div className="flex flex-col h-screen overflow-hidden">
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <>
+                  <div className="flex flex-col h-screen overflow-hidden">
+                    <Header />
+                    <div className="flex flex-1 overflow-hidden">
+                      <Sidebar />
+                      <div className="flex-1 p-4 overflow-y-hidden">
+                        <Routes>
+                          <Route path="/inventory" element={<Inventory />} />
+                          <Route
+                            path="/orders"
+                            element={
+                              <div className="h-full overflow-y-auto">
+                                <Orders/>
+                              </div>
+                            }
+                          />
+                          <Route
+                            path="/summary/:fleetName"
+                            element={
+                              <div className="h-full overflow-y-auto">
+                                <Summary />
+                              </div>
+                            }
+                          />
+                        </Routes>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </div>
     </Router>
   );
 };
