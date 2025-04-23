@@ -105,6 +105,35 @@ export const FleetAndBoatAssignment: Story = {
   },
 };
 
+export const UnsavedChanges: Story = {
+  args: {
+    isOpen: true,
+    order: sampleOrder,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const incrementButton = canvas.getByRole("button", { name: /increment quantity/i });
+    await userEvent.click(incrementButton);
+
+    const cancelButton = canvas.getByRole("button", { name: /cancel/i });
+    await userEvent.click(cancelButton);
+
+    const unsavedChangesModal = within(canvasElement).getByText("Unsaved Changes");
+    await expect(unsavedChangesModal).toBeInTheDocument();
+
+    const unsavedText = within(canvasElement).getByText(
+      "You have unsaved changes. Are you sure you want to leave without saving?"
+    );
+    await expect(unsavedText).toBeInTheDocument();
+
+    const discardButton = within(canvasElement).getByRole("button", { name: /discard changes/i });
+    await userEvent.click(discardButton);
+
+    await waitFor(() => expect(canvas.queryByText("Unsaved Changes")).not.toBeInTheDocument());
+  },
+};
+
 export const ConfirmationFlow: Story = {
   args: {
     isOpen: true,
