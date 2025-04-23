@@ -3,9 +3,25 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import prisma from "../lib/prisma";
+import { generateOtp, saveOtpToDatabase } from "../lib/otpService";
+import nodemailer from "nodemailer";
+import supabase from "../lib/supabaseClient";
 
 dotenv.config();
 const router: Router = express.Router();
+
+const transporter = nodemailer.createTransport({
+  // host: "smtp.gmail.com",
+  // port: 465,
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
 
 const ACCESS_SECRET = process.env.ACCESS_SECRET!;
 const REFRESH_SECRET = process.env.REFRESH_SECRET!;
@@ -36,31 +52,21 @@ router.post(
         return;
       }
 
-      const { pin, backupPin, securityQuestions } = req.body;
-
-      if (
-        !pin ||
-        !backupPin ||
-        !securityQuestions ||
-        securityQuestions.length !== 3
-      ) {
+      const { pin } = req.body;
+      if (!pin || pin.length !== 6 || !/^\d+$/.test(pin)) {
         res.status(400).json({
-          message: "All fields are required including 3 security questions",
+          message: "PIN is required and must be exactly 6 digits long.",
         });
         return;
       }
 
       const hashedPin = await bcrypt.hash(pin, 10);
-      const hashedBackupPin = await bcrypt.hash(backupPin, 10);
-
       await prisma.user.create({
         data: {
+          email: req.body.email,
           pin: hashedPin,
-          backupPin: hashedBackupPin,
-          securityQuestions,
         },
       });
-
       res.json({ message: "Admin account created successfully" });
     } catch (error) {
       console.error("Error creating admin:", error);
@@ -101,7 +107,12 @@ router.post(
       }
 
       const hashedPin = await bcrypt.hash(pin, 10);
-      await prisma.user.create({ data: { pin: hashedPin } });
+      await prisma.user.create({
+        data: {
+          email: req.body.email,
+          pin: hashedPin,
+        },
+      });
       res.json({ message: "Pin set successfully" });
     } catch (error) {
       console.error("Error in setup-pin:", error);
@@ -229,7 +240,7 @@ router.get("/check-pin", async (req: Request, res: Response): Promise<void> => {
     const user = await prisma.user.findFirst();
 
     if (!user) {
-      res.status(500).json({ message: "No admin found", isPinSet: false });
+      res.status(200).json({ message: "No admin found", isPinSet: false });
       return;
     }
 
@@ -248,7 +259,6 @@ router.get("/check-pin", async (req: Request, res: Response): Promise<void> => {
       res.json({ isPinSet: true, isAuthenticated: false });
     }
   } catch (error) {
-    console.error("Check PIN error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -264,57 +274,133 @@ router.post("/logout", async (req: Request, res: Response): Promise<void> => {
 });
 
 router.post(
-  "/reset-pin-input",
+  "/otp-login",
   async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: "http://localhost:5173/otp-callback" },
+    });
+
+    if (error) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+    res.status(200).json({ message: "Magic link sent" });
+  }
+);
+
+router.post(
+  "/verify-token",
+  async (req: Request, res: Response): Promise<void> => {
+    const { token, email } = req.body;
+
     try {
-      const { backupPin, securityAnswers, newPin } = req.body;
-
-      if (!backupPin || !securityAnswers || !newPin) {
-        res.status(400).json({ message: "All fields are required" });
-        return;
-      }
-
-      const user = await prisma.user.findFirst();
-      if (!user) {
-        res.status(404).json({ message: "No user account found" });
-        return;
-      }
-
-      if (!user.backupPin) {
-        res.status(500).json({ message: "Backup PIN is not set for the user" });
-        return;
-      }
-
-      const isBackupPinMatch = await bcrypt.compare(backupPin, user.backupPin);
-      if (!isBackupPinMatch) {
-        res.status(401).json({ message: "Invalid backup PIN" });
-        return;
-      }
-
-      const storedQuestions = user.securityQuestions as
-        | { question: string; answer: string }[]
-        | null;
-
-      if (!storedQuestions || !Array.isArray(storedQuestions)) {
-        res
-          .status(500)
-          .json({ message: "Security questions are not properly set" });
-        return;
-      }
-
-      const isSecurityAnswersMatch = storedQuestions.every((q, i) => {
-        return (
-          q.answer.trim().toLowerCase() ===
-          (securityAnswers[i]?.answer || "").trim().toLowerCase()
-        );
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: "magiclink",
       });
 
-      if (!isSecurityAnswersMatch) {
-        res.status(401).json({ message: "Invalid security answers" });
+      if (error || !data.session) {
+        res.status(401).json({ message: error?.message || "Invalid token" });
+        return;
+      }
+
+      res.status(200).json({ user: data.user, session: data.session });
+    } catch (err) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.post(
+  "/send-otp-email",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        res.status(400).json({ message: "Email is required." });
+        return;
+      }
+
+      const otp = generateOtp();
+      const otpExpiry = Date.now() + 10 * 60 * 1000;
+
+      await saveOtpToDatabase(email, otp, otpExpiry);
+
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Your OTP Code",
+        text: `Your OTP code is: ${otp}`,
+      });
+
+      res.status(200).json({ message: "OTP sent successfully", success: true });
+    } catch (error: any) {
+      console.error("Error sending OTP email:", error.message);
+      res.status(500).json({ message: "Failed to send OTP" });
+    }
+  }
+);
+
+router.post(
+  "/verify-otp",
+  async (req: Request, res: Response): Promise<void> => {
+    const { email, otp } = req.body;
+
+    try {
+      const otpRecord = await prisma.otp.findFirst({
+        where: { email, otp },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (!otpRecord) {
+        res.status(400).json({ message: "Invalid OTP" });
+        return;
+      }
+
+      const currentTime = new Date();
+      if (currentTime > otpRecord.otpExpiration) {
+        res.status(400).json({ message: "OTP has expired" });
+        return;
+      }
+
+      res.status(200).json({ message: "OTP verified successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Failed to verify OTP" });
+    }
+  }
+);
+
+router.post(
+  "/reset-pin",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email, newPin } = req.body;
+
+      if (
+        !newPin ||
+        newPin.length !== MAX_PIN_LENGTH ||
+        !/^\d+$/.test(newPin)
+      ) {
+        res.status(400).json({
+          message: `New PIN must be exactly ${MAX_PIN_LENGTH} digits long and only contain numbers.`,
+        });
+        return;
+      }
+
+      const user = await prisma.user.findFirst({ where: { email } });
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
         return;
       }
 
       const hashedNewPin = await bcrypt.hash(newPin, 10);
+
       await prisma.user.update({
         where: { id: user.id },
         data: { pin: hashedNewPin },
@@ -322,29 +408,8 @@ router.post(
 
       res.json({ message: "PIN reset successfully" });
     } catch (error) {
-      console.error("Forgot PIN error:", error);
+      console.error("Reset PIN error:", error);
       res.status(500).json({ message: "Internal server error" });
-    }
-  }
-);
-
-router.get(
-  "/security-questions",
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const admin = await prisma.user.findFirst();
-      if (!admin) {
-        res.status(404).json({ message: "Admin not found" });
-        return;
-      }
-
-      res.json({
-        questions: Array.isArray(admin.securityQuestions)
-          ? admin.securityQuestions
-          : [],
-      });
-    } catch (err) {
-      res.status(500).json({ message: "Failed to fetch questions" });
     }
   }
 );

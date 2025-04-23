@@ -4,7 +4,11 @@ import {
   setupPin,
   login as loginAPI,
   changePin,
+  sendOtpEmail as sendOtpEmailAPI,
+  verifyOtp,
+  verifyToken,
 } from "../api/authAPI";
+import supabase from "@/services/supabaseClient";
 
 interface AuthResponse {
   token?: string;
@@ -24,11 +28,9 @@ export const useAuth = () => {
   const [token, setToken] = useState<string | null>(() => {
     return sessionStorage.getItem(TOKEN_KEY);
   });
-
   const [isPinSet, setIsPinSet] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
   const isAuthenticated = !!token;
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export const useAuth = () => {
       try {
         const data = await checkPin();
         setIsPinSet(data.isPinSet ?? false);
-        if (data.isAuthenticated) {
+        if (data.isAuthenticated && data.token) {
           sessionStorage.setItem(TOKEN_KEY, data.token);
           setToken(data.token);
         }
@@ -82,6 +84,7 @@ export const useAuth = () => {
       });
       sessionStorage.removeItem(TOKEN_KEY);
       setToken(null);
+      await supabase.auth.signOut();
     } catch (err) {
       console.error("Logout failed:", err);
     } finally {
@@ -92,7 +95,7 @@ export const useAuth = () => {
   const setupNewPin = async (pin: string) => {
     try {
       setLoading(true);
-      const data: AuthResponse = await setupPin(pin);
+      const data = await setupPin(pin);
       if (data.message === "Pin set successfully") {
         setIsPinSet(true);
         setError(null);
@@ -110,7 +113,7 @@ export const useAuth = () => {
   const updatePin = async (oldPin: string, newPin: string) => {
     try {
       setLoading(true);
-      const data: AuthResponse = await changePin(oldPin, newPin);
+      const data = await changePin(oldPin, newPin);
       if (data.message === "Pin updated successfully") {
         setError(null);
       } else {
@@ -119,6 +122,48 @@ export const useAuth = () => {
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to change PIN.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendOtpEmail = async (email: string) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOtp({ email });
+      if (error) throw error;
+      console.log("OTP sent to email");
+    } catch (err) {
+      const error = err as ErrorWithMessage;
+      setError(error.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginWithOtp = async () => {
+    try {
+      setLoading(true);
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      if (error || !session || !session.access_token) {
+        throw new Error("OTP login failed or no session found");
+      }
+
+      const data = await verifyToken(session.access_token);
+      if (data.token) {
+        sessionStorage.setItem(TOKEN_KEY, data.token);
+        setToken(data.token);
+        setError(null);
+      } else {
+        throw new Error("Invalid token returned from backend");
+      }
+    } catch (err) {
+      const error = err as ErrorWithMessage;
+      setError(error.message || "OTP login failed");
     } finally {
       setLoading(false);
     }
@@ -161,5 +206,7 @@ export const useAuth = () => {
     logout,
     setupNewPin,
     updatePin,
+    loginWithOtp,
+    sendOtpEmail,
   };
 };

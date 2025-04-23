@@ -1,27 +1,32 @@
-import axios from "axios";
-
 const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
-export const checkPin = async () => {
+interface AuthResponse {
+  token?: string;
+  isPinSet?: boolean;
+  isAuthenticated?: boolean;
+  message?: string;
+}
+
+export const checkPin = async (): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/check-pin`, {
+    method: "GET",
     credentials: "include",
   });
   return res.json();
 };
 
-export const setupPin = async (pin: string) => {
+export const setupPin = async (pin: string): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/setup-pin`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ pin }),
-    credentials: "include",
   });
   return res.json();
 };
 
-export const login = async (
-  pin: string
-): Promise<{ token?: string; message?: string }> => {
+export const login = async (pin: string): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,7 +42,10 @@ export const login = async (
   return res.json();
 };
 
-export const changePin = async (oldPin: string, newPin: string) => {
+export const changePin = async (
+  oldPin: string,
+  newPin: string
+): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/change-pin`, {
     method: "PUT",
     headers: {
@@ -73,10 +81,9 @@ export const checkAdminExists = async (): Promise<boolean> => {
 };
 
 export const createAdmin = async (payload: {
+  email: string;
   pin: string;
   confirmPin: string;
-  backupPin: string;
-  securityQuestions: { question: string; securityAnswers: string }[];
 }) => {
   const res = await fetch(`${API_URL}/auth/create-admin`, {
     method: "POST",
@@ -92,52 +99,82 @@ export const createAdmin = async (payload: {
   return res.json();
 };
 
-export async function resetPinWithBackup(
-  backupPin: string,
-  answers: { question: string; answer: string }[],
-  newPin: string
-): Promise<{ success: boolean; message?: string }> {
-  const res = await fetch(`${API_URL}/auth/reset-pin-input`, {
+export const sendOtpEmail = async (email: string): Promise<void> => {
+  const res = await fetch(`${API_URL}/auth/send-otp-email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ backupPin, securityAnswers: answers, newPin }),
-    credentials: "include",
+    body: JSON.stringify({ email }),
   });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.message || "Failed to reset PIN");
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    throw new Error("Failed to parse JSON response from server.");
   }
 
-  return data;
-}
+  if (!res.ok || data.success === false) {
+    throw new Error(data.message || "Failed to send OTP email.");
+  }
+};
 
-export interface SecurityQuestion {
-  question: string;
-  securityAnswers: string[];
-}
-
-export async function getSecurityQuestions(): Promise<{
-  questions: SecurityQuestion[];
-}> {
-  const response = await fetch(`${API_URL}/auth/security-questions`, {
-    method: "GET",
+export const verifyOtp = async (
+  email: string,
+  otp: string
+): Promise<AuthResponse> => {
+  const res = await fetch(`${API_URL}/auth/verify-otp`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({ email, otp }),
     credentials: "include",
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch security questions");
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "OTP verification failed");
   }
 
-  const data = await response.json();
+  return res.json();
+};
 
-  return {
-    questions: data.questions as SecurityQuestion[], // Type assertion to ensure it's the expected shape
-  };
-}
+export const verifyToken = async (
+  token: string
+): Promise<{ token?: string }> => {
+  const res = await fetch(`${API_URL}/auth/verify-token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token }),
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Token verification failed");
+  }
+
+  return res.json();
+};
+
+export const resetPin = async (
+  email: string,
+  newPin: string
+): Promise<void> => {
+  const res = await fetch(`${API_URL}/auth/reset-pin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, newPin }),
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to reset PIN");
+  }
+};

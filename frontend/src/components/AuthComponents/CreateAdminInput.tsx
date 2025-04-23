@@ -1,4 +1,5 @@
 import React from "react";
+import { SimpleInputProps } from "@/types/select-field";
 
 interface CreateAdminInputProps {
   label: string;
@@ -6,6 +7,7 @@ interface CreateAdminInputProps {
   value: string;
   onChange: (value: string) => void;
   isPin?: boolean;
+  placeholder?: string;
 }
 
 const CreateAdminInput: React.FC<CreateAdminInputProps> = ({
@@ -14,6 +16,7 @@ const CreateAdminInput: React.FC<CreateAdminInputProps> = ({
   value,
   onChange,
   isPin = false,
+  placeholder,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -30,6 +33,7 @@ const CreateAdminInput: React.FC<CreateAdminInputProps> = ({
       <input
         type={type}
         value={value}
+        placeholder={placeholder}
         onChange={handleChange}
         className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
       />
