@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
 import { OrderItemProps } from "@/types/fleet-order";
-import UnsavedChangesModal from "../DiscardChangesModal";
+
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
+import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
 
 interface ModifyModalProps {
   isOpen: boolean;
@@ -247,8 +248,8 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
       <UnsavedChangesModal
         isOpen={isUnsavedChangesModalOpen}
-        onCancel={() => setIsUnsavedChangesModalOpen(false)}
-        onDiscard={handleDiscardChanges}
+        onClose={() => setIsUnsavedChangesModalOpen(false)}
+        onConfirm={handleDiscardChanges}
       />
     </>
   );
