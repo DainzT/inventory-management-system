@@ -9,9 +9,22 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
   pin       String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  otps      Otp[]
+}
+
+model Otp {
+  id            Int      @id @default(autoincrement())
+  email         String
+  otp           String
+  otpExpiration DateTime
+  createdAt     DateTime @default(now())
+  user          User?    @relation(fields: [userId], references: [id])
+  userId        Int?
 }
 
 model InventoryItem {
