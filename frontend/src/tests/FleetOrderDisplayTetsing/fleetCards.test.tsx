@@ -81,7 +81,6 @@ describe('FleetList Component', () => {
 
   it('marks the active fleet correctly', () => {
     render(<FleetList activeFleet="Doña Librada" onFleetSelect={mockOnFleetSelect} />);
-    
     expect(screen.getByText('Doña Librada')).toHaveAttribute('aria-current', 'page');
     expect(screen.getByText('All Fleets')).not.toHaveAttribute('aria-current');
   });

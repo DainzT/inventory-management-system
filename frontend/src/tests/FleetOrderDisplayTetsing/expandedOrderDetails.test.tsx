@@ -1,5 +1,4 @@
-import React from "react";
-import { getByTestId, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ExpandedOrderDetails } from "../../components/OrderFleetDisplay/ExpandedOrderDetails";
 import { OrderItemProps } from "@/types/fleet-order";
@@ -7,16 +6,17 @@ import { OrderItemProps } from "@/types/fleet-order";
 describe("ExpandedOrderDetails", () => {
   const order: OrderItemProps = {
     id: 1,
-    productName: "Product A",
+    name: "Product A",
     note: "This is a note",
     quantity: 10,
     unitPrice: 1,
     total: 10,
-    boat: "Boat 1",
-    dateOut: "2025-03-25",
-    fleet: "Fleet A",
+    boat: { id: 8, fleet_id: 2, boat_name: "F/B Ruth Gaily" },
+    outDate: "2025-03-25",
+    fleet: { id: 2, name: "F/B Doña Librada" },
     selectUnit: "Unit A",
-    unitSize: "Size A",
+    archived: false,
+    unitSize: 10,
   };
 
   it("renders the component with order details", () => {
@@ -25,12 +25,12 @@ describe("ExpandedOrderDetails", () => {
     );
 
     expect(getByText("Total Price")).toBeInTheDocument();
-    expect(getByTestId("total-price")).toHaveTextContent("10");
+    expect(getByTestId("total-price")).toHaveTextContent("₱10.00");
     expect(getByText("Fleet Assigned:")).toBeInTheDocument();
-    expect(getByText("Fleet A")).toBeInTheDocument();
+    expect(getByText("F/B Doña Librada")).toBeInTheDocument();
     expect(getByText("Selected Unit")).toBeInTheDocument();
     expect(getByText("Unit A")).toBeInTheDocument();
     expect(getByText("Unit Size")).toBeInTheDocument();
-    expect(getByText("Size A")).toBeInTheDocument();
+    expect(getByText("10")).toBeInTheDocument();
   });
 });

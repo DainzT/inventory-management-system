@@ -6,7 +6,7 @@ const meta: Meta<typeof FilterDropdown> = {
   component: FilterDropdown,
   tags: ['autodocs'],
   argTypes: {
-    onSelect: { action: 'selected' } // This will log selections in Storybook actions panel
+    onSelect: { action: 'selected' }
   }
 } satisfies Meta<typeof FilterDropdown>;
 
@@ -20,8 +20,6 @@ export const AllFleetsView: Story = {
     label: "All Boats",
     options: [
       "All Boats",
-      "F/B DONYA DONYA 2X",
-      "F/B Doña Librada",
       "F/B Lady Rachelle",
       "F/B Mariella",
       "F/B My Shield",

@@ -6,28 +6,32 @@ import { OrderItemProps } from "@/types/fleet-order";
 
 const mockOrders: OrderItemProps[] = [
   {
-    id: 1,
-    productName: "Product 1",
-    note: "Note 1",
+    id: 3,
+    name: "Hook",
+    note: "small size",
     quantity: 10,
-    unitPrice: 100,
-    selectUnit: "kg",
-    unitSize: 5,
-    fleet: "Fleet A",
-    boat: "F/B DONYA DONYA 2X",
-    dateOut: "2025-03-01",
+    unitPrice: 12.5,
+    selectUnit: "pack",
+    unitSize: 10,
+    total: 125,
+    fleet: { id: 2, name: "F/B Doña Librada" },
+    boat: { id: 9, fleet_id: 2, boat_name: "F/V Vadeo Scout" },
+    outDate: "Jan 30, 2024",
+    archived: false,
   },
   {
     id: 2,
-    productName: "Product 2",
-    note: "Note 2",
-    quantity: 20,
-    unitPrice: 200,
-    selectUnit: "kg",
-    unitSize: 10,
-    fleet: "Fleet B",
-    boat: "F/B Doña Librada",
-    dateOut: "2025-03-02",
+    name: "Nylon Fishing Line",
+    note: "500m, high-tensile strength",
+    quantity: 25,
+    unitPrice: 150.5,
+    selectUnit: "roll",
+    unitSize: 1,
+    total: 3762.5,
+    fleet: { id: 2, name: "F/B Doña Librada" },
+    boat: { id: 6, fleet_id: 2, boat_name: "F/B Adomar" },
+    outDate: "Jan 20, 2024",
+    archived: false,
   },
 ];
 
@@ -59,8 +63,8 @@ describe("OrdersTable", () => {
       />
     );
 
-    expect(getByText("Product 1")).toBeInTheDocument();
-    expect(getByText("Product 2")).toBeInTheDocument();
+    expect(getByText("Nylon Fishing Line")).toBeInTheDocument();
+    expect(getByText("Hook")).toBeInTheDocument();
   });
 
   it("calls onModify when Modify button is clicked", () => {
@@ -77,11 +81,11 @@ describe("OrdersTable", () => {
     const modifyButtons = getAllByText("Modify");
     fireEvent.click(modifyButtons[0]);
 
-    expect(onModifyMock).toHaveBeenCalledWith(1);
+    expect(onModifyMock).toHaveBeenCalledWith(2);
   });
 
   it("expands and collapses order details", () => {
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <OrdersTable
         orders={mockOrders}
         activeFleet="All Fleets"
@@ -90,12 +94,20 @@ describe("OrdersTable", () => {
     );
 
     const chevronIcon =
-      getByText("Product 1").parentElement?.nextElementSibling?.querySelector(
-        ".cursor-pointer"
-      );
+      getByText(
+        "Nylon Fishing Line"
+      ).parentElement?.nextElementSibling?.querySelector(".cursor-pointer");
+
     if (chevronIcon) {
+      // Expand details
       fireEvent.click(chevronIcon);
-      expect(getByText("Note 1")).toBeInTheDocument();
+      expect(getByText("500m, high-tensile strength")).toBeInTheDocument();
+
+      // Collapse details
+      fireEvent.click(chevronIcon);
+      expect(
+        queryByText("500m, high-tensile strength")
+      ).not.toBeInTheDocument();
     }
   });
 

@@ -38,8 +38,6 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       case "All Fleets":
         return [
           "All Boats",
-          "F/B DONYA DONYA 2X",
-          "F/B Doña Librada",
           "F/B Lady Rachelle",
           "F/B Mariella",
           "F/B My Shield",
