@@ -10,7 +10,7 @@
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["src/**/*", "../frontend/src/services/supabaseClient.ts"], // Include all files in the src directory
+  "include": ["src/**/*"], // Include all files in the src directory
   "exclude": ["node_modules", "dist"], // Exclude node_modules and dist
   "experimentalSpecifierResolution": "node"
 }
