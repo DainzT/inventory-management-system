@@ -39,7 +39,7 @@ const Orders: React.FC = () => {
         const response = await fetchAssignedItems();
         console.log("Fetched orders:", response);
         setOrders(response);
-        setFilteredOrders(response); // Initialize filtered orders with all orders
+        setFilteredOrders(response); 
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -109,7 +109,6 @@ const Orders: React.FC = () => {
     quantity: number,
     fleet: string,
     boat: string,
-    unit: string
   ) => {
     if (selectedOrder) {
       console.log("Changes confirmed:", {
@@ -117,7 +116,6 @@ const Orders: React.FC = () => {
         quantity,
         fleet,
         boat,
-        unit,
       });
       setIsModalOpen(false);
     }
