@@ -10,24 +10,44 @@ const meta: Meta<typeof AddProductModal> = {
     component: AddProductModal,
     parameters: {
         layout: 'centered',
+        description: {
+            component: 'The Add Product Modal Component allows inputting values and various states',
+        },
     },
     tags: ['autodocs'],
     argTypes: {
         isOpen: {
             control: 'boolean',
             defaultValue: true,
+            description: 'Called when modal visibility changes (true=opened, false=closed)',
+            table: {
+                category: 'Visibility',
+            }
         },
         setIsOpen: {
             action: 'setIsOpen',
         },
         onAddItem: {
             action: 'onAddItem',
+            description: 'Triggered when new item submission starts',
+            table: {
+                category: 'Data',
+            }
+        },
+        isAdding: {
+            control: 'boolean',
+            defaultValue: false,
+            description: 'Toggles loading indicator during submissions',
+            table: {
+                category: 'State',
+            }
         }
     },
     args: {
         isOpen: false,
         setIsOpen: fn(),
         onAddItem: fn(),
+        isAdding: false,
     },
     decorators: [
         (Story) => (
@@ -40,8 +60,11 @@ const meta: Meta<typeof AddProductModal> = {
 export default meta;
 type Story = StoryObj<typeof AddProductModal>
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const StatefulWrapper = () => {
     const [isOpen, setIsOpen] = useState<boolean>(true);
+    const [isAdding,] = useState<boolean>(false);
     const handleAddItem = () => {
         console.log("Add item clicked with empty data");
     };
@@ -51,6 +74,7 @@ const StatefulWrapper = () => {
             onAddItem={handleAddItem}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
+            isAdding={isAdding}
         />
     );
 };
@@ -61,11 +85,25 @@ export const Default: Story = {
         setIsOpen: action('setIsOpen'),
         onAddItem: action('Item Added'),
     },
+    parameters: {
+        docs: {
+            description: {
+                story: 'An open environment to test out the modal.',
+            },
+        },
+    },
 };
 
 export const OpenModal: Story = {
     args: {
         isOpen: true,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'What it looks like when the modal is opened.',
+            },
+        },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
@@ -112,9 +150,15 @@ export const CloseModal: Story = {
             <StatefulWrapper />
         );
     },
+    parameters: {
+        docs: {
+            description: {
+                story: 'What it looks like when closing the modal.',
+            },
+        },
+    },
     play: async ({ canvasElement, args }) => {
         const canvas = within(canvasElement)
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
         await waitFor(async () => {
             await userEvent.hover(canvas.getByLabelText('Close dialog'));
@@ -156,6 +200,13 @@ export const CloseModal: Story = {
 export const EmptyForm: Story = {
     args: {
         isOpen: true,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'When the modal is empty.',
+            },
+        },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
@@ -248,6 +299,13 @@ export const FilledForm: Story = {
     args: {
         isOpen: true,
     },
+    parameters: {
+        docs: {
+            description: {
+                story: 'When filling up the modal.',
+            },
+        },
+    },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
 
@@ -323,6 +381,13 @@ export const DiscardConfirmationModal: Story = {
     args: {
         isOpen: true,
     },
+    parameters: {
+        docs: {
+            description: {
+                story: 'After making progress and deciding to exit the modal.',
+            },
+        },
+    },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
 
@@ -356,9 +421,15 @@ export const DiscardCancelConfirmation: Story = {
     args: {
         isOpen: true,
     },
+    parameters: {
+        docs: {
+            description: {
+                story: 'After deciding to not discard filled details.',
+            },
+        },
+    },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
         const inputTextConfigs = [
             {
@@ -397,9 +468,15 @@ export const DiscardChangesConfirmation: Story = {
             <StatefulWrapper />
         );
     },
+    parameters: {
+        docs: {
+            description: {
+                story: 'After deciding to cancel the product to be added.',
+            },
+        },
+    },
     play: async ({ canvasElement, args }) => {
         const canvas = within(canvasElement)
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
         const inputTextConfigs = [
             {
@@ -439,18 +516,25 @@ export const SubmitWithEmptyForm: Story = {
     args: {
         isOpen: true,
     },
-    play: async({ canvasElement }) => {
+    parameters: {
+        docs: {
+            description: {
+                story: ' Displays all errors on areas the has not been completed.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-        await waitFor( async() => {
+
+        await waitFor(async () => {
             const button = canvas.getByRole('button', {
                 name: /add product/i
             });
 
             expect(button).toBeVisible();
             expect(button).toBeEnabled();
-            await delay(1000)
+            await delay(500)
             await userEvent.click(button)
         });
     }
@@ -460,9 +544,15 @@ export const SubmitIncompleteForm: Story = {
     args: {
         isOpen: true,
     },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Displays errors on some areas the has not been filled after an attempt to submit'
+            },
+        },
+    },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
         const inputTextConfigs = [
             {
@@ -520,8 +610,8 @@ export const SubmitIncompleteForm: Story = {
         })
 
         await waitFor(async () => {
-            const errorMessage =  [
-                'Please select a unit', 
+            const errorMessage = [
+                'Please select a unit',
                 'Enter a valid quantity',
                 'Enter a valid unit size'
             ]
@@ -539,10 +629,16 @@ export const SubmitCompleteForm: Story = {
     args: {
         isOpen: true,
     },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A success submission after filling up the form'
+            },
+        },
+    },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-        
+
         const inputTextConfigs = [
             {
                 role: 'textbox',
@@ -621,5 +717,91 @@ export const SubmitCompleteForm: Story = {
         })
     }
 };
+
+export const ProcessingSubmission: Story = {
+    args: {
+        isOpen: true,
+        isAdding: true,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A processing state while the product is being process'
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+
+        const inputTextConfigs = [
+            {
+                role: 'textbox',
+                value: 'Net',
+            },
+            {
+                role: 'textbox',
+                value: '10 meter wide',
+            },
+        ];
+
+        for (const [index, config] of inputTextConfigs.entries()) {
+            const input = canvas.getAllByRole(config.role)[index] as HTMLInputElement;
+            input.value = config.value
+            expect(input).toHaveValue(config.value);
+        }
+
+        const inputNumberConfigs = [
+            {
+                role: 'spinbutton',
+                value: "10"
+            },
+            {
+                role: 'spinbutton',
+                value: "200",
+            },
+            {
+                role: 'spinbutton',
+                value: "1",
+            },
+            {
+                role: 'spinbutton',
+                value: `${200 * 10}`,
+            },
+        ];
+
+        for (const [index, config] of inputNumberConfigs.entries()) {
+            const input = canvas.getAllByRole(config.role)[index] as HTMLInputElement;
+            if (config.value === "2000") {
+                input.value = config.value
+                await waitFor(() => expect(input).toHaveValue(Number(config.value)));
+            } else {
+                input.value = config.value
+                await waitFor(() => expect(input).toHaveValue(Number(config.value)));
+            }
+        }
+
+        const selectUnit = {
+            text: 'Select Unit',
+            placeholder: 'Unit',
+            expectedValue: 'Unit',
+        }
+
+        const label = canvas.getByText(selectUnit.text);
+        const div = label.closest('div') as HTMLDivElement;
+        const selectDiv = within(div).getByText('Unit')
+        if (selectDiv) {
+            selectDiv.textContent = "Piece"
+        }
+
+        expect(selectDiv).toHaveTextContent('Piece');
+        await waitFor(() => {
+            const loaderContainer = canvas.getByText('Adding...').closest('div');
+            expect(loaderContainer).toBeInTheDocument();
+            expect(loaderContainer).toHaveClass('flex', 'items-center', 'justify-center');
+            expect(canvas.getByText('Adding...')).toBeInTheDocument();
+        })
+    }
+}
 
 
