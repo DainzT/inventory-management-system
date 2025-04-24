@@ -1,12 +1,10 @@
 import { Boat } from  "./summary-item"
 import { Fleet } from "./summary-item";
-import { InventoryItem } from "./inventory-item";
 
 export interface OrderItem {
   id: number;
   name: string;
   note: string;
-  currentStock: InventoryItem;
   quantity: number | "";
   unitPrice: number | "";
   selectUnit: string | "";
@@ -15,7 +13,6 @@ export interface OrderItem {
   fleet: Fleet;
   boat: Boat;
   archived: boolean;
-  outDate: Date | string;
-  lastUpdated: Date | string;
-
+  outDate: Date;
+  lastUpdated?: Date;
 }

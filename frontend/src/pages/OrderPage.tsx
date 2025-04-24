@@ -4,6 +4,7 @@ import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
 import { OrderItem } from "@/types/order-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
 import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
+import { PageTitle } from "@/components/PageTitle";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [
@@ -103,7 +104,7 @@ const Orders: React.FC = () => {
         order.unitSize.toString(),
         order.total?.toString() || "",
         order.boat.boat_name.toLowerCase(),
-        order.outDate as string,
+        order.outDate.toString(),
       ].some((field) => field.includes(searchQuery.toLowerCase()));
 
       const matchesFleet =
@@ -172,33 +173,33 @@ const Orders: React.FC = () => {
 
   return (
     <div>
-      <main className="flex-1">
-        <h1 className="mt-4 text-5xl font-bold text-[#295C65]">
-          Orders for {activeFleet}
-        </h1>
+      <main className="flex-1 p-0">
+        <PageTitle title={activeFleet} />
 
-        <div className="-mt-5 flex justify-center items-center gap-25  h-[300px]">
-          <FleetCard
-            title="All Fleets"
-            backgroundColor="bg-emerald-800"
-            isActive={activeFleet === "All Fleets"}
-            onClick={() => handleFleetSelect("All Fleets")}
-          />
-          <FleetCard
-            title="F/B DONYA DONYA 2X"
-            backgroundColor="bg-cyan-800"
-            isActive={activeFleet === "F/B DONYA DONYA 2X"}
-            onClick={() => handleFleetSelect("F/B DONYA DONYA 2X")}
-          />
-          <FleetCard
-            title="F/B Doña Librada"
-            backgroundColor="bg-red-800"
-            isActive={activeFleet === "F/B Doña Librada"}
-            onClick={() => handleFleetSelect("F/B Doña Librada")}
-          />
+        <div className="flex justify-center items-center h-[230px]">
+          <div className="justify-start items-center flex gap-35">
+            <FleetCard
+              title="All Fleets"
+              backgroundColor="bg-emerald-800"
+              isActive={activeFleet === "All Fleets"}
+              onClick={() => handleFleetSelect("All Fleets")}
+            />
+            <FleetCard
+              title="F/B DONYA DONYA 2X"
+              backgroundColor="bg-cyan-800"
+              isActive={activeFleet === "F/B DONYA DONYA 2X"}
+              onClick={() => handleFleetSelect("F/B DONYA DONYA 2X")}
+            />
+            <FleetCard
+              title="F/B Doña Librada"
+              backgroundColor="bg-red-800"
+              isActive={activeFleet === "F/B Doña Librada"}
+              onClick={() => handleFleetSelect("F/B Doña Librada")}
+            />
+          </div>
         </div>
 
-        <div className="-mt-5 scale-97">
+        <div className="p-[30px]">
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}

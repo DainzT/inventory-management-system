@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+import { handleApiError } from "./handleApiError";
 import apiClient from "./apiClient";
 import { OrderItem } from "@/types/order-item";
 
@@ -18,29 +18,7 @@ export const fetchAssignedItems = async (): Promise<OrderItem[]> => {
       dateOut: item.outDate,
     }));
   } catch (error) {
-    const axiosError = error as AxiosError<{
-      error?: string;
-      message?: string;
-    }>;
-
-    if (axiosError.response) {
-      const status = axiosError.response.status;
-      const errorMessage =
-        axiosError.response.data?.message ||
-        axiosError.response.data?.error ||
-        `Request failed with status ${status}`;
-      console.error(`API Error [Status ${status}]:`, errorMessage);
-      throw new Error(errorMessage);
-    } else if (axiosError.request) {
-      console.error(
-        "No response received from server. Request details:",
-        axiosError.request
-      );
-      throw new Error("No response received from server");
-    } else {
-      console.error("Request setup error:", axiosError.message);
-      throw new Error(`Request setup error: ${axiosError.message}`);
-    }
+    return handleApiError(error);
   }
 };
 
@@ -57,6 +35,6 @@ export const updateArchivedStatus = async (orders: OrderItem[]) => {
     return response.data;
   } catch (error) {
     console.error("Error updating archived status:", error);
-    throw error;
+    return handleApiError(error)
   }
 };

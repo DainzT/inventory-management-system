@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
-import { OrderItemProps } from "@/types/fleet-order";
-
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
+import { OrderItem } from "@/types";
 
 interface ModifyModalProps {
   isOpen: boolean;
@@ -14,7 +13,7 @@ interface ModifyModalProps {
     boat: string,
   ) => void;
   onRemove: () => void;
-  order: OrderItemProps;
+  order: OrderItem;
 }
 
 const fleets = {
@@ -45,7 +44,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const [quantity, setQuantity] = useState<number>(
     typeof order.quantity === "number" ? order.quantity : 0
   );
-  const [fleet, setFleet] = useState<string>(order.fleet.name);
+  const [fleet, setFleet] = useState<string>(order.fleet.fleet_name);
   const [boat, setBoat] = useState<string>(order.boat.boat_name);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] =
@@ -53,11 +52,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const [hasChanges, setHasChanges] = useState(false);
 
   const currentStock = 8;
-
   useEffect(() => {
     const hasChanged =
       quantity !== order.quantity ||
-      fleet !== order.fleet.name ||
+      fleet !== order.fleet.fleet_name ||
       boat !== order.boat.boat_name;
   
     setHasChanges(hasChanged);
@@ -161,9 +159,6 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                   >
                     <Plus size={20} />
                   </button>
-                </div>
-                <div className= "px-3 py-2 h-10 flex items-center justify-center min-w-[80px]">
-                  {/* {unit} */}
                 </div>
               </div>
             </div>
