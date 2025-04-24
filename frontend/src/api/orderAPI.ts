@@ -1,12 +1,12 @@
 import { AxiosError } from "axios";
 import apiClient from "./apiClient";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item";
 
-export const fetchAssignedItems = async (): Promise<OrderItemProps[]> => {
+export const fetchAssignedItems = async (): Promise<OrderItem[]> => {
   try {
     const response = await apiClient.get<{
       success: boolean;
-      data: OrderItemProps[];
+      data: OrderItem[];
     }>("/assigned-item/assign-item");
 
     if (!response.data.success || !Array.isArray(response.data.data)) {
@@ -41,5 +41,22 @@ export const fetchAssignedItems = async (): Promise<OrderItemProps[]> => {
       console.error("Request setup error:", axiosError.message);
       throw new Error(`Request setup error: ${axiosError.message}`);
     }
+  }
+};
+
+export const updateArchivedStatus = async (orders: OrderItem[]) => {
+  try {
+    const response = await apiClient.post("/assigned-item/update-archive", {
+      orders,
+    });
+
+    if (!response.data.success) {
+      throw new Error("Failed to update archived status");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating archived status:", error);
+    throw error;
   }
 };
