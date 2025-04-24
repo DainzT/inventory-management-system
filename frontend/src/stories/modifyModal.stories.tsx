@@ -96,14 +96,17 @@ export const FleetAndBoatAssignment: Story = {
     const canvas = within(canvasElement);
     const fleetSelect = canvas.getByLabelText("Fleet Assignment");
     const boatSelect = canvas.getByLabelText("Boat Assignment");
-    
 
+    await userEvent.click(fleetSelect);
     await userEvent.selectOptions(fleetSelect, "F/B Doña Librada");
     await expect(fleetSelect).toHaveValue("F/B Doña Librada");
 
+    await userEvent.click(boatSelect);
+    await userEvent.selectOptions(boatSelect, "F/B Adomar");
     await expect(boatSelect).toHaveValue("F/B Adomar");
   },
 };
+
 
 export const UnsavedChanges: Story = {
   args: {
