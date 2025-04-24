@@ -1,12 +1,12 @@
 import { AxiosError } from "axios";
 import apiClient from "./apiClient";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item";
 
-export const fetchAssignedItems = async (): Promise<OrderItemProps[]> => {
+export const fetchAssignedItems = async (): Promise<OrderItem[]> => {
   try {
     const response = await apiClient.get<{
       success: boolean;
-      data: OrderItemProps[];
+      data: OrderItem[];
     }>("/assigned-item/assign-item");
 
     if (!response.data.success || !Array.isArray(response.data.data)) {
@@ -44,7 +44,7 @@ export const fetchAssignedItems = async (): Promise<OrderItemProps[]> => {
   }
 };
 
-export const updateArchivedStatus = async (orders: OrderItemProps[]) => {
+export const updateArchivedStatus = async (orders: OrderItem[]) => {
   try {
     const response = await apiClient.post("/assigned-item/update-archive", {
       orders,

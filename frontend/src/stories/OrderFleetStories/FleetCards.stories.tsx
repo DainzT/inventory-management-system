@@ -41,9 +41,6 @@ export const AllFleets: Story = {
     backgroundColor: "bg-emerald-800",
     isActive: true,
   },
-  play: async () => {
-    console.log("All Fleets card is active:", true);
-  },
 };
 
 export const DonyaDonya: Story = {
@@ -52,9 +49,6 @@ export const DonyaDonya: Story = {
     title: "F/B DONYA DONYA 2X",
     backgroundColor: "bg-cyan-800",
     isActive: true,
-  },
-  play: async () => {
-    console.log("Donya Donya card is active:", true);
   },
 };
 
@@ -65,9 +59,6 @@ export const DonaLibrada: Story = {
     backgroundColor: "bg-red-800",
     isActive: true,
   },
-  play: async () => {
-    console.log("Dona Librada card is active:", true);
-  },
 };
 
 export const Inactive: Story = {
@@ -76,8 +67,5 @@ export const Inactive: Story = {
     title: "Inactive Fleet",
     backgroundColor: "bg-cyan-800",
     isActive: false,
-  },
-  play: async () => {
-    console.log("Inactive card is active:", false);
   },
 };

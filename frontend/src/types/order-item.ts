@@ -1,18 +1,18 @@
-import { InventoryItem } from "./inventory-item";
+import { Boat } from  "./summary-item"
+import { Fleet } from "./summary-item";
 
 export interface OrderItem {
-  item_id: InventoryItem;
-
+  id: number;
   name: string;
   note: string;
-  quantity: number;
-  unitPrice: number;
-  selectUnit: string;
-  unitSize: number;
-  total: number;
-
-  fleet_name: string;
-  boat_name: string;
-  outDate?: Date;
-  lastUpdated?: Date;
+  quantity: number | "";
+  unitPrice: number | "";
+  selectUnit: string | "";
+  unitSize: number | "";
+  total: number | "";
+  fleet: Fleet;
+  boat: Boat;
+  archived: boolean;
+  outDate: Date | string;
+  lastUpdated: Date | string;
 }

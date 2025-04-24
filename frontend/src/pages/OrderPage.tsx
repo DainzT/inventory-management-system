@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
 import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
 
@@ -23,14 +23,14 @@ const fleetBoats = {
 };
 
 const Orders: React.FC = () => {
-  const [orders, setOrders] = useState<OrderItemProps[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<OrderItemProps[]>([]);
-  const [archivedOrders, setArchivedOrders] = useState<OrderItemProps[]>([]);
+  const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<OrderItem[]>([]);
+  const [archivedOrders, setArchivedOrders] = useState<OrderItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<OrderItemProps | null>(
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(
     null
   );
 

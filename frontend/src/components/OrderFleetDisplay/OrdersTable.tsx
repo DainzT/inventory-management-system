@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item";
 import { SearchBar } from "../InventoryManagementTable/SearchBar";
 import { FilterDropdown } from "./FilterDropdown";
 import { ExpandedOrderDetails } from "./ExpandedOrderDetails";
 import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 
 interface OrdersTableProps {
-  orders: OrderItemProps[];
+  orders: OrderItem[];
   onSearch?: (query: string) => void;
   onFilter?: (filter: string) => void;
   onModify?: (id: number) => void;
