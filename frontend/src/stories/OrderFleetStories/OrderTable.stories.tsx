@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { OrdersTable } from "../../components/OrderFleetDisplay/OrdersTable";
-import { OrderItemProps } from "@/types/fleetorders";
+import { OrderItemProps } from "@/types/fleet-order";
 import { useState } from "react";
 
 const meta: Meta<typeof OrdersTable> = {
@@ -16,16 +16,16 @@ type Story = StoryObj<typeof OrdersTable>;
 const sampleOrders: OrderItemProps[] = [
   {
     id: 1,
-  productName: "Fishing Reel",
-  note: "Spinning reel, corrosion-resistant",
-  quantity: 1,
-  unitPrice: 480.0,
-  selectUnit: "piece",
-  unitSize: 2,
-  total: 480.0,
-  fleet: "F/B DONYA DONYA 2X",
-  boat: "F/B Lady Rachelle",
-  dateOut: "Jan 15, 2024",
+    productName: "Fishing Reel",
+    note: "Spinning reel, corrosion-resistant",
+    quantity: 1,
+    unitPrice: 480.0,
+    selectUnit: "piece",
+    unitSize: 2,
+    total: 480.0,
+    fleet: "F/B DONYA DONYA 2X",
+    boat: "F/B Lady Rachelle",
+    dateOut: "Jan 15, 2024",
   },
   {
     id: 3,
@@ -62,9 +62,11 @@ const Template: Story["render"] = (args) => {
   const [isModifyOpen, setIsModifyOpen] = useState(false);
 
   const filteredOrders = sampleOrders.filter((order) => {
-    const matchesSearch = order.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    order.note.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterValue === "All Boats" || order.boat === filterValue;
+    const matchesSearch =
+      order.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.note.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter =
+      filterValue === "All Boats" || order.boat === filterValue;
     return matchesSearch && matchesFilter;
   });
 
@@ -87,7 +89,6 @@ export const Default: Story = {
     orders: sampleOrders,
   },
 };
-
 
 export const EmptyOrder: Story = {
   args: {

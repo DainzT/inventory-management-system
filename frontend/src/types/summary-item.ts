@@ -5,7 +5,7 @@ export interface Fleet {
 
 export interface Boat {
   id: number;
-  name: string;
+  boat_name: string;
   fleet_id: number; // foreign key to fleet
 }
 
