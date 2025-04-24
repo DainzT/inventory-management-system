@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import {
   checkPin,
   setupPin,
-  login as loginAPI,
+  loginAPI,
   changePin,
   sendOtpEmail as sendOtpEmailAPI,
   verifyOtp,
   verifyToken,
+  refreshTokenAPI,
+  logoutAPI,
 } from "../api/authAPI";
 import supabase from "@/services/supabaseClient";
 
@@ -78,10 +80,7 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       setLoading(true);
-      await fetch(`${API_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      await logoutAPI();
       sessionStorage.removeItem(TOKEN_KEY);
       setToken(null);
       await supabase.auth.signOut();
@@ -169,32 +168,18 @@ export const useAuth = () => {
     }
   };
 
-  useEffect(() => {
-    const refreshToken = async () => {
-      const token = sessionStorage.getItem(TOKEN_KEY);
-      if (token) {
-        try {
-          const res = await fetch(`${API_URL}/auth/refresh-token`, {
-            method: "POST",
-            credentials: "include",
-          });
-          const data = await res.json();
-          if (data.token) {
-            sessionStorage.setItem(TOKEN_KEY, data.token);
-            setToken(data.token);
-          }
-        } catch (err) {
-          console.error("Token refresh failed:", err);
-        }
+  const refreshToken = async () => {
+    try {
+      const data = await refreshTokenAPI();
+      if (data.token) {
+        sessionStorage.setItem(TOKEN_KEY, data.token);
+        setToken(data.token);
       }
-    };
-
-    const tokenExpirationInterval = setInterval(refreshToken, 30 * 60 * 1000);
-
-    return () => {
-      clearInterval(tokenExpirationInterval);
-    };
-  }, []);
+    } catch (err) {
+      console.error("Token refresh failed:", err);
+      setToken(null);
+    }
+  };
 
   return {
     token,
@@ -208,5 +193,6 @@ export const useAuth = () => {
     updatePin,
     loginWithOtp,
     sendOtpEmail,
+    refreshToken,
   };
 };

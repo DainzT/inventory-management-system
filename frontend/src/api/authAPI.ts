@@ -26,7 +26,7 @@ export const setupPin = async (pin: string): Promise<AuthResponse> => {
   return res.json();
 };
 
-export const login = async (pin: string): Promise<AuthResponse> => {
+export const loginAPI = async (pin: string): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -40,6 +40,18 @@ export const login = async (pin: string): Promise<AuthResponse> => {
   }
 
   return res.json();
+};
+
+export const logoutAPI = async (): Promise<void> => {
+  const res = await fetch(`${API_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Logout failed");
+  }
 };
 
 export const changePin = async (
@@ -57,7 +69,7 @@ export const changePin = async (
   return res.json();
 };
 
-export const refreshToken = async () => {
+export const refreshTokenAPI = async () => {
   const res = await fetch(`${API_URL}/auth/refresh-token`, {
     method: "POST",
     credentials: "include",

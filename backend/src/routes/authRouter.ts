@@ -166,7 +166,9 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure:
+        process.env.NODE_ENV === "development" ||
+        process.env.NODE_ENV === "test",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -235,33 +237,55 @@ router.put(
 );
 
 router.get("/check-pin", async (req: Request, res: Response): Promise<void> => {
-  try {
+  const hasRefreshToken = Boolean(req.cookies["refresh_token"]);
+  const user = await prisma.user.findFirst();
+
+  if (!user) {
+    res.status(200).json({ message: "No admin found", isPinSet: false });
+    return;
+  }
+
+  res.json({ isPinSet: true, isAuthenticated: hasRefreshToken });
+  return;
+
+  //   try {
+  //     const accessToken = jwt.sign({ userId: user.id }, ACCESS_SECRET, {
+  //       expiresIn: "15m",
+  //     });
+
+  //     res.json({ isPinSet: true, isAuthenticated: true, token: accessToken });
+  //   } catch (error) {
+  //     res.json({ isPinSet: true, isAuthenticated: false });
+  //   }
+  // } catch (error) {
+  //   res.status(500).json({ message: "Internal server error" });
+  // }
+});
+
+router.post(
+  "/refresh-token",
+  async (req: Request, res: Response): Promise<void> => {
     const refreshToken = req.cookies["refresh_token"];
-    const user = await prisma.user.findFirst();
-
-    if (!user) {
-      res.status(200).json({ message: "No admin found", isPinSet: false });
-      return;
-    }
-
     if (!refreshToken) {
-      res.json({ isPinSet: true, isAuthenticated: false });
+      res.sendStatus(401);
       return;
     }
 
     try {
-      const accessToken = jwt.sign({ userId: user.id }, ACCESS_SECRET, {
+      const payload = jwt.verify(refreshToken, REFRESH_SECRET) as {
+        userId: string;
+      };
+
+      const accessToken = jwt.sign({ userId: payload.userId }, ACCESS_SECRET, {
         expiresIn: "15m",
       });
 
-      res.json({ isPinSet: true, isAuthenticated: true, token: accessToken });
-    } catch (error) {
-      res.json({ isPinSet: true, isAuthenticated: false });
+      res.json({ token: accessToken });
+    } catch (err) {
+      res.sendStatus(403);
     }
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 router.post("/logout", async (req: Request, res: Response): Promise<void> => {
   try {

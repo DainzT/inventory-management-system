@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Logo } from "@/components/SidebarComponents/Logo";
 import PinInput from "@/components/AuthComponents/PinInput";
 import { ClipLoader } from "react-spinners";
-import { login, checkAdminExists } from "@/api/authAPI";
+import { checkAdminExists } from "@/api/authAPI";
 import ChangePin from "@/components/AuthComponents/ChangePin";
 import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";
@@ -25,6 +26,7 @@ const LoginPage: React.FC = () => {
   const [showChangePin, setShowChangePin] = useState(false);
   const [showCreateAdmin, setShowCreateAdmin] = useState(false);
   const [showForgotPin, setShowForgotPin] = useState(false);
+  const { login, refreshToken } = useAuth();
 
   const navigate = useNavigate();
 
@@ -47,10 +49,12 @@ const LoginPage: React.FC = () => {
   const handleLogin = async () => {
     setLoading(true);
     setError("");
-
     try {
       await login(pin);
-      navigate("/inventory");
+      setTimeout(async () => {
+        await refreshToken();
+        navigate("/inventory");
+      }, 1000);
     } catch (err: unknown) {
       if (isApiError(err)) {
         setError(err.message);

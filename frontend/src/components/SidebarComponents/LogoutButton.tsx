@@ -2,18 +2,24 @@ import React, { useState } from "react";
 import Portal from "../../utils/Portal";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+import { FiLogOut } from "react-icons/fi";
+import { useAuth } from "@/hooks/useAuth";
 
 const LogoutButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+  const handleLogout = async () => {
+    try {
+      setLoading(true);
+      await logout();
       navigate("/login");
-    }, 2000);
+    } catch (err) {
+      console.error("Logout failed", err);
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,20 +33,7 @@ const LogoutButton: React.FC = () => {
         "
         onClick={() => setIsOpen(true)}
       >
-        <svg
-          width="1.9375rem"
-          height="1.625rem"
-          viewBox="0 0 31 26"
-          fill="none"
-        >
-          <path
-            d="M22.7333 7.42847L27.5555 12.9999M27.5555 12.9999L22.7333 18.5713M27.5555 12.9999H16.3037M17.9111 18.5713H16.3037C13.6404 18.5713 11.4814 16.0769 11.4814 12.9999C11.4814 9.92289 13.6404 7.42847 16.3037 7.42847H17.9111"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <FiLogOut />
         <span className="text-sm text-white">Logout</span>
       </button>
 
