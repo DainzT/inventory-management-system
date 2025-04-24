@@ -2,9 +2,9 @@ import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { OrdersTable } from "../../components/OrderFleetDisplay/OrdersTable";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types";
 
-const mockOrders: OrderItemProps[] = [
+const mockOrders: OrderItem[] = [
   {
     id: 3,
     name: "Hook",
@@ -14,9 +14,9 @@ const mockOrders: OrderItemProps[] = [
     selectUnit: "pack",
     unitSize: 10,
     total: 125,
-    fleet: { id: 2, name: "F/B Doña Librada" },
+    fleet: { id: 2, fleet_name: "F/B Doña Librada" },
     boat: { id: 9, fleet_id: 2, boat_name: "F/V Vadeo Scout" },
-    outDate: "Jan 30, 2024",
+    outDate: new Date("Jan 30, 2024"),
     archived: false,
   },
   {
@@ -28,9 +28,9 @@ const mockOrders: OrderItemProps[] = [
     selectUnit: "roll",
     unitSize: 1,
     total: 3762.5,
-    fleet: { id: 2, name: "F/B Doña Librada" },
+    fleet: { id: 2, fleet_name: "F/B Doña Librada" },
     boat: { id: 6, fleet_id: 2, boat_name: "F/B Adomar" },
-    outDate: "Jan 20, 2024",
+    outDate: new Date("Jan 20, 2024"),
     archived: false,
   },
 ];

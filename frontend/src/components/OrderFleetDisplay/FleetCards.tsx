@@ -1,5 +1,5 @@
 import React from "react";
-import { FleetCardProps, FleetListProps } from "@/types/fleet-card";
+import { FleetCardProps } from "@/types/fleet-card";
 
 // Combined component
 export const FleetCard: React.FC<FleetCardProps> = ({
@@ -10,8 +10,8 @@ export const FleetCard: React.FC<FleetCardProps> = ({
 }) => {
   return (
     <article
-      className={`relative p-12 ${backgroundColor} rounded-xl ${
-        isActive ? "h-[200px] w-[300px]" : "h-[170px] w-[250px]"
+      className={`relative p-4 ${backgroundColor} rounded-xl outline-1 ${
+        isActive ? "h-[170px] w-[320px]" : "h-[150px] w-[280px]"
       } cursor-pointer transition-all duration-300 ease-in-out shadow-lg ${
         isActive ? "shadow-2xl" : "shadow-md"
       }`}
@@ -19,7 +19,7 @@ export const FleetCard: React.FC<FleetCardProps> = ({
     >
       <h2 className="text-2xl font-bold text-white">{title}</h2>
 
-      <div className="absolute bottom-[14px] right-[14px] opacity-[0.3]">
+      <div className="absolute bottom-[10px] right-[14px] opacity-[0.3]">
         <svg
           width="115"
           height="115"
@@ -39,28 +39,3 @@ export const FleetCard: React.FC<FleetCardProps> = ({
   );
 };
 
-export const FleetList: React.FC<FleetListProps> = ({
-  activeFleet,
-  onFleetSelect,
-}) => {
-  const fleets = ["All Fleets", "DONYA DONYA", "Doña Librada"];
-
-  return (
-    <nav className="flex relative flex-col gap-4 pl-24 mt-5">
-      <div
-        className="absolute w-0.5 bg-stone-300 h-[136px] left-[58px]"
-        data-testid="fleet-list-separator"
-      />
-      {fleets.map((fleet) => (
-        <button
-          key={fleet}
-          className="text-xl text-black hover:text-cyan-800 text-left"
-          onClick={() => onFleetSelect && onFleetSelect(fleet)}
-          aria-current={activeFleet === fleet ? "page" : undefined}
-        >
-          {fleet}
-        </button>
-      ))}
-    </nav>
-  );
-};

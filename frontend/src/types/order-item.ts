@@ -13,6 +13,6 @@ export interface OrderItem {
   fleet: Fleet;
   boat: Boat;
   archived: boolean;
-  outDate: Date | string;
-  lastUpdated: Date | string;
+  outDate: Date;
+  lastUpdated?: Date;
 }
