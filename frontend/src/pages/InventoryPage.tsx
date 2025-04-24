@@ -19,7 +19,7 @@ const Inventory: React.FC = () => {
     inventoryItems,
     isLoading,
     isAdding,
-    isOuting,
+    isAssigning,
     isEditing,
     isDeleting,
     isAddOpen,
@@ -102,7 +102,7 @@ const Inventory: React.FC = () => {
         setIsOpen={setIsOutOpen}
         selectedItem={selectedItem}
         onOutItem={handleOutItem}
-        isOuting={isOuting}
+        isAssigning={isAssigning}
       />
       <EditProductModal
         isOpen={isEditOpen}

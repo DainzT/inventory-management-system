@@ -32,7 +32,7 @@ export function TableRow({
         </div>
         <div className="
           w-[98px] xs:min-w-[80px] sm:min-w-[100px] md:min-w-[140px] lg:min-w-[130px] xl:min-w-[160px]
-          text-[12px] xs:text-xs sm:text-sm md:text-[16px] font-bold text-[#1F2937] text-left 
+          text-[12px] xs:text-xs sm:text-sm md:text-[16px] font-bold text-[#1F2937] text-center 
           shrink-0 break-all overflow-hidden hyphens-auto  px-2 flex-1">
           {item.name}
         </div>

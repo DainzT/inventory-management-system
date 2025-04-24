@@ -63,7 +63,7 @@ export const InventoryButton = ({
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-[16px] text-white flex-1">Out</span>
+          <span className="text-[16px] text-white flex-1">Assign</span>
         </button>
         <button
           onClick={onEdit}
