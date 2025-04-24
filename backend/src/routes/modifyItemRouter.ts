@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import dotenv from "dotenv";
 import prisma from "../lib/prisma";
-import authenticateToken from "../middleware/authMiddleware";
+import { authenticateToken } from "../middleware/authMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
