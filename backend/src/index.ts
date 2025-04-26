@@ -8,6 +8,7 @@ import { errorHandler } from "./middleware/errorMiddleware.js";
 // Routes
 import authRoutes from "./routes/authRouter.js";
 import inventoryItemRoutes from "./routes/inventoryItemRouter.js"
+import modifyItemRoutes from "./routes/modifyItemRouter"
 import assignedItemRoutes from "./routes/assignedItemRouter";
 
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/inventory-item", inventoryItemRoutes)
+app.use("/api/modify-item", modifyItemRoutes)
 app.use("/api/assigned-item", assignedItemRoutes);
 app.use(errorHandler);
 

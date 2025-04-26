@@ -20,6 +20,17 @@ const meta: Meta<typeof ModifyModal> = {
 export default meta;
 type Story = StoryObj<typeof ModifyModal>;
 
+const sampleFleet: Fleet = {
+  id: 1,
+  name: "F/B DONYA DONYA 2X"
+};
+
+const sampleBoat: Boat = {
+  id: 1,
+  boat_name: "F/B Lady Rachelle",
+  fleet_id: 1
+};
+
 const sampleOrder: OrderItemProps = {
   id: 1,
   productName: "Marine Rope - 16mm",
@@ -37,10 +48,14 @@ export const Default: Story = {
   args: {
     isOpen: true,
     order: sampleOrder,
+    onClose: fn(),
+    onConfirm: fn(),
+    onRemove: fn(),
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
+    await expect(canvas.getByText("Modify Item")).toBeInTheDocument();
+    await expect(canvas.getByText(sampleOrder.name)).toBeInTheDocument();
     await expect(canvas.getByText("Modify Item")).toBeInTheDocument();
     await expect(canvas.getByText(sampleOrder.productName)).toBeInTheDocument();
     await expect(
@@ -56,6 +71,9 @@ export const QuantityAdjustment: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const quantityDisplay = canvas.getByTestId("quantity-display");
+    const incrementButton = canvas.getByRole("button", { name: /increment quantity/i });
+    const decrementButton = canvas.getByRole("button", { name: /decrement quantity/i });
 
     const buttons = canvas.getAllByRole("button");
     const decrementButton = buttons[1];
@@ -82,13 +100,15 @@ export const QuantityAdjustment: Story = {
   },
 };
 
-export const UnitSelection: Story = {
+export const FleetAndBoatAssignment: Story = {
   args: {
     isOpen: true,
     order: sampleOrder,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const fleetSelect = canvas.getByLabelText("Fleet Assignment");
+    const boatSelect = canvas.getByLabelText("Boat Assignment");
 
     const quantityLabel = canvas.getByText("Quantity");
     const unitSelect = quantityLabel.parentElement?.querySelector("select");
@@ -102,7 +122,8 @@ export const UnitSelection: Story = {
   },
 };
 
-export const FleetAssignment: Story = {
+
+export const UnsavedChanges: Story = {
   args: {
     isOpen: true,
     order: sampleOrder,
@@ -148,10 +169,10 @@ export const ConfirmationFlow: Story = {
     await waitFor(() => {
       expect(args.onConfirm).toHaveBeenCalledWith(
         sampleOrder.quantity,
-        sampleOrder.fleet,
-        sampleOrder.boat,
-        sampleOrder.selectUnit
+        sampleFleet.name,
+        sampleBoat.boat_name
       );
     });
   },
 };
+

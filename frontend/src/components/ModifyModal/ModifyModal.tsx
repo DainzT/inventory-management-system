@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
 import { OrderItemProps } from "@/types/fleet-order";
-import UnsavedChangesModal from "../DiscardChangesModal";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
+import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
 
 interface ModifyModalProps {
   isOpen: boolean;
@@ -11,7 +11,6 @@ interface ModifyModalProps {
     quantity: number,
     fleet: string,
     boat: string,
-    unit: string
   ) => void;
   onRemove: () => void;
   order: OrderItemProps;
@@ -34,18 +33,6 @@ const fleets = {
   ],
 };
 
-const units = [
-  "piece",
-  "meter",
-  "kilogram",
-  "gram",
-  "roll",
-  "sack",
-  "box",
-  "liter",
-  "pack",
-];
-
 export const ModifyModal: React.FC<ModifyModalProps> = ({
   isOpen,
   onClose,
@@ -56,9 +43,8 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const [quantity, setQuantity] = useState<number>(
     typeof order.quantity === "number" ? order.quantity : 0
   );
-  const [unit, setUnit] = useState(order.selectUnit);
-  const [fleet, setFleet] = useState(order.fleet);
-  const [boat, setBoat] = useState(order.boat);
+  const [fleet, setFleet] = useState<string>(order.fleet.name);
+  const [boat, setBoat] = useState<string>(order.boat.boat_name);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] =
     useState(false);
@@ -69,12 +55,11 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   useEffect(() => {
     const hasChanged =
       quantity !== order.quantity ||
-      unit !== order.selectUnit ||
-      fleet !== order.fleet ||
-      boat !== order.boat;
-
+      fleet !== order.fleet.name ||
+      boat !== order.boat.boat_name;
+  
     setHasChanges(hasChanged);
-  }, [quantity, unit, fleet, boat, order]);
+  }, [quantity, fleet, boat, order]);
 
   const handleIncrement = () => {
     if (quantity < currentStock) {
@@ -90,11 +75,14 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleFleetChange = (newFleet: string) => {
     setFleet(newFleet);
-    setBoat(fleets[newFleet as keyof typeof fleets][0]);
+    const fleetBoats = fleets[newFleet as keyof typeof fleets];
+    if (fleetBoats && fleetBoats.length > 0) {
+      setBoat(fleetBoats[0]);
+    }
   };
 
   const handleConfirm = () => {
-    onConfirm(quantity, fleet, boat, unit);
+    onConfirm(quantity, fleet, boat);
     onClose();
   };
 
@@ -117,7 +105,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   if (!isOpen) return null;
 
-  const totalPrice = order.unitPrice * quantity;
+  const totalPrice = Number(order.unitPrice) * quantity;
   const remainingStock = currentStock - quantity;
 
   return (
@@ -141,10 +129,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
             <div>
               <h3 className="text-lg font-bold text-gray-800">
-                {order.productName}
+                {order.name}
               </h3>
               <p className="text-gray-600">{order.note}</p>
-              <p className="text-gray-800">₱{order.unitPrice.toFixed(2)}</p>
+              <p className="text-gray-800">₱{Number(order.unitPrice).toFixed(2)}</p>
             </div>
 
             <div>
@@ -153,6 +141,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                 <div className="flex">
                   <button
                     onClick={handleDecrement}
+                    aria-label="Decrement quantity"
                     className="bg-gray-200 hover:bg-gray-300 rounded-l-md w-10 h-10 flex items-center justify-center"
                   >
                     <Minus size={20} />
@@ -165,28 +154,22 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                   </div>
                   <button
                     onClick={handleIncrement}
+                    aria-label="Increment quantity"
                     className="bg-gray-200 hover:bg-gray-300 rounded-r-md w-10 h-10 flex items-center justify-center"
                   >
                     <Plus size={20} />
                   </button>
                 </div>
-                <select
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                  className="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
-                >
-                  {units.map((unitOption) => (
-                    <option key={unitOption} value={unitOption}>
-                      {unitOption}
-                    </option>
-                  ))}
-                </select>
+                <div className= "px-3 py-2 h-10 flex items-center justify-center min-w-[80px]">
+                  {/* {unit} */}
+                </div>
               </div>
             </div>
 
             <div>
-              <label className="block font-medium mb-2">Fleet Assignment</label>
+              <label htmlFor="fleet-select" className="block font-medium mb-2">Fleet Assignment</label>
               <select
+                id="fleet-select"
                 value={fleet}
                 onChange={(e) => handleFleetChange(e.target.value)}
                 className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
@@ -197,11 +180,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                   </option>
                 ))}
               </select>
-            </div>
 
-            <div>
-              <label className="block font-medium mb-2">Boat Assignment</label>
+              <label htmlFor="boat-select" className="block font-medium mb-2">Boat Assignment</label>
               <select
+                id="boat-select"
                 value={boat}
                 onChange={(e) => setBoat(e.target.value)}
                 className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
@@ -212,6 +194,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                   </option>
                 ))}
               </select>
+
             </div>
             <div>
               <div className="flex justify-between items-start mb-2">
@@ -263,8 +246,8 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
       <UnsavedChangesModal
         isOpen={isUnsavedChangesModalOpen}
-        onCancel={() => setIsUnsavedChangesModalOpen(false)}
-        onDiscard={handleDiscardChanges}
+        onClose={() => setIsUnsavedChangesModalOpen(false)}
+        onConfirm={handleDiscardChanges}
       />
     </>
   );

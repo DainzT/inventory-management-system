@@ -152,7 +152,6 @@ const Orders: React.FC = () => {
     quantity: number,
     fleet: string,
     boat: string,
-    unit: string
   ) => {
     if (selectedOrder) {
       console.log("Changes confirmed:", {
@@ -160,7 +159,6 @@ const Orders: React.FC = () => {
         quantity,
         fleet,
         boat,
-        unit,
       });
       setIsModalOpen(false);
     }
