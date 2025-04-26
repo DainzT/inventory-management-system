@@ -13,7 +13,7 @@ const mockOrder = {
   total: 21.98,
   fleet: {
     id: 1, 
-    name: "F/B DONYA DONYA 2X",
+    fleet_name: "F/B DONYA DONYA 2X",
   },
   boat: {
     id: 1, 
@@ -21,7 +21,7 @@ const mockOrder = {
     fleet_id: 1, 
   },
   archived: false,
-  outDate: "2023-01-01",
+  outDate: new Date("2023-01-01"),
 };
 
 const mockProps = {
