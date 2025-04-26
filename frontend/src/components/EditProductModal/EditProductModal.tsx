@@ -36,7 +36,7 @@ const EditProductModal = ({
     if (!isOpen || !selectedItem) return null;
 
     return (
-        <section className="flex fixed inset-0 justify-center items-center ">
+        <section className="flex z-50 fixed inset-0 justify-center items-center ">
             <article
                 className="relative z-50 px-6 py-4 w-96 bg-white rounded-[19px] border-[1px] border-[#E0D8D8] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] animate-[fadeIn_0.2s_ease-out] h-[36rem]"
             >
