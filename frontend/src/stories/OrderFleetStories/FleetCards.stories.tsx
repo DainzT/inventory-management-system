@@ -5,7 +5,7 @@ const defaultArgs = {
   title: "Fleet Card",
   backgroundColor: "bg-cyan-800",
   isActive: false,
-  onClick: () => console.log("Fleet card clicked"),
+  onClick: () => {},
 };
 
 const meta: Meta<typeof FleetCard> = {
