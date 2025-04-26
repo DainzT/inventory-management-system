@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
 import { handleApiError } from "./handleApiError";
-import { InventoryItem, ItemFormData, OrderItem } from "@/types";
+import { InventoryItem, ItemFormData, OutItemData } from "@/types";
 
 type InventoryResponse = {
   message: string;
@@ -56,7 +56,7 @@ export const addInventoryItem = async (
 };
 
 export const outInventoryItem = async (
-  item: OrderItem
+  item: OutItemData
 ): Promise<InventoryResponse> => {
   try {
 

@@ -45,14 +45,14 @@ const Sidebar: React.FC = () => {
   return (
     <>
       <button
-        className="fixed top-4 left-4 z-50 p-2 bg-gray-200/90 rounded-lg md:hidden"
+        className="fixed top-4 left-4  z-50 p-2 bg-gray-200/90 rounded-lg md:hidden"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
         {isSidebarOpen ? <HiX size={20} /> : <HiMenu size={20} />}
       </button>
 
       <aside
-        className={`fixed md:relative h-screen w-[256px] flex flex-col justify-between inter-font bg-[rgba(244,244,244,0.8)] border-r-[1px] border-r-[#E5E7EB] transform transition-transform duration-200 ease-in-out ${
+        className={`fixed z-40 md:relative h-screen w-[256px] flex flex-col justify-between inter-font bg-[rgba(244,244,244,0.8)] border-r-[1px] border-r-[#E5E7EB] transform transition-transform duration-200 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >

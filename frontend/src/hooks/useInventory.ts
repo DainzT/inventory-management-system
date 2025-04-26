@@ -6,7 +6,7 @@ import {
     editInventoryItem,
     deleteInventoryitem,
 } from "@/api/inventoryAPI";
-import { InventoryItem, ItemFormData, OrderItem } from "@/types";
+import { InventoryItem, ItemFormData, OutItemData } from "@/types";
 import { useToast } from "./useToast";
 
 export const useInventory = () => {
@@ -70,7 +70,7 @@ export const useInventory = () => {
         }
     };
 
-    const handleOutItem = async (outItem: OrderItem) => {
+    const handleOutItem = async (outItem: OutItemData) => {
         showLoadingToast("assigning-product", "Assigning product...");
         try {
             setIsAssigning(true);
