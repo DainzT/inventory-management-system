@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
-import { OrderItem } from "@/types";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
 import { OrderItem } from "@/types";
+import { fleets } from "@/utils/Fleets";
+
 
 interface ModifyModalProps {
   isOpen: boolean;
@@ -17,23 +18,6 @@ interface ModifyModalProps {
   order: OrderItem;
 }
 
-const fleets = {
-  "F/B DONYA DONYA 2X": [
-    "F/B Lady Rachelle",
-    "F/B Mariella",
-    "F/B My Shield",
-    "F/B Abigail",
-    "F/B DC-9",
-  ],
-  "F/B Doña Librada": [
-    "F/B Adomar",
-    "F/B Prince of Peace",
-    "F/B Ruth Gaily",
-    "F/V Vadeo Scout",
-    "F/B Mariene",
-  ],
-};
-
 export const ModifyModal: React.FC<ModifyModalProps> = ({
   isOpen,
   onClose,
@@ -41,9 +25,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   onRemove,
   order,
 }) => {
-  const [quantity, setQuantity] = useState<number>(
-    typeof order.quantity === "number" ? order.quantity : 0
-  );
+  const [quantity, setQuantity] = useState<number>(order.quantity || 0);
   const [fleet, setFleet] = useState<string>(order.fleet.fleet_name);
   const [boat, setBoat] = useState<string>(order.boat.boat_name);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -75,9 +57,9 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleFleetChange = (newFleet: string) => {
     setFleet(newFleet);
-    const fleetBoats = fleets[newFleet as keyof typeof fleets];
-    if (fleetBoats && fleetBoats.length > 0) {
-      setBoat(fleetBoats[0]);
+    const fleetBoatsList = fleets[newFleet as keyof typeof fleets];
+    if (fleetBoatsList && fleetBoatsList.length > 0) {
+      setBoat(fleetBoatsList[0]);
     }
   };
 

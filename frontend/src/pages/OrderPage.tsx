@@ -5,23 +5,7 @@ import { OrderItem } from "@/types/order-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
 import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
 import { PageTitle } from "@/components/PageTitle";
-
-const fleetBoats = {
-  "F/B DONYA DONYA 2X": [
-    "F/B Lady Rachelle",
-    "F/B Mariella",
-    "F/B My Shield",
-    "F/B Abigail",
-    "F/B DC-9",
-  ],
-  "F/B Doña Librada": [
-    "F/B Adomar",
-    "F/B Prince of Peace",
-    "F/B Ruth Gaily",
-    "F/V Vadeo Scout",
-    "F/B Mariene",
-  ],
-};
+import { fleetBoats } from "@/utils/Fleets";
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<OrderItem[]>([]);
