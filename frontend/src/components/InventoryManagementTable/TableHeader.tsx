@@ -5,7 +5,8 @@ export const TableHeader = () => {
         bg-[#295C65] flex items-center flex-1 px-3 sm:px-0 md:px-6 lg:px-3 xl:px-5
         text-[12px] xs:text-xs sm:text-sm md:text-[13px] lg:text-[14px] xl:text-[16px] font-bold text-white
       ">
-      <div className="min-w-[30px] xs:min-w-[40px] sm:min-w-[50px]  lg:min-w-[50px] xl:min-w-[60px]  text-left px-3 shrink-0">ID</div>
+      <div 
+        className="min-w-[30px] xs:min-w-[40px] sm:min-w-[50px]  lg:min-w-[50px] xl:min-w-[60px]  text-left px-3 shrink-0">ID</div>
 
       <div className="min-w-[90px] xs:min-w-[80px] sm:min-w-[100px] md:min-w-[140px]  lg:min-w-[130px] xl:min-w-[160px] text-left px-3 truncate shrink-0 flex-1 ">
         Product Name

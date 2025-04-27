@@ -1,4 +1,3 @@
-import React from "react";
 import { BsFileMinus, BsFilePlus } from "react-icons/bs";
 
 interface QuantitySelectorProps {
@@ -10,15 +9,14 @@ interface QuantitySelectorProps {
   disabled?: boolean;
 }
 
-
-const QuantitySelector: React.FC<QuantitySelectorProps> = ({
+const QuantitySelector = ({
   value,
   onChange,
   maxQuantity,
   unitSize,
   error,
   disabled,
-}) => {
+}: QuantitySelectorProps) => {
   const decrementQuantity = () => {
     if (Number(value) > 0) {
       onChange((value || 0) - unitSize);

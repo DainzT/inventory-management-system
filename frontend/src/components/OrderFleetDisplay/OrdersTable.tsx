@@ -32,6 +32,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
+  
 
 
   const getFilterOptions = () => {

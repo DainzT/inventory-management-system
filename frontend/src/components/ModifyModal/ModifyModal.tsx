@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
+import { OrderItem } from "@/types";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
 import { OrderItem } from "@/types";
@@ -32,7 +33,6 @@ const fleets = {
     "F/B Mariene",
   ],
 };
-
 
 export const ModifyModal: React.FC<ModifyModalProps> = ({
   isOpen,
