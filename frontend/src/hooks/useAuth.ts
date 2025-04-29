@@ -147,9 +147,24 @@ export const useAuth = () => {
   const updatePin = async (currentPin: string, newPin: string) => {
     const updatePinId = "update-pin-toast";
     showLoadingToast(updatePinId, "Updating PIN...");
+
+    const accessToken = sessionStorage.getItem(TOKEN_KEY);
+    if (!accessToken) {
+      showErrorToast(
+        updatePinId,
+        "No access token found. Please log in again."
+      );
+      return;
+    }
+
     try {
       setLoading(true);
-      const data = await changePinAPI(currentPin, newPin);
+      const data: AuthResponse = await changePinAPI(
+        currentPin,
+        newPin,
+        accessToken
+      );
+
       if (data.message === "PIN updated successfully") {
         setError(null);
         showSuccessToast(updatePinId, "PIN updated successfully.");
@@ -264,15 +279,12 @@ export const useAuth = () => {
       setLoading(true);
       const data = await verifyOtpAPI(email, otp);
 
-      if (data.token) {
-        sessionStorage.setItem(TOKEN_KEY, data.token);
-        setToken(data.token);
-        setError(null);
+      if (data.message === "OTP verified successfully") {
         showSuccessToast(verifyOtpId, "OTP verified successfully.");
-        return data;
       } else {
         showErrorToast(verifyOtpId, data.message || "OTP verification failed");
       }
+      return data;
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "OTP verification failed");
@@ -282,25 +294,6 @@ export const useAuth = () => {
       setLoading(false);
     }
   };
-
-  // const resetPin = async (email: string, newPin: string) => {
-  //   const resetPinId = "reset-pin-toast";
-  //   showLoadingToast(resetPinId, "Resetting PIN...");
-  //   try {
-  //     setLoading(true);
-  //     setError(null);
-  //     await resetPinAPI(email, newPin);
-  //     showSuccessToast(resetPinId, "PIN reset successfully.");
-  //     setIsPinSet(true);
-  //   } catch (err) {
-  //     const error = err as ErrorWithMessage;
-  //     setError(error.message || "Failed to reset PIN");
-  //     showErrorToast(resetPinId, error.message || "Failed to reset PIN");
-  //     throw err;
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const verifyAndResetPin = async (
     email: string,

@@ -11,10 +11,8 @@ import { ToastContainer } from "react-toastify";
 
 const LoginPage: React.FC = () => {
   const [pin, setPin] = useState("");
-  const [showChangePin, setShowChangePin] = useState(false);
   const [showForgotPin, setShowForgotPin] = useState(false);
-  const { login, showCreateAdmin, setShowCreateAdmin } =
-    useAuth();
+  const { login, showCreateAdmin, setShowCreateAdmin } = useAuth();
 
   const navigate = useNavigate();
 
@@ -51,22 +49,11 @@ const LoginPage: React.FC = () => {
 
         <LoginInput pin={pin} setPin={setPin} />
 
-        <button
-          type="button"
-          onClick={() => setShowChangePin(true)}
-          className="mt-2 text-sm text-cyan-700 underline hover:text-cyan-900"
-        >
-          Change PIN?
-        </button>
-        {showChangePin && (
-          <ChangePinModal onClose={() => setShowChangePin(false)} />
-        )}
-
         <div className="mb-3">
           <button
             type="button"
             onClick={() => setShowForgotPin(true)}
-            className="mt-2 mb-4 text-sm text-cyan-700 underline hover:text-cyan-900"
+            className="mt-2 mb-4 text-sm text-cyan-700 underline hover:text-accent-light cursor-pointer"
           >
             Forgot PIN?
           </button>

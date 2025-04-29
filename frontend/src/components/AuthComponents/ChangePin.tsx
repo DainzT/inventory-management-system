@@ -3,6 +3,7 @@ import Portal from "@/utils/Portal";
 import { ClipLoader } from "react-spinners";
 import AuthInput from "./AuthInput";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface ChangePinModalProps {
   onClose: () => void;
@@ -18,6 +19,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
   const [otpSent, setOtpSent] = useState(false);
   const { updatePin, sendOtpEmail, verifyOtp, verifyEmail, verifyPin } =
     useAuth();
+  const navigate = useNavigate();
 
   const handleVerifyCurrentPin = async () => {
     try {
@@ -49,6 +51,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
       await updatePin(currentPin, newPin);
       setLoading(false);
       onClose();
+      navigate("/login");
     } catch {
       setLoading(false);
     }
@@ -56,7 +59,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
 
   return (
     <Portal>
-      <div className="flex fixed inset-0 justify-center items-center select-none">
+      <div className="flex fixed inset-0 justify-center items-center select-none z-50">
         <div className="relative px-6 py-4 w-[24rem] bg-white z-50 rounded-2xl border-2 shadow-sm border-zinc-300 animate-[fadeIn_0.2s_ease-out]">
           <header className="mb-4">
             <h2 className="text-2xl font-semibold text-cyan-800">Change PIN</h2>
@@ -108,7 +111,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
           <div className="flex justify-end gap-2 mt-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
             >
               Cancel
             </button>
@@ -120,7 +123,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
                   ? handleSendOTP
                   : handleVerifyOTPAndUpdatePin
               }
-              className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition"
+              className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition cursor-pointer"
               disabled={loading}
             >
               {loading ? (

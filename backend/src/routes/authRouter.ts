@@ -6,6 +6,7 @@ import prisma from "../lib/prisma";
 import { generateOtp, saveOtpToDatabase } from "../lib/otpService";
 import nodemailer from "nodemailer";
 import supabase from "../lib/supabaseClient";
+import { authenticateToken } from "../middleware/authMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
@@ -182,6 +183,7 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
 
 router.put(
   "/change-pin",
+  authenticateToken,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { oldPin, newPin } = req.body;

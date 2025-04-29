@@ -8,13 +8,15 @@ import LogoutButton from "./SidebarComponents/LogoutButton";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { BsBoxSeam } from "react-icons/bs";
 import { HiMenu, HiX } from "react-icons/hi";
+import ChangePinModal from "./AuthComponents/ChangePin";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState<string | null>(
     location.pathname
   );
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar visibility
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [showChangePin, setShowChangePin] = useState(false);
 
   const handleLinkClick = (path: string) => {
     if (path === "/summary") {
@@ -75,6 +77,18 @@ const Sidebar: React.FC = () => {
               fleets={["All Fleets", "F/B DONYA DONYA 2x", "F/B Doña Librada"]}
             />
           </nav>
+        </div>
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowChangePin(true)}
+            className="mt-2 text-sm text-accent underline hover:text-accent-light cursor-pointer active:scale-95 flex justify-self-center"
+          >
+            Change PIN?
+          </button>
+          {showChangePin && (
+            <ChangePinModal onClose={() => setShowChangePin(false)} />
+          )}
         </div>
 
         <div className=" flex justify-center p-4 border-t-[1px] border-t-[#E5E7EB] mb-10 pt-6">

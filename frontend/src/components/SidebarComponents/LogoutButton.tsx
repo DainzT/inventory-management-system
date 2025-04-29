@@ -39,7 +39,7 @@ const LogoutButton: React.FC = () => {
 
       {isOpen && (
         <Portal>
-          <section className="flex fixed inset-0 justify-center items-center select-none">
+          <section className="flex fixed inset-0 z-50 justify-center items-center select-none">
             <article className="relative px-6 py-4 w-[24rem] bg-white rounded-2xl border-2 shadow-sm border-zinc-300 z-50 animate-[fadeIn_0.2s_ease-out]">
               <header className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-semibold inter-font text-accent">

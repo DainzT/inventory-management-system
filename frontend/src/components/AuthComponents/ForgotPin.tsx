@@ -82,13 +82,13 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
           <div className="flex justify-end gap-2 mt-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={otpSent ? handleVerifyOTP : handleSendOTP}
-              className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition"
+              className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition cursor-pointer"
               disabled={loading}
             >
               {loading ? (

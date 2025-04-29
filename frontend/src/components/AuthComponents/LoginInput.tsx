@@ -25,7 +25,7 @@ function LoginInput({ pin, setPin }: LoginInputProps) {
       <button
         onClick={() => setShowPin(!showPin)}
         aria-label={showPin ? "Show PIN" : "Hide PIN"}
-        className="ml-3 text-black"
+        className="ml-3 text-black cursor-pointer"
       >
         {showPin ? <EyeIcon /> : <EyeOffIcon />}
       </button>

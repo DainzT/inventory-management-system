@@ -56,16 +56,19 @@ export const logoutAPI = async (): Promise<void> => {
 
 export const changePinAPI = async (
   oldPin: string,
-  newPin: string
+  newPin: string,
+  accessToken: string
 ): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/change-pin`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ oldPin, newPin }),
     credentials: "include",
   });
+
   return res.json();
 };
 
@@ -131,7 +134,7 @@ export const verifyPinAPI = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ pin }),
-    // credentials: "include",
+    credentials: "include",
   });
 
   if (!res.ok) {
@@ -162,10 +165,7 @@ export const verifyEmailAPI = async (
   return res.json();
 };
 
-export const verifyOtpAPI = async (
-  email: string,
-  otp: string
-): Promise<AuthResponse> => {
+export const verifyOtpAPI = async (email: string, otp: string) => {
   const res = await fetch(`${API_URL}/auth/verify-otp`, {
     method: "POST",
     headers: {
