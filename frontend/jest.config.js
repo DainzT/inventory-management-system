@@ -1,12 +1,10 @@
-import { defaultsESM } from "ts-jest/presets/index.js";
+import presets from "ts-jest/presets/index.js";
+const { defaultsESM } = presets;
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 const config = {
   ...defaultsESM,
   testEnvironment: "jsdom",
-  transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest",
-  },
   globals: {
     "ts-jest": {
       useESM: true,
