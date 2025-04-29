@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Portal from "../../utils/Portal";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 
 const LogoutButton: React.FC = () => {
@@ -28,14 +27,27 @@ const LogoutButton: React.FC = () => {
         className="
           flex items-center gap-[0.6875rem] w-[6.875rem] h-[2.5rem] rounded-[0.5rem] scale-80
           bg-[#fc2424] cursor-pointer px-[0.4375rem] transition-all duration-200 
-          ease-in-out hover:scale-105 focus:outline-none
+          ease-in-out hover:scale-90 focus:outline-none
           shadow-[inset_0_0.125rem_0.25rem_0_rgba(0,0,0,0.2)] hover:shadow-[inset_0_0.125rem_0.5rem_0_rgba(0,0,0,0.4)]
         "
         onClick={() => setIsOpen(true)}
       >
-        <FiLogOut />
+        <svg
+          width="1.9375rem"
+          height="1.625rem"
+          viewBox="0 0 31 26"
+          fill="none"
+        >
+          <path
+            d="M22.7333 7.42847L27.5555 12.9999M27.5555 12.9999L22.7333 18.5713M27.5555 12.9999H16.3037M17.9111 18.5713H16.3037C13.6404 18.5713 11.4814 16.0769 11.4814 12.9999C11.4814 9.92289 13.6404 7.42847 16.3037 7.42847H17.9111"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         <span className="text-sm text-white">Logout</span>
-      </button>
+      </button >
 
       {isOpen && (
         <Portal>
@@ -55,16 +67,20 @@ const LogoutButton: React.FC = () => {
                 <button
                   role="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transitionl w-30"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition-all"
+                  className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition-all w-35 h-11 flex items-center justify-center"
+                  disabled={loading}
                 >
                   {loading ? (
-                    <ClipLoader size={20} color="#f4f4f4" />
+                    <span className="inline-flex items-center gap-1.5 text-sm">
+                      <ClipLoader size={14} color="#f4f4f4" />
+                      <span>Logging Out...</span>
+                    </span>
                   ) : (
                     "Confirm"
                   )}
@@ -73,12 +89,13 @@ const LogoutButton: React.FC = () => {
             </article>
             <div
               className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-              onClick={() => setIsOpen(false)}
+              onClick={() => !loading && setIsOpen(false)}
               aria-hidden="true"
             />
           </section>
         </Portal>
-      )}
+      )
+      }
     </>
   );
 };
