@@ -13,7 +13,6 @@ import {
   resetPinAPI,
   logoutAPI,
 } from "../api/authAPI";
-import supabase from "@/services/supabaseClient";
 import { useToast } from "./useToast";
 
 interface AuthResponse {
@@ -111,7 +110,6 @@ export const useAuth = () => {
       await logoutAPI();
       sessionStorage.removeItem(TOKEN_KEY);
       setToken(null);
-      await supabase.auth.signOut();
       showSuccessToast(logoutId, "Logout successful.");
     } catch (err) {
       const error = err as ErrorWithMessage;
