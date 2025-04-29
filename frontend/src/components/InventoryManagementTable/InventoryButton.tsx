@@ -20,11 +20,11 @@ export const InventoryButton = ({
         type={type}
         onClick={onAdd}
         className="
-            flex items-center gap-[10px] h-[51px] px-[16px] 
+            flex items-center gap-[10px] h-[51px] px-[16px] scale-90 
             rounded-[12px] bg-[#295C65] 
             shadow-[0px_2px_4px_0px_rgba(0,0,0,0.10)]
             transition-transform duration-200 ease-in-out 
-          hover:bg-[#357D8B] hover:scale-105
+          hover:bg-[#357D8B] hover:scale-95
             cursor-pointer
           "
       >
@@ -36,7 +36,7 @@ export const InventoryButton = ({
             strokeLinecap="round"
           />
         </svg>
-        <span className="text-[18px] text-white">Add Item</span>
+        <span className="text-[16px] text-white">Add Item</span>
       </button>
     );
   }

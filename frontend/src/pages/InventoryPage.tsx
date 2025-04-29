@@ -62,9 +62,9 @@ const Inventory: React.FC = () => {
   });
   
   return (
-    <div className="flex-1 p-0 ">
+    <div className="flex-1 p-0 overflow-auto">
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop
@@ -72,10 +72,9 @@ const Inventory: React.FC = () => {
         rtl={false}
         pauseOnFocusLoss
         draggable
-        pauseOnHover
         theme="light"
       />
-
+  
       <PageTitle title="Main Inventory" />
       <InventoryManagementTable
         setIsAddOpen={setIsAddOpen}

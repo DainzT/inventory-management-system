@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
-import { fetchAssignedItems } from "@/api/orderAPI";
+import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
+import { PageTitle } from "@/components/PageTitle";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [
@@ -23,13 +24,14 @@ const fleetBoats = {
 };
 
 const Orders: React.FC = () => {
-  const [orders, setOrders] = useState<OrderItemProps[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<OrderItemProps[]>([]);
+  const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<OrderItem[]>([]);
+  const [archivedOrders, setArchivedOrders] = useState<OrderItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<OrderItemProps | null>(
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(
     null
   );
 
@@ -39,7 +41,7 @@ const Orders: React.FC = () => {
         const response = await fetchAssignedItems();
         console.log("Fetched orders:", response);
         setOrders(response);
-        setFilteredOrders(response); 
+        setFilteredOrders(response);
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -49,36 +51,77 @@ const Orders: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (orders.length >= 0) {
-      const filteredOrders = orders?.filter((order) => {
-        const matchesSearch = [
-          order.name.toLowerCase(),
-          order.note.toLowerCase(),
-          order.quantity.toString(),
-          order.unitPrice.toString(),
-          order.selectUnit.toLowerCase(),
-          order.unitSize.toString(),
-          order.total?.toString() || "",
-          order.boat.boat_name.toLowerCase(),
-          order.outDate as string,
-        ].some((field) => field.includes(searchQuery.toLowerCase()));
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
 
-        const matchesFleet =
-          activeFleet === "All Fleets" ||
-          fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(
-            order.boat.boat_name
-          ) ||
-          order.boat.boat_name === activeFleet;
+    const updatedArchivedOrders = orders.map((order) => {
+      const orderDate = new Date(order.outDate);
+      const isPastMonth =
+        orderDate.getFullYear() < currentYear ||
+        (orderDate.getFullYear() === currentYear &&
+          orderDate.getMonth() < currentMonth);
 
-        const matchesBoat =
-          selectedBoat === "All Boats" || order.boat.boat_name === selectedBoat;
+      return {
+        ...order,
+        archived: isPastMonth,
+      };
+    });
 
-        return matchesSearch && matchesFleet && matchesBoat;
-      });
+    setArchivedOrders(updatedArchivedOrders);
 
-      setFilteredOrders(filteredOrders);
-    }
-  }, [orders, searchQuery, activeFleet, selectedBoat]);
+    const updateArchiveInDB = async () => {
+      try {
+        console.log("Updating archive in DB:", updatedArchivedOrders); // Log the data
+        await updateArchivedStatus(updatedArchivedOrders);
+        console.log("Archived status updated in the database");
+      } catch (error) {
+        console.error(
+          "Failed to update archived status in the database:",
+          error
+        );
+      }
+    };
+
+    updateArchiveInDB();
+  }, [orders]);
+
+  useEffect(() => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const filteredOrders = archivedOrders.filter((order) => {
+      const orderDate = new Date(order.outDate);
+      const isCurrentMonth =
+        orderDate.getMonth() === currentMonth &&
+        orderDate.getFullYear() === currentYear;
+
+      const matchesSearch = [
+        order.name.toLowerCase(),
+        order.note.toLowerCase(),
+        order.quantity.toString(),
+        order.unitPrice.toString(),
+        order.selectUnit.toLowerCase(),
+        order.unitSize.toString(),
+        order.total?.toString() || "",
+        order.boat.boat_name.toLowerCase(),
+        order.outDate.toString(),
+      ].some((field) => field.includes(searchQuery.toLowerCase()));
+
+      const matchesFleet =
+        activeFleet === "All Fleets" ||
+        fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(
+          order.boat.boat_name
+        ) ||
+        order.boat.boat_name === activeFleet;
+
+      const matchesBoat =
+        selectedBoat === "All Boats" || order.boat.boat_name === selectedBoat;
+
+      return isCurrentMonth && matchesSearch && matchesFleet && matchesBoat;
+    });
+
+    setFilteredOrders(filteredOrders);
+  }, [archivedOrders, searchQuery, activeFleet, selectedBoat]);
 
   const handleModify = (id: number) => {
     const order = orders.find((order) => order.id === id);
@@ -130,33 +173,33 @@ const Orders: React.FC = () => {
 
   return (
     <div>
-      <main className="flex-1">
-        <h1 className="mt-4 text-5xl font-bold text-[#295C65]">
-          Orders for {activeFleet}
-        </h1>
+      <main className="flex-1 p-0">
+        <PageTitle title={activeFleet} />
 
-        <div className="-mt-5 flex justify-center items-center gap-25  h-[300px]">
-          <FleetCard
-            title="All Fleets"
-            backgroundColor="bg-emerald-800"
-            isActive={activeFleet === "All Fleets"}
-            onClick={() => handleFleetSelect("All Fleets")}
-          />
-          <FleetCard
-            title="F/B DONYA DONYA 2X"
-            backgroundColor="bg-cyan-800"
-            isActive={activeFleet === "F/B DONYA DONYA 2X"}
-            onClick={() => handleFleetSelect("F/B DONYA DONYA 2X")}
-          />
-          <FleetCard
-            title="F/B Doña Librada"
-            backgroundColor="bg-red-800"
-            isActive={activeFleet === "F/B Doña Librada"}
-            onClick={() => handleFleetSelect("F/B Doña Librada")}
-          />
+        <div className="flex justify-center items-center h-[230px]">
+          <div className="justify-start items-center flex gap-35">
+            <FleetCard
+              title="All Fleets"
+              backgroundColor="bg-emerald-800"
+              isActive={activeFleet === "All Fleets"}
+              onClick={() => handleFleetSelect("All Fleets")}
+            />
+            <FleetCard
+              title="F/B DONYA DONYA 2X"
+              backgroundColor="bg-cyan-800"
+              isActive={activeFleet === "F/B DONYA DONYA 2X"}
+              onClick={() => handleFleetSelect("F/B DONYA DONYA 2X")}
+            />
+            <FleetCard
+              title="F/B Doña Librada"
+              backgroundColor="bg-red-800"
+              isActive={activeFleet === "F/B Doña Librada"}
+              onClick={() => handleFleetSelect("F/B Doña Librada")}
+            />
+          </div>
         </div>
 
-        <div className="-mt-5 scale-97">
+        <div className="p-[30px]">
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}

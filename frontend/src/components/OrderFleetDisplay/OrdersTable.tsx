@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item";
 import { SearchBar } from "../InventoryManagementTable/SearchBar";
 import { FilterDropdown } from "./FilterDropdown";
 import { ExpandedOrderDetails } from "./ExpandedOrderDetails";
 import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
+import { pluralize } from "@/utils/Pluralize";
 
 interface OrdersTableProps {
-  orders: OrderItemProps[];
+  orders: OrderItem[];
   onSearch?: (query: string) => void;
   onFilter?: (filter: string) => void;
   onModify?: (id: number) => void;
@@ -33,13 +34,12 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   };
   
 
+
   const getFilterOptions = () => {
     switch (activeFleet) {
       case "All Fleets":
         return [
           "All Boats",
-          "F/B DONYA DONYA 2X",
-          "F/B Doña Librada",
           "F/B Lady Rachelle",
           "F/B Mariella",
           "F/B My Shield",
@@ -77,50 +77,79 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   const filterOptions = getFilterOptions();
 
   return (
-    <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm">
-      <div className="flex gap-5 p-9">
+    <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm ">
+      <div className="flex gap-5 p-2 sm:p-[24px]">
         <SearchBar placeholder="Search Items..." onSearch={onSearch} />
         <FilterDropdown
           label="All Boats"
           options={filterOptions}
-          onSelect={onFilter || (() => {})}
+          onSelect={onFilter || (() => { })}
         />
       </div>
 
-      <div className="grid px-5 py-6 w-full text-lg font-bold text-white bg-cyan-900 grid-cols-[170px_200px_235px_150px_147px_135px_100px]">
-        <div>Date Out</div>
-        <div>Product Name</div>
-        <div>Note</div>
-        <div>Quantity</div>
-        <div>Unit Price</div>
-        <div>Boat</div>
-        <div>Actions</div>
+      <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-cyan-900 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
+        <div className="px-3">Date Out</div>
+        <div className="px-3">Product Name</div>
+        <div className="px-3">Note</div>
+        <div className="px-3">Quantity</div>
+        <div className="px-3">Unit Price</div>
+        <div className="px-3">Boat</div>
+        <div className="text-center">Actions</div>
       </div>
 
-      <div className="p-5">
+      <div className="flex-1">
         {sortedOrders?.map((order, index) => {
           const isSameDateAsPrevious =
             index > 0 && order.outDate === sortedOrders[index - 1].outDate;
 
           return (
             <React.Fragment key={order.id}>
-              <div className="grid items-center py-4 grid-cols-[170px_190px_280px_115px_140px_135px_110px] bg-white">
-                <div className="text-lg text-gray-600">
+              <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
+                <div className="
+                  text-[16px] text-gray-600 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
                   {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
                 </div>
-                <div className="text-lg font-bold text-gray-800">
+                <div className="
+                  text-[16px] font-bold text-gray-800 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
                   {order.name}
                 </div>
-                <div className="text-md text-gray-600">{order.note}</div>
-                <div className="text-lg text-gray-800">{order.quantity}</div>
-                <div className="text-lg text-gray-800">
-                  ₱{order.unitPrice}
+                <div className="
+                  text-[16px] text-gray-600 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  {order.note}
                 </div>
-                <div className="text-lg text-gray-600">{order.boat.boat_name}</div>
-
-                <div className="flex items-center gap-2">
+                <div className="
+                  text-[16px] text-gray-800 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  {order.quantity} {pluralize(order.selectUnit, Number(order.quantity))}
+                </div>
+                <div className="
+                  text-[16px] text-gray-800 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  ₱{order.unitPrice} / {order.unitSize} {pluralize(order.selectUnit, Number(order.unitSize))}
+                </div>
+                <div className="
+                  text-[16px] text-gray-600 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  {order.boat.boat_name}
+                </div>
+                <div className="
+                  flex items-center gap-2
+                  shrink-0 break-all overflow-hidden hyphens-auto justify-center
+                ">
                   <button
-                    className="h-9 text-base text-white bg-emerald-700 rounded-lg w-[85px]"
+                    className="
+                    h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
+                    cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                  "
                     onClick={() => {
                       if (onModify) onModify(order.id);
                       isModifyOpen(true);
@@ -128,21 +157,19 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   >
                     Modify
                   </button>
+                  </div>
                   <div
                     className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
                     onClick={() => toggleExpand(order.id)}
                   >
                     <ChevronIcon isExpanded={expandedOrderId === order.id} />
                   </div>
-                </div>
               </div>
-
               <div
-                className={`transition-all duration-300 ease-in-out ${
-                  expandedOrderId === order.id
-                    ? "opacity-100 max-h-[500px]"
-                    : "opacity-0 max-h-0 overflow-hidden"
-                }`}
+                className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
+                    ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                    : "scale-100 opacity-0 max-h-0 overflow-auto"
+                  }`}
               >
                 {expandedOrderId === order.id && (
                   <ExpandedOrderDetails order={order} />

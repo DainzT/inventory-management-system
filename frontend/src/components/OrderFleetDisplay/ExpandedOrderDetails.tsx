@@ -1,8 +1,8 @@
 import React from "react";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item"
 
 interface ExpandedOrderDetailsProps {
-  order: OrderItemProps;
+  order: OrderItem;
 }
 
 export const ExpandedOrderDetails: React.FC<ExpandedOrderDetailsProps> = ({
@@ -19,15 +19,15 @@ export const ExpandedOrderDetails: React.FC<ExpandedOrderDetailsProps> = ({
       </div>
       <div>
         <div className="mb-1 text-sm text-gray-500">Fleet Assigned:</div>
-        <div className="text-base text-gray-800">{order.fleet}</div>
+        <div className="text-base text-gray-800">{order.fleet.fleet_name}</div>
       </div>
       <div>
-        <div className="mb-1 text-sm text-gray-500">Selected Unit</div>
-        <div className="text-base text-gray-800">{order.selectUnit}</div>
-      </div>
-      <div>
-        <div className="mb-1 text-sm text-gray-500">Unit Size</div>
-        <div className="text-base text-gray-800">{order.unitSize}</div>
+        <div className="mb-1 text-sm text-gray-500">Last Updated</div>
+        <div className="text-base text-gray-800">
+          {order.lastUpdated instanceof Date
+            ? order.lastUpdated.toLocaleString()
+            : order.lastUpdated}
+        </div>
       </div>
     </div>
   );

@@ -1,11 +1,14 @@
-import React from "react";
-import { SummarySectionProps } from "@/types/summary-display";
+interface SummarySectionProps {
+  totalPrice: number;
+  remainingStock: number;
+  unit: string;
+}
 
-const SummarySection: React.FC<SummarySectionProps> = ({
+const SummarySection = ({
   totalPrice,
   remainingStock,
   unit,
-}) => {
+}: SummarySectionProps) => {
   return (
     <section className="p-2 bg-gray-50 rounded-lg">
       <div className="flex justify-between items-center mb-2">

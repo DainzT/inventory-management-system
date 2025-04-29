@@ -1,4 +1,4 @@
-import { GroupedOrders, Order } from "@/types";
+import { GroupedOrders, OrderItem } from "@/types";
 import { InvoiceHeader } from "./InvoiceHeader";
 import { InvoiceTable } from "./InvoiceTable";
 import { InvoiceSummary } from "./InvoiceSummary";
@@ -8,7 +8,7 @@ import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 
 interface InvoiceProps {
-    orders: Order[];
+    orders: OrderItem[];
     selectedMonth: string;
     selectedYear: number;
     total: number;
@@ -30,14 +30,14 @@ export const Invoice = ({
     );
 
     const groupedByBoat = sortedOrders.reduce((acc: Record<number, GroupedOrders>, order) => {
-        if (!acc[order.boat_id.id]) {
-            acc[order.boat_id.id] = {
-                boatId: order.boat_id.id,
-                boatName: order.boat_id.name,
+        if (!acc[order.boat.id]) {
+            acc[order.boat.id] = {
+                boatId: order.boat.id,
+                boatName: order.boat.boat_name,
                 orders: [],
             };
         }
-        acc[order.boat_id.id].orders.push(order);
+        acc[order.boat.id].orders.push(order);
         return acc;
     }, {});
 
@@ -60,14 +60,14 @@ export const Invoice = ({
         const pageOrders = allOrders.slice(startIndex, startIndex + ordersPerPage);
 
         return pageOrders.reduce((acc: Record<number, GroupedOrders>, order) => {
-            if (!acc[order.boat_id.id]) {
-                acc[order.boat_id.id] = {
-                    boatId: order.boat_id.id,
-                    boatName: order.boat_id.name,
+            if (!acc[order.boat.id]) {
+                acc[order.boat.id] = {
+                    boatId: order.boat.id,
+                    boatName: order.boat.boat_name,
                     orders: [],
                 };
             }
-            acc[order.boat_id.id].orders.push(order);
+            acc[order.boat.id].orders.push(order);
             return acc;
         }, {});
     };

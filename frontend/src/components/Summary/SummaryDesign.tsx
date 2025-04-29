@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import { YearSelector } from "./YearSelector";
 import { MonthSelector } from "./MonthSelector";
 import { Invoice } from "./Invoice";
-import { Order } from "@/types";
+import { OrderItem } from "@/types";
 
 interface SummaryDesignProps {
-  orders: Order[];
+  orders: OrderItem[];
   fleetName: string;
 }
 
@@ -48,7 +48,7 @@ const SummaryDesign = ({
   const getTotal = (): number => {
     return Number(
       filteredOrders
-        .reduce((sum: number, order: Order) => {
+        .reduce((sum: number, order: OrderItem) => {
           const orderTotal = Number(order.total) || 0;
           
           const normalizedTotal = orderTotal;

@@ -1,4 +1,5 @@
 import { GroupedOrders } from "@/types";
+import { pluralize } from "@/utils/Pluralize";
 
 interface InvoiceTableProps {
   itemSummary: GroupedOrders[];
@@ -7,24 +8,6 @@ interface InvoiceTableProps {
 export const InvoiceTable = ({
   itemSummary,
 }: InvoiceTableProps) => {
-  const pluralize = (unit: string, quantity: number): string => {
-    if (quantity === 1) {
-      if (unit.endsWith('s')) {
-        return unit.slice(0, -1);
-      }
-      return unit;
-    }
-
-    const irregularPlurals: Record<string, string> = {
-      box: 'boxes',
-      child: 'children',
-    };
-    if (irregularPlurals[unit]) return irregularPlurals[unit];
-
-    if (unit.endsWith('s')) return unit;
-
-    return `${unit}s`;
-  };
   return (
     <section className="rounded-lg overflow-hidden shadow-sm border border-gray-200">
       <div className="top-0 z-10 grid text-white  bg-cyan-900 grid-cols-[95px_120px_140px_90px_140px_160px] text-sm">
@@ -54,7 +37,7 @@ export const InvoiceTable = ({
               {group.orders.map((order) => (
                 <div
                   key={`${order.id}_${order.outDate.toISOString()}`}
-                  className="grid grid-cols-[95px_120px_140px_90px_140px_160px] text-sm even:bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="grid grid-cols-[95px_130px_130px_90px_140px_160px] text-sm even:bg-gray-50 hover:bg-gray-100 transition-colors"
                 >
                   <div className="px-3 py-4 border-r border-gray-400">
                     {new Date(order.outDate).toLocaleDateString('en-GB', {
@@ -82,21 +65,21 @@ export const InvoiceTable = ({
                       text-center px-2 py-4 border-r border-gray-400
                       shrink-0 break-all overflow-hidden hyphens-auto
                   ">
-                    {order.quantity} {pluralize(order.selectUnit, order.quantity)}
+                    {order.quantity} {pluralize(order.selectUnit, Number(order.quantity))}
                   </div>
                   <div
                     className="
                       px-4 py-4 border-r border-gray-400
                       shrink-0 break-all overflow-hidden hyphens-auto
                   ">
-                    ₱{Number(order.unitPrice).toFixed(2)} / {order.unitSize} {pluralize(order.selectUnit, order.unitSize)}
+                    ₱{Number(order.unitPrice).toFixed(2)} / {order.unitSize} {pluralize(order.selectUnit, Number(order.unitSize))}
                   </div>
                   <div
                     className="
                       text-center px-3 py-4 border-r border-gray-400
                       shrink-0 break-all overflow-hidden hyphens-auto  
                   ">
-                    ₱{(order.total).toFixed(2)}
+                    ₱{(Number(order.total)).toFixed(2)}
                   </div>
                 </div>
               ))}

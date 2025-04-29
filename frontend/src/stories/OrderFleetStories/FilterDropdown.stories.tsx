@@ -1,12 +1,14 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { FilterDropdown } from "../../components/OrderFleetDisplay/FilterDropdown";
+import userEvent from "@testing-library/user-event";
+import {within} from "@storybook/testing-library";
 
 const meta: Meta<typeof FilterDropdown> = {
   title: "Order Components/FilterDropdown",
   component: FilterDropdown,
   tags: ['autodocs'],
   argTypes: {
-    onSelect: { action: 'selected' } // This will log selections in Storybook actions panel
+    onSelect: { action: 'selected' }
   }
 } satisfies Meta<typeof FilterDropdown>;
 
@@ -20,8 +22,6 @@ export const AllFleetsView: Story = {
     label: "All Boats",
     options: [
       "All Boats",
-      "F/B DONYA DONYA 2X",
-      "F/B Doña Librada",
       "F/B Lady Rachelle",
       "F/B Mariella",
       "F/B My Shield",
@@ -33,6 +33,11 @@ export const AllFleetsView: Story = {
       "F/V Vadeo Scout",
       "F/B Mariene"
     ]
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const expand = canvas.getByText("All Boats")
+    await userEvent.click(expand);
   }
 };
 
@@ -48,8 +53,13 @@ export const DonyaDonyaFleetView: Story = {
       "F/B Abigail",
       "F/B DC-9"
     ]
-  }
-};
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const expand = canvas.getByText("All Boats")
+    await userEvent.click(expand);
+    }
+  };
 
 
 export const DonaLibradaFleetView: Story = {
@@ -63,13 +73,18 @@ export const DonaLibradaFleetView: Story = {
       "F/V Vadeo Scout",
       "F/B Mariene"
     ]
-  }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const expand = canvas.getByText("All Boats")
+    await userEvent.click(expand);
+    }
 };
 
 
 export const NoOptions: Story = {
     args: {
       label: "No Boats Available",
-      options: []
-    }
+      options: ["No Boats"]
+    },
   };

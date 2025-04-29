@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { OrdersTable } from "../../components/OrderFleetDisplay/OrdersTable";
 import { OrderItemProps } from "@/types/fleet-order";
 import { useState } from "react";
+import { waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 const meta: Meta<typeof OrdersTable> = {
   title: " Order Components/OrdersTable",
@@ -16,42 +18,45 @@ type Story = StoryObj<typeof OrdersTable>;
 const sampleOrders: OrderItemProps[] = [
   {
     id: 1,
-    productName: "Fishing Reel",
+    name: "Fishing Reel",
     note: "Spinning reel, corrosion-resistant",
     quantity: 1,
     unitPrice: 480.0,
     selectUnit: "piece",
     unitSize: 2,
     total: 480.0,
-    fleet: "F/B DONYA DONYA 2X",
-    boat: "F/B Lady Rachelle",
-    dateOut: "Jan 15, 2024",
+    fleet: { id: 2, name: "F/B Doña Librada" },
+    boat: { id: 8, fleet_id: 2, boat_name: "F/B Ruth Gaily" },
+    outDate: "Jan 15, 2024",
+    archived: false,
   },
   {
     id: 3,
-    productName: "Hook",
+    name: "Hook",
     note: "small size",
     quantity: 10,
     unitPrice: 12.5,
     selectUnit: "pack",
     unitSize: 10,
     total: 125,
-    fleet: "F/B Doña Librada",
-    boat: "F/B Mariene",
-    dateOut: "Jan 30, 2024",
+    fleet: { id: 2, name: "F/B Doña Librada" },
+    boat: { id: 9, fleet_id: 2, boat_name: "F/V Vadeo Scout" },
+    outDate: "Jan 30, 2024",
+    archived: false,
   },
   {
     id: 2,
-    productName: "Nylon Fishing Line",
+    name: "Nylon Fishing Line",
     note: "500m, high-tensile strength",
     quantity: 25,
     unitPrice: 150.5,
     selectUnit: "roll",
     unitSize: 1,
     total: 3762.5,
-    fleet: "F/B DONYA DONYA 2X",
-    boat: "F/B Mariella",
-    dateOut: "Jan 20, 2024",
+    fleet: { id: 2, name: "F/B Doña Librada" },
+    boat: { id: 6, fleet_id: 2, boat_name: "F/B Adomar" },
+    outDate: "Jan 20, 2024",
+    archived: false,
   },
 ];
 
@@ -59,14 +64,13 @@ const sampleOrders: OrderItemProps[] = [
 const Template: Story["render"] = (args) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterValue, setFilterValue] = useState("All Boats");
-  const [isModifyOpen, setIsModifyOpen] = useState(false);
 
   const filteredOrders = sampleOrders.filter((order) => {
     const matchesSearch =
-      order.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.note.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter =
-      filterValue === "All Boats" || order.boat === filterValue;
+      filterValue === "All Boats" || order.boat.boat_name === filterValue;
     return matchesSearch && matchesFilter;
   });
 
@@ -77,7 +81,6 @@ const Template: Story["render"] = (args) => {
       onSearch={(query) => setSearchQuery(query)}
       onFilter={(filter) => setFilterValue(filter)}
       onModify={(id) => console.log(`Modify order ${id}`)}
-      isModifyOpen={(isOpen) => setIsModifyOpen(isOpen)}
     />
   );
 };
@@ -104,11 +107,12 @@ export const WithSearch: Story = {
     orders: sampleOrders,
   },
   play: async ({ canvasElement }) => {
-    const searchInput = canvasElement.querySelector("input");
-    if (searchInput) {
-      searchInput.focus();
-      searchInput.value = "hook";
-      searchInput.dispatchEvent(new Event("input", { bubbles: true }));
-    }
+    const canvas = within(canvasElement);
+    const searchInput = canvas.getByRole('textbox')
+    console.log(searchInput)
+    await userEvent.type(searchInput, "Fishing Reel");
+    await waitFor(() => {
+      expect(canvas.getByText("Fishing Reel")).toBeInTheDocument();
+    });
   },
 };
