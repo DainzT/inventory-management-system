@@ -7,15 +7,15 @@ interface AuthResponse {
   message?: string;
 }
 
-export const checkPin = async (): Promise<AuthResponse> => {
-  const res = await fetch(`${API_URL}/auth/check-pin`, {
+export const checkUserAPI = async (): Promise<AuthResponse> => {
+  const res = await fetch(`${API_URL}/auth/check-user`, {
     method: "GET",
     credentials: "include",
   });
   return res.json();
 };
 
-export const setupPin = async (pin: string): Promise<AuthResponse> => {
+export const setupPinAPI = async (pin: string): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/setup-pin`, {
     method: "POST",
     headers: {
@@ -54,7 +54,7 @@ export const logoutAPI = async (): Promise<void> => {
   }
 };
 
-export const changePin = async (
+export const changePinAPI = async (
   oldPin: string,
   newPin: string
 ): Promise<AuthResponse> => {
@@ -83,16 +83,7 @@ export const refreshTokenAPI = async () => {
   return res.json();
 };
 
-export const checkAdminExists = async (): Promise<boolean> => {
-  const res = await fetch(`${API_URL}/auth/check-pin`, {
-    credentials: "include",
-  });
-
-  const data = await res.json();
-  return data.isPinSet === true;
-};
-
-export const createAdmin = async (payload: {
+export const createAdminAPI = async (payload: {
   email: string;
   pin: string;
   confirmPin: string;
@@ -111,7 +102,7 @@ export const createAdmin = async (payload: {
   return res.json();
 };
 
-export const sendOtpEmail = async (email: string): Promise<void> => {
+export const sendOtpEmailAPI = async (email: string): Promise<void> => {
   const res = await fetch(`${API_URL}/auth/send-otp-email`, {
     method: "POST",
     headers: {
@@ -131,7 +122,47 @@ export const sendOtpEmail = async (email: string): Promise<void> => {
   }
 };
 
-export const verifyOtp = async (
+export const verifyPinAPI = async (
+  pin: string
+): Promise<{ message: string }> => {
+  const res = await fetch(`${API_URL}/auth/verify-pin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ pin }),
+    // credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "PIN verification failed");
+  }
+
+  return res.json();
+};
+
+export const verifyEmailAPI = async (
+  email: string
+): Promise<{ message: string }> => {
+  const res = await fetch(`${API_URL}/auth/verify-email`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Email verification failed");
+  }
+
+  return res.json();
+};
+
+export const verifyOtpAPI = async (
   email: string,
   otp: string
 ): Promise<AuthResponse> => {
@@ -152,27 +183,7 @@ export const verifyOtp = async (
   return res.json();
 };
 
-export const verifyToken = async (
-  token: string
-): Promise<{ token?: string }> => {
-  const res = await fetch(`${API_URL}/auth/verify-token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ token }),
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || "Token verification failed");
-  }
-
-  return res.json();
-};
-
-export const resetPin = async (
+export const resetPinAPI = async (
   email: string,
   newPin: string
 ): Promise<void> => {

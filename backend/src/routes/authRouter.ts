@@ -236,31 +236,21 @@ router.put(
   }
 );
 
-router.get("/check-pin", async (req: Request, res: Response): Promise<void> => {
-  const hasRefreshToken = Boolean(req.cookies["refresh_token"]);
-  const user = await prisma.user.findFirst();
+router.get(
+  "/check-user",
+  async (req: Request, res: Response): Promise<void> => {
+    const hasRefreshToken = Boolean(req.cookies["refresh_token"]);
+    const user = await prisma.user.findFirst();
 
-  if (!user) {
-    res.status(200).json({ message: "No admin found", isPinSet: false });
+    if (!user) {
+      res.status(200).json({ message: "No admin found", isPinSet: false });
+      return;
+    }
+
+    res.json({ isPinSet: true, isAuthenticated: hasRefreshToken });
     return;
   }
-
-  res.json({ isPinSet: true, isAuthenticated: hasRefreshToken });
-  return;
-
-  //   try {
-  //     const accessToken = jwt.sign({ userId: user.id }, ACCESS_SECRET, {
-  //       expiresIn: "15m",
-  //     });
-
-  //     res.json({ isPinSet: true, isAuthenticated: true, token: accessToken });
-  //   } catch (error) {
-  //     res.json({ isPinSet: true, isAuthenticated: false });
-  //   }
-  // } catch (error) {
-  //   res.status(500).json({ message: "Internal server error" });
-  // }
-});
+);
 
 router.post(
   "/refresh-token",
@@ -280,7 +270,7 @@ router.post(
         expiresIn: "15m",
       });
 
-      res.json({ token: accessToken });
+      res.json({ accessToken });
     } catch (err) {
       res.sendStatus(403);
     }
@@ -316,30 +306,6 @@ router.post(
 );
 
 router.post(
-  "/verify-token",
-  async (req: Request, res: Response): Promise<void> => {
-    const { token, email } = req.body;
-
-    try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token,
-        type: "magiclink",
-      });
-
-      if (error || !data.session) {
-        res.status(401).json({ message: error?.message || "Invalid token" });
-        return;
-      }
-
-      res.status(200).json({ user: data.user, session: data.session });
-    } catch (err) {
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-);
-
-router.post(
   "/send-otp-email",
   async (req: Request, res: Response): Promise<void> => {
     try {
@@ -366,6 +332,53 @@ router.post(
     } catch (error: any) {
       console.error("Error sending OTP email:", error.message);
       res.status(500).json({ message: "Failed to send OTP" });
+    }
+  }
+);
+
+router.post(
+  "/verify-pin",
+  async (req: Request, res: Response): Promise<void> => {
+    const { pin } = req.body;
+    try {
+      const user = await prisma.user.findFirst();
+
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      const isMatch = await bcrypt.compare(pin, user.pin);
+      if (!isMatch) {
+        res.status(401).json({ message: "Invalid PIN" });
+        return;
+      }
+
+      res.status(200).json({ message: "PIN verified successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Failed to verify PIN" });
+    }
+  }
+);
+
+router.post(
+  "/verify-email",
+  async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+
+    try {
+      const user = await prisma.user.findFirst();
+
+      if (!user || user.email !== email) {
+        res.status(400).json({ message: "Invalid email address" });
+        return;
+      }
+
+      res.status(200).json({ message: "Email verified successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Failed to verify email" });
     }
   }
 );

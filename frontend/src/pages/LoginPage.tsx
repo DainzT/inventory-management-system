@@ -3,68 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Logo } from "@/components/SidebarComponents/Logo";
-import PinInput from "@/components/AuthComponents/PinInput";
-import { ClipLoader } from "react-spinners";
-import { checkAdminExists } from "@/api/authAPI";
-import ChangePin from "@/components/AuthComponents/ChangePin";
+import LoginInput from "@/components/AuthComponents/LoginInput";
+import ChangePinModal from "@/components/AuthComponents/ChangePin";
 import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";
-
-interface LoginResponse {
-  token?: string;
-  message?: string;
-}
-
-interface ApiError {
-  message: string;
-}
+import { ToastContainer } from "react-toastify";
 
 const LoginPage: React.FC = () => {
   const [pin, setPin] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showChangePin, setShowChangePin] = useState(false);
-  const [showCreateAdmin, setShowCreateAdmin] = useState(false);
   const [showForgotPin, setShowForgotPin] = useState(false);
-  const { login, refreshToken } = useAuth();
+  const { login, showCreateAdmin, setShowCreateAdmin } =
+    useAuth();
 
   const navigate = useNavigate();
 
-  function isApiError(error: unknown): error is ApiError {
-    return typeof error === "object" && error !== null && "message" in error;
-  }
-
-  useEffect(() => {
-    const fetchAdminStatus = async () => {
-      try {
-        const exists = await checkAdminExists();
-        setShowCreateAdmin(!exists);
-      } catch (err) {
-        console.error("Failed to check admin status", err);
-      }
-    };
-    fetchAdminStatus();
-  }, []);
-
   const handleLogin = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      await login(pin);
-      setTimeout(async () => {
-        await refreshToken();
-        navigate("/inventory");
-      }, 1000);
-    } catch (err: unknown) {
-      if (isApiError(err)) {
-        setError(err.message);
-      } else if (typeof err === "string") {
-        setError(err);
-      } else {
-        setError("Login failed");
-      }
-    } finally {
-      setLoading(false);
+    const success = await login(pin);
+    if (success) {
+      navigate("/inventory");
     }
   };
 
@@ -74,14 +31,25 @@ const LoginPage: React.FC = () => {
 
   return (
     <main className="flex flex-col items-center justify-start h-screen w-screen bg-white">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Header />
 
       <section className="relative flex flex-col items-center justify-center flex-grow w-full">
         <Logo width={20} height={20} />
         <h1 className="text-4xl font-bold text-black mb-9">Welcome, Admin!</h1>
 
-        <PinInput pin={pin} setPin={setPin} />
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <LoginInput pin={pin} setPin={setPin} />
 
         <button
           type="button"
@@ -90,7 +58,9 @@ const LoginPage: React.FC = () => {
         >
           Change PIN?
         </button>
-        {showChangePin && <ChangePin onClose={() => setShowChangePin(false)} />}
+        {showChangePin && (
+          <ChangePinModal onClose={() => setShowChangePin(false)} />
+        )}
 
         <div className="mb-3">
           <button
@@ -106,9 +76,9 @@ const LoginPage: React.FC = () => {
 
         <button
           onClick={handleLogin}
-          className="w-40 h-12 bg-accent rounded-[11px] text-xl font-semibold text-white"
+          className="w-40 h-12 bg-accent rounded-[11px] hover:bg-accent-light cursor-pointer active:scale-95 text-xl font-semibold text-white"
         >
-          {loading ? <ClipLoader color="#f4f4f4" size={20} /> : "Login"}
+          Login
         </button>
       </section>
     </main>

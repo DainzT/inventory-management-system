@@ -1,19 +1,23 @@
 import { useState, useEffect } from "react";
 import {
-  checkPin,
-  setupPin,
+  checkUserAPI,
+  setupPinAPI,
   loginAPI,
-  changePin,
-  sendOtpEmail as sendOtpEmailAPI,
-  verifyOtp,
-  verifyToken,
+  changePinAPI,
+  sendOtpEmailAPI,
+  verifyPinAPI,
+  verifyEmailAPI,
+  verifyOtpAPI,
+  createAdminAPI,
   refreshTokenAPI,
+  resetPinAPI,
   logoutAPI,
 } from "../api/authAPI";
 import supabase from "@/services/supabaseClient";
+import { useToast } from "./useToast";
 
 interface AuthResponse {
-  token?: string;
+  accessToken?: string;
   message?: string;
   isPinSet?: boolean;
   isAuthenticated?: boolean;
@@ -24,7 +28,6 @@ interface ErrorWithMessage {
 }
 
 const TOKEN_KEY = "access_token";
-const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 export const useAuth = () => {
   const [token, setToken] = useState<string | null>(() => {
@@ -33,73 +36,105 @@ export const useAuth = () => {
   const [isPinSet, setIsPinSet] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateAdmin, setShowCreateAdmin] = useState<boolean>(false);
+  const { showErrorToast, showLoadingToast, showSuccessToast } = useToast();
   const isAuthenticated = !!token;
 
   useEffect(() => {
-    const fetchPinStatus = async () => {
+    const statusId = "pin-status-toast";
+    const fetchUserStatus = async () => {
+      // showLoadingToast(statusId, "Checking PIN status...");
       try {
-        const data = await checkPin();
+        const data = await checkUserAPI();
         setIsPinSet(data.isPinSet ?? false);
+        setShowCreateAdmin(!data.isPinSet);
         if (data.isAuthenticated && data.token) {
           sessionStorage.setItem(TOKEN_KEY, data.token);
           setToken(data.token);
         }
+        // showSuccessToast(statusId, "PIN status checked successfully.");
       } catch (err) {
         const error = err as ErrorWithMessage;
         setError(error.message || "Failed to check PIN status.");
+        showErrorToast(
+          statusId,
+          error.message || "Failed to check PIN status."
+        );
       } finally {
         setLoading(false);
       }
     };
-    fetchPinStatus();
+    fetchUserStatus();
   }, []);
 
   const login = async (pin: string) => {
+    const loginId = "login-toast";
+    showLoadingToast(loginId, "Logging in...");
+    if (!pin || pin.trim() === "") {
+      showErrorToast(loginId, "PIN input cannot be empty.");
+      setLoading(false);
+      return false;
+    }
     try {
       setLoading(true);
       const data: AuthResponse = await loginAPI(pin);
-      if (data.token) {
-        sessionStorage.setItem(TOKEN_KEY, data.token);
-        setToken(data.token);
+      if (data.accessToken) {
+        sessionStorage.setItem(TOKEN_KEY, data.accessToken);
+        setToken(data.accessToken);
         setError(null);
+        showSuccessToast(loginId, "Login successful.");
+        return true;
       } else {
         setError(data.message || "Invalid PIN");
+        showErrorToast(loginId, data.message || "Invalid PIN");
+        return false;
       }
     } catch (err) {
       const error = err as ErrorWithMessage;
-      if (error.message === "Failed to fetch") {
-        setError("Network error. Please check your internet connection.");
-      } else {
-        setError(error.message || "Login failed. Try again.");
-      }
+      const message =
+        error.message === "Failed to fetch"
+          ? "Network error. Please check your internet connection."
+          : error.message || "Login failed. Try again.";
+      setError(message);
+      showErrorToast(loginId, message);
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
   const logout = async () => {
+    const logoutId = "logout-toast";
+    showLoadingToast(logoutId, "Logging out...");
     try {
       setLoading(true);
       await logoutAPI();
       sessionStorage.removeItem(TOKEN_KEY);
       setToken(null);
       await supabase.auth.signOut();
+      showSuccessToast(logoutId, "Logout successful.");
     } catch (err) {
-      console.error("Logout failed:", err);
+      const error = err as ErrorWithMessage;
+      setError(error.message);
+      showErrorToast(logoutId, "Logout failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const setupNewPin = async (pin: string) => {
+    const setupPinId = "set-up-pin-toast";
+    showLoadingToast(setupPinId, "Setting up PIN...");
     try {
       setLoading(true);
-      const data = await setupPin(pin);
+      const data = await setupPinAPI(pin);
       if (data.message === "Pin set successfully") {
         setIsPinSet(true);
         setError(null);
+        showSuccessToast(setupPinId, "PIN set successfully.");
       } else {
         setError(data.message || "Unknown error occurred");
+        showErrorToast(setupPinId, data.message || "Unknown error occurred");
       }
     } catch (err) {
       const error = err as ErrorWithMessage;
@@ -109,77 +144,216 @@ export const useAuth = () => {
     }
   };
 
-  const updatePin = async (oldPin: string, newPin: string) => {
+  const updatePin = async (currentPin: string, newPin: string) => {
+    const updatePinId = "update-pin-toast";
+    showLoadingToast(updatePinId, "Updating PIN...");
     try {
       setLoading(true);
-      const data = await changePin(oldPin, newPin);
-      if (data.message === "Pin updated successfully") {
+      const data = await changePinAPI(currentPin, newPin);
+      if (data.message === "PIN updated successfully") {
         setError(null);
+        showSuccessToast(updatePinId, "PIN updated successfully.");
       } else {
         setError(data.message || "Unknown error occurred");
+        showErrorToast(updatePinId, data.message || "Unknown error occurred.");
       }
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to change PIN.");
+      showErrorToast(updatePinId, error.message || "Failed to change PIN.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createAdmin = async (payload: {
+    email: string;
+    pin: string;
+    confirmPin: string;
+  }) => {
+    const createAdminId = "create-admin-toast";
+    showLoadingToast(createAdminId, "Creating admin account...");
+    if (payload.pin !== payload.confirmPin) {
+      setError("PIN and Confirm PIN do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = await createAdminAPI(payload);
+      showSuccessToast(createAdminId, "Admin account created successfully.");
+      return data;
+    } catch (err) {
+      const error = err as ErrorWithMessage;
+      setError(error.message || "Failed to create admin");
+      showErrorToast(createAdminId, error.message || "Failed to create admin");
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
   const sendOtpEmail = async (email: string) => {
+    const sendOtpId = "send-otp-toast";
+    showLoadingToast(sendOtpId, "Sending OTP...");
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({ email });
-      if (error) throw error;
-      console.log("OTP sent to email");
+      await sendOtpEmailAPI(email);
+      showSuccessToast(sendOtpId, "OTP sent to email.");
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to send OTP");
+      showErrorToast(sendOtpId, error.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
   };
 
-  const loginWithOtp = async () => {
+  const verifyPin = async (pin: string) => {
+    const verifyPinId = "verify-pin-toast";
+    showLoadingToast(verifyPinId, "Verifying PIN...");
     try {
       setLoading(true);
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
+      const data = await verifyPinAPI(pin);
+      showSuccessToast(
+        verifyPinId,
+        data.message || "PIN verified successfully."
+      );
+      setError(null);
+      return data;
+    } catch (err) {
+      const error = err as ErrorWithMessage;
+      setError(error.message || "PIN verification failed");
+      showErrorToast(verifyPinId, error.message || "PIN verification failed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      if (error || !session || !session.access_token) {
-        throw new Error("OTP login failed or no session found");
-      }
+  const verifyEmail = async (email: string) => {
+    const verifyEmailId = "verify-email-toast";
+    showLoadingToast(verifyEmailId, "Verifying email...");
+    try {
+      setLoading(true);
+      const data = await verifyEmailAPI(email);
 
-      const data = await verifyToken(session.access_token);
+      showSuccessToast(
+        verifyEmailId,
+        data.message || "Email verified successfully."
+      );
+      setError(null);
+      return data;
+    } catch (err) {
+      const error = err as ErrorWithMessage;
+      setError(error.message || "Email verification failed");
+      showErrorToast(
+        verifyEmailId,
+        error.message || "Email verification failed"
+      );
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
+    const verifyOtpId = "verify-otp-toast";
+    showLoadingToast(verifyOtpId, "Verifying OTP...");
+    try {
+      setLoading(true);
+      const data = await verifyOtpAPI(email, otp);
+
       if (data.token) {
         sessionStorage.setItem(TOKEN_KEY, data.token);
         setToken(data.token);
         setError(null);
+        showSuccessToast(verifyOtpId, "OTP verified successfully.");
+        return data;
       } else {
-        throw new Error("Invalid token returned from backend");
+        showErrorToast(verifyOtpId, data.message || "OTP verification failed");
       }
     } catch (err) {
       const error = err as ErrorWithMessage;
-      setError(error.message || "OTP login failed");
+      setError(error.message || "OTP verification failed");
+      showErrorToast(verifyOtpId, error.message || "OTP verification failed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // const resetPin = async (email: string, newPin: string) => {
+  //   const resetPinId = "reset-pin-toast";
+  //   showLoadingToast(resetPinId, "Resetting PIN...");
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     await resetPinAPI(email, newPin);
+  //     showSuccessToast(resetPinId, "PIN reset successfully.");
+  //     setIsPinSet(true);
+  //   } catch (err) {
+  //     const error = err as ErrorWithMessage;
+  //     setError(error.message || "Failed to reset PIN");
+  //     showErrorToast(resetPinId, error.message || "Failed to reset PIN");
+  //     throw err;
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const verifyAndResetPin = async (
+    email: string,
+    otp: string,
+    newPin: string
+  ) => {
+    const verifyResetId = "verify-reset-toast";
+    showLoadingToast(verifyResetId, "Verifying and resetting PIN...");
+    try {
+      setLoading(true);
+      setError(null);
+      await verifyOtpAPI(email, otp);
+      await resetPinAPI(email, newPin);
+      showSuccessToast(verifyResetId, "PIN reset successfully.");
+      setIsPinSet(true);
+    } catch (err) {
+      const error = err as ErrorWithMessage;
+      setError(error.message || "PIN reset failed");
+      showErrorToast(verifyResetId, error.message || "PIN reset failed");
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
   const refreshToken = async () => {
+    const refreshId = "refresh-toast";
     try {
       const data = await refreshTokenAPI();
       if (data.token) {
-        sessionStorage.setItem(TOKEN_KEY, data.token);
-        setToken(data.token);
+        sessionStorage.setItem(TOKEN_KEY, data.accessToken);
+        setToken(data.accessToken);
+        showSuccessToast(refreshId, "Token refreshed successfully.");
       }
     } catch (err) {
-      console.error("Token refresh failed:", err);
+      const error = err as ErrorWithMessage;
+      setError(error.message || "Failed to refresh token.");
+      showErrorToast(refreshId, error.message || "Failed to refresh token.");
       setToken(null);
     }
   };
+
+  useEffect(() => {
+    if (!token) return;
+
+    refreshToken();
+
+    const interval = setInterval(() => {
+      refreshToken();
+    }, 15 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   return {
     token,
@@ -187,12 +361,19 @@ export const useAuth = () => {
     isPinSet,
     loading,
     error,
+    showCreateAdmin,
+    setShowCreateAdmin,
+    setIsPinSet,
+    createAdmin,
     login,
     logout,
     setupNewPin,
     updatePin,
-    loginWithOtp,
     sendOtpEmail,
+    verifyPin,
+    verifyEmail,
+    verifyOtp,
+    verifyAndResetPin,
     refreshToken,
   };
 };

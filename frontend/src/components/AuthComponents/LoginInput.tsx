@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
-interface PinInputProps {
+interface LoginInputProps {
   pin: string;
   setPin: (pin: string) => void;
 }
 
-function PinInput({ pin, setPin }: PinInputProps) {
+function LoginInput({ pin, setPin }: LoginInputProps) {
   const [showPin, setShowPin] = useState(false);
 
   return (
@@ -33,4 +33,4 @@ function PinInput({ pin, setPin }: PinInputProps) {
   );
 }
 
-export default PinInput;
+export default LoginInput;

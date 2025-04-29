@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Portal from "@/utils/Portal";
 import { ClipLoader } from "react-spinners";
-import { sendOtpEmail, verifyOtp, resetPin } from "@/api/authAPI";
-import { useNavigate } from "react-router-dom";
+import AuthInput from "@/components/AuthComponents/AuthInput";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ForgotPinProps {
   onClose: () => void;
@@ -14,18 +14,16 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
   const [newPin, setNewPin] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const { sendOtpEmail, verifyAndResetPin, verifyEmail } = useAuth();
 
   const handleSendOTP = async () => {
     try {
       setLoading(true);
-      setError("");
+      await verifyEmail(email);
       await sendOtpEmail(email);
       setOtpSent(true);
+      setLoading(false);
     } catch {
-      setError("Failed to send OTP. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -33,17 +31,10 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
   const handleVerifyOTP = async () => {
     try {
       setLoading(true);
-      setError("");
-      await verifyOtp(email, otp);
-      await resetPin(email, newPin);
+      await verifyAndResetPin(email, otp, newPin);
+      setLoading(false);
       onClose();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || "OTP verification failed. Please try again.");
-      } else {
-        setError("OTP verification failed. Please try again.");
-      }
-    } finally {
+    } catch {
       setLoading(false);
     }
   };
@@ -55,49 +46,38 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
           <header className="mb-4">
             <h2 className="text-2xl font-semibold text-cyan-800">Forgot PIN</h2>
           </header>
-
           {!otpSent ? (
             <>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
+              <AuthInput
+                label="Email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                onChange={setEmail}
                 placeholder="Enter your email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               />
             </>
           ) : (
             <>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                OTP
-              </label>
-              <input
-                type="text"
+              <AuthInput
+                label="OTP"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value)}
+                type="text"
+                onChange={setOtp}
                 placeholder="Enter OTP"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               />
-              <label className="block text-sm font-medium text-zinc-700 mb-1 mt-4">
-                New PIN
-              </label>
-              <input
-                type="password"
+              <AuthInput
+                label="New PIN"
                 value={newPin}
-                onChange={(e) => setNewPin(e.target.value)}
+                type="password"
+                onChange={setNewPin}
                 placeholder="Enter new PIN"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                isPin
                 required
               />
             </>
           )}
-
-          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
 
           <div className="flex justify-end gap-2 mt-6">
             <button
