@@ -19,16 +19,8 @@ export const UnitSelector = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const presetUnits = [
-    "Piece",
-    "Box",
-    "Pack",
-    "Dozen",
-    "Case",
-    "Bundle",
-    "Set",
-    "Kit",
-    "Roll",
-    "Meter",
+    "Piece", "Box", "Pack", "Dozen", "Case",
+    "Bundle", "Set", "Kit", "Roll", "Meter",
   ];
 
   const filteredUnits = presetUnits.filter((unit) =>

@@ -71,13 +71,13 @@ export const QuantityAdjustment: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const quantityDisplay = canvas.getByTestId("quantity-display");
-    const incrementButton = canvas.getByRole("button", { name: /increment quantity/i });
-    const decrementButton = canvas.getByRole("button", { name: /decrement quantity/i });
+    // const quantityDisplay = canvas.getByTestId("quantity-display");
+    // const incrementButton = canvas.getByRole("button", { name: /increment quantity/i });
+    // const decrementButton = canvas.getByRole("button", { name: /decrement quantity/i });
 
-    const buttons = canvas.getAllByRole("button");
-    const decrementButton = buttons[1];
-    const incrementButton = buttons[2];
+    // const buttons = canvas.getAllByRole("button");
+    // const decrementButton = buttons[1];
+    // const incrementButton = buttons[2];
 
     const quantityDisplay =
       canvas.getByTestId("quantity-display") ||

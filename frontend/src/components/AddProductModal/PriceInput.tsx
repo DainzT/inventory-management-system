@@ -95,7 +95,7 @@ export const PriceInput = ({
               disabled={disabled}
             />
             {error && <span className="absolute text-red-600 text-sm -translate-17 translate-y-10">{error.unitSize}</span>}
-            <span className="ml-2 inter-font">{unit?.trim() || "unit"}</span>
+            <span className="ml-2 inter-font">{unit?.trim() || "Unit"}</span>
           </>
         )}
       </div>
