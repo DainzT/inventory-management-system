@@ -1,22 +1,18 @@
-import presets from "ts-jest/presets/index.js";
-const { defaultsESM } = presets;
+import type { Config } from "@jest/types";
 
-/** @type {import('@jest/types').Config.InitialOptions} */
-const config = {
-  ...defaultsESM,
+const config: Config.InitialOptions = {
+  preset: "ts-jest",
   testEnvironment: "jsdom",
-  globals: {
-    "ts-jest": {
-      useESM: true,
-    },
-  },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest",
+  },
   testMatch: [
     "**/__tests__/**/*.test.[jt]s?(x)",
     "**/?(*.)+(spec|test).[jt]s?(x)",
   ],
   testPathIgnorePatterns: ["/node_modules/", "/e2e/"],
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   watchPathIgnorePatterns: ["node_modules", "dist"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
