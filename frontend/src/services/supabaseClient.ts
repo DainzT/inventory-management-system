@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_DATABASE_URL;
-const supabaseKey = import.meta.env.VITE_DATABASE_KEY;
+const supabaseUrl = process.env.VITE_DATABASE_URL;
+const supabaseKey = process.env.VITE_DATABASE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error("Supabase URL and key are required.");
@@ -10,4 +10,3 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default supabase;
-
