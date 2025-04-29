@@ -326,19 +326,23 @@ export const useAuth = () => {
     }
   };
 
-  const refreshToken = async () => {
-    const refreshId = "refresh-toast";
+  const refreshToken = async (showToast = false) => {
     try {
       const data = await refreshTokenAPI();
-      if (data.token) {
+      if (data.accessToken) {
         sessionStorage.setItem(TOKEN_KEY, data.accessToken);
         setToken(data.accessToken);
-        showSuccessToast(refreshId, "Token refreshed successfully.");
+        if (showToast) showSuccessToast("refresh-toast", "Token refreshed");
       }
     } catch (err) {
       const error = err as ErrorWithMessage;
+      if (showToast) {
+        showErrorToast(
+          "refresh-toast",
+          error.message || "Token refresh failed"
+        );
+      }
       setError(error.message || "Failed to refresh token.");
-      showErrorToast(refreshId, error.message || "Failed to refresh token.");
       setToken(null);
     }
   };

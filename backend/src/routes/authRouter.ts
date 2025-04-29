@@ -263,7 +263,7 @@ router.post(
 
     try {
       const payload = jwt.verify(refreshToken, REFRESH_SECRET) as {
-        userId: string;
+        userId: number;
       };
 
       const accessToken = jwt.sign({ userId: payload.userId }, ACCESS_SECRET, {
