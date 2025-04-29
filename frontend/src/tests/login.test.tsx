@@ -5,6 +5,9 @@ import LoginPage from "@/pages/LoginPage";
 import { loginAPI } from "@/api/authAPI";
 import "@testing-library/jest-dom";
 
+jest.mock("@/services/supabaseClient", () =>
+  require("__mocks__/supabaseClientMock")
+);
 jest.mock("@/api/authAPI", () => ({
   login: jest.fn(),
 }));
