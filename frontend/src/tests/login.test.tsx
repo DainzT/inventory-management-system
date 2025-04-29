@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import LoginPage from "@/pages/LoginPage";
-import { login } from "@/api/authAPI";
+import { loginAPI } from "@/api/authAPI";
 import "@testing-library/jest-dom";
 
 jest.mock("@/api/authAPI", () => ({
@@ -27,7 +27,7 @@ describe("LoginPage", () => {
   });
 
   it("shows error when PIN is incorrect", async () => {
-    (login as jest.Mock).mockRejectedValue(new Error("Invalid PIN"));
+    (loginAPI as jest.Mock).mockRejectedValue(new Error("Invalid PIN"));
 
     render(
       <MemoryRouter>
@@ -47,7 +47,7 @@ describe("LoginPage", () => {
 
   it("navigates to inventory on successful login", async () => {
     const mockNavigate = jest.fn();
-    (login as jest.Mock).mockResolvedValue({ token: "mocked-jwt-token" });
+    (loginAPI as jest.Mock).mockResolvedValue({ token: "mocked-jwt-token" });
 
     jest
       .spyOn(require("react-router-dom"), "useNavigate")
@@ -70,7 +70,7 @@ describe("LoginPage", () => {
   });
 
   it("shows error when the login API fails (e.g., server error)", async () => {
-    (login as jest.Mock).mockRejectedValue(new Error("Server error"));
+    (loginAPI as jest.Mock).mockRejectedValue(new Error("Server error"));
 
     render(
       <MemoryRouter>
