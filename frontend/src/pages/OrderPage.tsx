@@ -2,37 +2,78 @@ import React, { useState, useEffect } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
 import { OrderItem } from "@/types/order-item";
+import { InventoryItem } from "@/types/inventory-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
 import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
+import { fetchInventoryItems } from "@/api/inventoryAPI";
 import { PageTitle } from "@/components/PageTitle";
 import { fleetBoats } from "@/utils/Fleets";
+import { ModifyOrderItem } from "@/types/modify-order-item";
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<OrderItem[]>([]);
   const [archivedOrders, setArchivedOrders] = useState<OrderItem[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(
-    null
-  );
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
+  const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
+
+  function toModifyOrderItem(order: OrderItem, inventory: InventoryItem): ModifyOrderItem {
+    const quantity = typeof order.quantity === 'number' 
+      ? order.quantity 
+      : Number(order.quantity) || 0;
+  
+    return {
+      id: order.id,
+      name: order.name,
+      note: order.note,
+      quantity: quantity,
+      unitPrice: Number(order.unitPrice),
+      fleet: order.fleet,
+      boat: order.boat,
+      currentQuantity: Number(inventory.quantity)
+    };
+  }
+  
+  
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchOrdersAndInventory = async () => {
       try {
-        const response = await fetchAssignedItems();
-        console.log("Fetched orders:", response);
-        setOrders(response);
-        setFilteredOrders(response);
+        const [ordersResponse, inventoryResponse] = await Promise.all([
+          fetchAssignedItems(),
+          fetchInventoryItems()
+        ]);
+
+        setOrders(ordersResponse);
+        setFilteredOrders(ordersResponse);
+        setInventoryItems(inventoryResponse);
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchOrders();
+    fetchOrdersAndInventory();
   }, []);
+
+  useEffect(() => {
+    if (isModalOpen && selectedOrder) {
+      console.log("Selected Order (before transform):", selectedOrder);
+      const inventoryMatch = inventoryItems.find(
+        (item) => item.name === selectedOrder.name
+      );
+      if (inventoryMatch) {
+        const transformed = toModifyOrderItem(selectedOrder, inventoryMatch);
+        console.log("Transformed Order:", transformed);
+        setModifyOrderItem(transformed);
+      }
+    }
+  }, [isModalOpen, selectedOrder, inventoryItems]);
+  
 
   useEffect(() => {
     const currentMonth = new Date().getMonth();
@@ -55,14 +96,9 @@ const Orders: React.FC = () => {
 
     const updateArchiveInDB = async () => {
       try {
-        console.log("Updating archive in DB:", updatedArchivedOrders); // Log the data
         await updateArchivedStatus(updatedArchivedOrders);
-        console.log("Archived status updated in the database");
       } catch (error) {
-        console.error(
-          "Failed to update archived status in the database:",
-          error
-        );
+        console.error("Failed to update archived status:", error);
       }
     };
 
@@ -110,10 +146,19 @@ const Orders: React.FC = () => {
   const handleModify = (id: number) => {
     const order = orders.find((order) => order.id === id);
     if (order) {
+      const inventoryMatch = inventoryItems.find((inv) => inv.name === order.name);
+      if (inventoryMatch) {
+        const transformed = toModifyOrderItem(order, inventoryMatch);
+        setModifyOrderItem(transformed);
+      } else {
+        console.warn("No matching inventory item found for order:", order.name);
+      }
       setSelectedOrder(order);
       setIsModalOpen(true);
     }
   };
+  
+  
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -130,13 +175,10 @@ const Orders: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
+    setModifyOrderItem(null);
   };
 
-  const handleConfirmChanges = (
-    quantity: number,
-    fleet: string,
-    boat: string,
-  ) => {
+  const handleConfirmChanges = (quantity: number, fleet: string, boat: string) => {
     if (selectedOrder) {
       console.log("Changes confirmed:", {
         selectedOrder,
@@ -194,13 +236,13 @@ const Orders: React.FC = () => {
           />
         </div>
 
-        {selectedOrder && (
+        {modifyOrderItem && (
           <ModifyModal
             isOpen={isModalOpen}
             onClose={handleCloseModal}
             onConfirm={handleConfirmChanges}
             onRemove={handleRemoveItem}
-            order={selectedOrder}
+            order={modifyOrderItem}
           />
         )}
       </main>

@@ -3,7 +3,8 @@ import { Trash2, Minus, Plus, CheckSquare, X } from "lucide-react";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
 import { OrderItem } from "@/types";
-import { fleets } from "@/utils/Fleets";
+import { fleetBoats, fleets } from "@/utils/Fleets";
+import { ModifyOrderItem } from "@/types/modify-order-item";
 
 
 interface ModifyModalProps {
@@ -15,7 +16,7 @@ interface ModifyModalProps {
     boat: string,
   ) => void;
   onRemove: () => void;
-  order: OrderItem;
+  order: ModifyOrderItem;
 }
 
 export const ModifyModal: React.FC<ModifyModalProps> = ({
@@ -26,14 +27,22 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   order,
 }) => {
   const [quantity, setQuantity] = useState<number>(order.quantity || 0);
-  const [fleet, setFleet] = useState<string>(order.fleet.fleet_name);
-  const [boat, setBoat] = useState<string>(order.boat.boat_name);
+  const [fleet, setFleet] = useState<string>(order.fleet?.fleet_name || "");
+  const [boat, setBoat] = useState<string>(order.boat?.boat_name || "");  
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] =
     useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const currentStock = 8;
+  const currentStock = order.currentQuantity;
+
+  useEffect(() => {
+    if (isOpen) {
+      console.log("Selected fleet:", fleet);
+      console.log("Boats available for selected fleet:", fleets[fleet as keyof typeof fleets]);
+    }
+  }, [isOpen, fleet]);
+
   useEffect(() => {
     const hasChanged =
       quantity !== order.quantity ||
@@ -42,6 +51,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   
     setHasChanges(hasChanged);
   }, [quantity, fleet, boat, order]);
+  
 
   const handleIncrement = () => {
     if (quantity < currentStock) {
@@ -59,7 +69,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     setFleet(newFleet);
     const fleetBoatsList = fleets[newFleet as keyof typeof fleets];
     if (fleetBoatsList && fleetBoatsList.length > 0) {
-      setBoat(fleetBoatsList[0]);
+      setBoat(fleetBoatsList[0]); 
     }
   };
 
@@ -164,7 +174,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               <select
                 id="boat-select"
                 value={boat}
-                onChange={(e) => setBoat(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setBoat(e.target.value)}
                 className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-teal-500"
               >
                 {fleets[fleet as keyof typeof fleets]?.map((boatName) => (
@@ -185,8 +195,8 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Remaining Stock</span>
                 <span data-testid="remaining-stock" className="font-medium">
-                  {remainingStock}
-                </span>
+                {order.currentQuantity - (quantity - order.quantity)}
+              </span>
               </div>
             </div>
             <div className="flex gap-3 mt-2">
