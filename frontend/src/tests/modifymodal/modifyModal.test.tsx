@@ -9,19 +9,20 @@ const mockOrder = {
   quantity: 2,
   unitPrice: 10.99,
   selectUnit: "piece",
-  unitSize: 1, 
+  unitSize: 1,
   total: 21.98,
   fleet: {
-    id: 1, 
+    id: 1,
     fleet_name: "F/B DONYA DONYA 2X",
   },
   boat: {
-    id: 1, 
+    id: 1,
     boat_name: "F/B Lady Rachelle",
-    fleet_id: 1, 
+    fleet_id: 1,
   },
   archived: false,
   outDate: new Date("2023-01-01"),
+  currentQuantity: 10,
 };
 
 const mockProps = {
@@ -32,7 +33,7 @@ const mockProps = {
   order: mockOrder,
 };
 
-describe("ModifyModal Frontend Interactions", () => {
+describe("ModifyModal Component", () => {
   it("renders product information correctly", () => {
     render(<ModifyModal {...mockProps} />);
     expect(screen.getByText("Test Product")).toBeInTheDocument();
@@ -40,14 +41,12 @@ describe("ModifyModal Frontend Interactions", () => {
     expect(screen.getByText("₱10.99")).toBeInTheDocument();
   });
 
-  it("allows changing quantity", () => {
+  it("allows changing quantity using increment and decrement", () => {
     render(<ModifyModal {...mockProps} />);
+    const quantityDisplay = screen.getByTestId("quantity-display");
 
-    const quantityDisplay = screen.getByText("2").parentElement;
-    const buttons = screen.getAllByRole("button");
-
-    const decrementButton = buttons[1];
-    const incrementButton = buttons[2];
+    const incrementButton = screen.getByLabelText("Increment quantity");
+    const decrementButton = screen.getByLabelText("Decrement quantity");
 
     fireEvent.click(incrementButton);
     expect(quantityDisplay).toHaveTextContent("3");
@@ -56,52 +55,54 @@ describe("ModifyModal Frontend Interactions", () => {
     expect(quantityDisplay).toHaveTextContent("2");
   });
 
-  it("changes fleet and boat assignments", () => {
+  it("displays and updates fleet and boat selections", () => {
     render(<ModifyModal {...mockProps} />);
 
-    const initialFleetSelect = screen.getByDisplayValue("F/B DONYA DONYA 2X");
-    const initialBoatSelect = screen.getByDisplayValue("F/B Lady Rachelle");
+    const fleetSelect = screen.getByLabelText("Fleet Assignment") as HTMLSelectElement;
+    const boatSelect = screen.getByLabelText("Boat Assignment") as HTMLSelectElement;
 
-    expect(initialFleetSelect).toBeInTheDocument();
-    expect(initialBoatSelect).toBeInTheDocument();
+    expect(fleetSelect.value).toBe("F/B DONYA DONYA 2X");
+    expect(boatSelect.value).toBe("F/B Lady Rachelle");
 
-    fireEvent.change(initialFleetSelect, {
-      target: { value: "F/B Doña Librada" },
-    });
+    fireEvent.change(fleetSelect, { target: { value: "F/B Doña Librada" } });
+    expect(fleetSelect.value).toBe("F/B Doña Librada");
 
-    expect(screen.getByDisplayValue("F/B Doña Librada")).toBeInTheDocument();
-
-    const updatedBoatSelect = screen.getByDisplayValue("F/B Adomar");
-    expect(updatedBoatSelect).toBeInTheDocument();
-
-    fireEvent.change(updatedBoatSelect, {
-      target: { value: "F/B Prince of Peace" },
-    });
-
-    expect(screen.getByDisplayValue("F/B Prince of Peace")).toBeInTheDocument();
+    fireEvent.change(boatSelect, { target: { value: "F/B Adomar" } });
+    expect(boatSelect.value).toBe("F/B Adomar");
   });
 
-  it("calculates total price correctly", () => {
+  it("calculates total price correctly after quantity change", () => {
     render(<ModifyModal {...mockProps} />);
-
     expect(screen.getByText("₱21.98")).toBeInTheDocument();
 
-    const buttons = screen.getAllByRole("button");
-    const incrementButton = buttons[2];
-
-    fireEvent.click(incrementButton);
+    fireEvent.click(screen.getByLabelText("Increment quantity"));
     expect(screen.getByText("₱32.97")).toBeInTheDocument();
   });
 
-  it("closes when cancel button is clicked", () => {
+  it("displays updated remaining stock correctly", () => {
+    render(<ModifyModal {...mockProps} />);
+    const remaining = screen.getByTestId("remaining-stock");
+    expect(remaining).toHaveTextContent("10");
+
+    fireEvent.click(screen.getByLabelText("Increment quantity"));
+    expect(remaining).toHaveTextContent("9");
+  });
+
+  it("calls onClose when Cancel is clicked", () => {
     render(<ModifyModal {...mockProps} />);
     fireEvent.click(screen.getByText("Cancel"));
     expect(mockProps.onClose).toHaveBeenCalled();
   });
 
-  it("saves changes when confirm button is clicked", () => {
+  it("calls onConfirm when Confirm Changes is clicked", () => {
     render(<ModifyModal {...mockProps} />);
-    fireEvent.click(screen.getByText("Confirm Changes"));
+    fireEvent.click(screen.getByTestId("confirm-changes-button"));
     expect(mockProps.onConfirm).toHaveBeenCalled();
+  });
+
+  it("opens delete confirmation modal when Remove Item is clicked", () => {
+    render(<ModifyModal {...mockProps} />);
+    fireEvent.click(screen.getByTestId("remove-item-button"));
+    expect(screen.getByText(/are you sure you want to remove/i)).toBeInTheDocument();
   });
 });
