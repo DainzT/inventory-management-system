@@ -15,6 +15,10 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
+jest.mock("@/services/supabaseClient", () =>
+  require("__mocks__/supabaseClientMock.ts")
+);
+
 describe("Sidebar Component", () => {
   beforeEach(() => {
     jest.useFakeTimers();
