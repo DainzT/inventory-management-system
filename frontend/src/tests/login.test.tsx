@@ -4,10 +4,9 @@ import { MemoryRouter } from "react-router-dom";
 import LoginPage from "@/pages/LoginPage";
 import { loginAPI } from "@/api/authAPI";
 import "@testing-library/jest-dom";
+import supabaseClientMock from "./__mocks__/supabaseClientMock";
 
-jest.mock("@/services/supabaseClient", () =>
-  require("__mocks__/supabaseClientMock.ts")
-);
+jest.mock("@/services/supabaseClient", () => supabaseClientMock);
 jest.mock("@/api/authAPI", () => ({
   login: jest.fn(),
 }));

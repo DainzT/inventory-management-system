@@ -8,6 +8,7 @@ import {
 import Sidebar from "@/components/Sidebar";
 import { BrowserRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
+import supabaseClientMock from "./__mocks__/supabaseClientMock";
 
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -15,9 +16,7 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock("@/services/supabaseClient", () =>
-  require("__mocks__/supabaseClientMock.ts")
-);
+jest.mock("@/services/supabaseClient", () => supabaseClientMock);
 
 describe("Sidebar Component", () => {
   beforeEach(() => {
