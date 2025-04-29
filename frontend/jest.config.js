@@ -1,4 +1,4 @@
-import { defaultsESM } from "ts-jest/presets";
+import { defaultsESM } from "ts-jest/presets/index.js";
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 const config = {
