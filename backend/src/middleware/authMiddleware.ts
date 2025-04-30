@@ -5,7 +5,7 @@ export const authenticateToken = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(" ")[1];
 

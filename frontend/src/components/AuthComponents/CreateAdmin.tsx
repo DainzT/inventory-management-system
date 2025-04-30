@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import Portal from "@/utils/Portal";
-import { sendOtpEmail, verifyOtp, createAdmin } from "@/api/authAPI";
+import { sendOtpEmailAPI, verifyOtpAPI, createAdminAPI } from "@/api/authAPI";
 import { ClipLoader } from "react-spinners";
-import CreateAdminInput from "@/components/AuthComponents/CreateAdminInput";
+import AuthInput from "@/components/AuthComponents/AuthInput";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CreateAdminModalProps {
   onSuccess: () => void;
@@ -16,17 +17,15 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { sendOtpEmail, verifyOtp, createAdmin } = useAuth();
 
   const handleSendOTP = async () => {
     try {
       setLoading(true);
-      setError("");
       await sendOtpEmail(email);
       setOtpSent(true);
+      setLoading(false);
     } catch {
-      setError("Failed to send OTP. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -34,30 +33,21 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
   const handleVerifyOTP = async () => {
     try {
       setLoading(true);
-      setError("");
       await verifyOtp(email, otp);
       setOtpVerified(true);
+      setLoading(false);
     } catch {
-      setError("OTP verification failed. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
 
   const handleCreateAdmin = async () => {
-    if (pin !== confirmPin) {
-      setError("PIN and Confirm PIN do not match.");
-      return;
-    }
-
     try {
       setLoading(true);
-      setError("");
       await createAdmin({ email, pin, confirmPin });
+      setLoading(false);
       onSuccess();
     } catch {
-      setError("Failed to create admin. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -73,7 +63,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
           </header>
 
           {!otpSent ? (
-            <CreateAdminInput
+            <AuthInput
               label="Email"
               placeholder="Enter admin email first"
               value={email}
@@ -81,7 +71,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
               type="text"
             />
           ) : !otpVerified ? (
-            <CreateAdminInput
+            <AuthInput
               label="OTP"
               placeholder="Enter OTP sent to your email"
               value={otp}
@@ -90,7 +80,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
             />
           ) : (
             <>
-              <CreateAdminInput
+              <AuthInput
                 label="PIN"
                 placeholder="Enter PIN"
                 value={pin}
@@ -98,7 +88,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
                 type="password"
                 isPin
               />
-              <CreateAdminInput
+              <AuthInput
                 label="Confirm PIN"
                 placeholder="Re-enter PIN"
                 value={confirmPin}
@@ -108,8 +98,6 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
               />
             </>
           )}
-
-          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
 
           <div className="flex justify-end gap-2 mt-6">
             <button

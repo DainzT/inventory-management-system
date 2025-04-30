@@ -13,6 +13,6 @@ export interface SimpleInputProps {
   label: string;
   placeholder: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
   required?: boolean;
 }
