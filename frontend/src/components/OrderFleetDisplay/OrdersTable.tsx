@@ -33,7 +33,6 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
 
-
   const getFilterOptions = () => {
     switch (activeFleet) {
       case "All Fleets":
@@ -82,7 +81,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
         <FilterDropdown
           label="All Boats"
           options={filterOptions}
-          onSelect={onFilter || (() => { })}
+          onSelect={onFilter || (() => {})}
         />
       </div>
 
@@ -97,65 +96,83 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       </div>
 
       <div className="flex-1">
-        {sortedOrders?.map((order, index) => {
-          const isSameDateAsPrevious =
-            index > 0 && order.outDate === sortedOrders[index - 1].outDate;
-
-          return (
-            <React.Fragment key={order.id}>
-              <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
-                </div>
-                <div className="
-                  text-[16px] font-bold text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {order.name}
-                </div>
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {order.note}
-                </div>
-                <div className="
-                  text-[16px] text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {order.quantity} {pluralize(order.selectUnit, Number(order.quantity))}
-                </div>
-                <div className="
-                  text-[16px] text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  ₱{order.unitPrice} / {order.unitSize} {pluralize(order.selectUnit, Number(order.unitSize))}
-                </div>
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {order.boat.boat_name}
-                </div>
-                <div className="
-                  flex items-center gap-2
-                  shrink-0 break-all overflow-hidden hyphens-auto justify-center
-                ">
-                  <button
+        {sortedOrders.length === 0 ? (
+          <div className="text-center py-6 text-gray-500">
+            There is no assigned item
+          </div>
+        ) : (
+          sortedOrders?.map((order) => {
+            return (
+              <React.Fragment key={order.id}>
+                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
+                  <div
                     className="
-                    h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
-                    cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
                   "
-                    onClick={() => {
-                      if (onModify) onModify(order.id);
-                      isModifyOpen(true);
-                    }}
                   >
-                    Modify
-                  </button>
+                    {new Date(order.outDate).toLocaleDateString()}
+                  </div>
+                  <div
+                    className="
+                    text-[16px] font-bold text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  "
+                  >
+                    {order.name}
+                  </div>
+                  <div
+                    className="
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  "
+                  >
+                    {order.note}
+                  </div>
+                  <div
+                    className="
+                    text-[16px] text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  "
+                  >
+                    {order.quantity}{" "}
+                    {pluralize(order.selectUnit, Number(order.quantity))}
+                  </div>
+                  <div
+                    className="
+                    text-[16px] text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  "
+                  >
+                    ₱{order.unitPrice} / {order.unitSize}{" "}
+                    {pluralize(order.selectUnit, Number(order.unitSize))}
+                  </div>
+                  <div
+                    className="
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  "
+                  >
+                    {order.boat.boat_name}
+                  </div>
+                  <div
+                    className="
+                    flex items-center gap-2
+                    shrink-0 break-all overflow-hidden hyphens-auto justify-center
+                  "
+                  >
+                    <button
+                      className="
+                      h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
+                      cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                    "
+                      onClick={() => {
+                        if (onModify) onModify(order.id);
+                        isModifyOpen(true);
+                      }}
+                    >
+                      Modify
+                    </button>
                   </div>
                   <div
                     className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
@@ -163,20 +180,22 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   >
                     <ChevronIcon isExpanded={expandedOrderId === order.id} />
                   </div>
-              </div>
-              <div
-                className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
-                    ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                    : "scale-100 opacity-0 max-h-0 overflow-auto"
+                </div>
+                <div
+                  className={`transition-all duration-300 ease-in-out ${
+                    expandedOrderId === order.id
+                      ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                      : "scale-100 opacity-0 max-h-0 overflow-auto"
                   }`}
-              >
-                {expandedOrderId === order.id && (
-                  <ExpandedOrderDetails order={order} />
-                )}
-              </div>
-            </React.Fragment>
-          );
-        })}
+                >
+                  {expandedOrderId === order.id && (
+                    <ExpandedOrderDetails order={order} />
+                  )}
+                </div>
+              </React.Fragment>
+            );
+          })
+        )}
       </div>
     </section>
   );

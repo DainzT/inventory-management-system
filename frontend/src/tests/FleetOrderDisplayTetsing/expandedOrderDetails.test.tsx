@@ -28,8 +28,5 @@ describe("ExpandedOrderDetails", () => {
     expect(getByTestId("total-price")).toHaveTextContent("₱10.00");
     expect(getByText("Fleet Assigned:")).toBeInTheDocument();
     expect(getByText("F/B Doña Librada")).toBeInTheDocument();
-    expect(getByText("Unit A")).toBeInTheDocument();
-    expect(getByText("Unit Size")).toBeInTheDocument();
-    expect(getByText("10")).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-interface MonthSelectorProps {
+export interface MonthSelectorProps {
   selectedMonth: string;
   onMonthSelect: (month: string) => void;
 }

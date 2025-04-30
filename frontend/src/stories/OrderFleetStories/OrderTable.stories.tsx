@@ -60,7 +60,6 @@ const sampleOrders: OrderItem[] = [
   },
 ];
 
-// Template with state management
 const Template: Story["render"] = (args) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterValue, setFilterValue] = useState("All Boats");

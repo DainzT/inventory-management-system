@@ -1,7 +1,7 @@
 import { GroupedOrders } from "@/types";
 import { pluralize } from "@/utils/Pluralize";
 
-interface InvoiceTableProps {
+export interface InvoiceTableProps {
   itemSummary: GroupedOrders[];
 }
 
