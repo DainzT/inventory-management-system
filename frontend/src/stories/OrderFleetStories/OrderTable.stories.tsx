@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { OrdersTable } from "../../components/OrderFleetDisplay/OrdersTable";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item";
 import { useState } from "react";
 import { waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -15,7 +15,7 @@ export default meta;
 type Story = StoryObj<typeof OrdersTable>;
 
 // Sample data
-const sampleOrders: OrderItemProps[] = [
+const sampleOrders: OrderItem[] = [
   {
     id: 1,
     name: "Fishing Reel",
@@ -25,9 +25,9 @@ const sampleOrders: OrderItemProps[] = [
     selectUnit: "piece",
     unitSize: 2,
     total: 480.0,
-    fleet: { id: 2, name: "F/B Doña Librada" },
+    fleet: { id: 2, fleet_name: "F/B Doña Librada" },
     boat: { id: 8, fleet_id: 2, boat_name: "F/B Ruth Gaily" },
-    outDate: "Jan 15, 2024",
+    outDate: new Date("Jan 15, 2024"),
     archived: false,
   },
   {
@@ -39,9 +39,9 @@ const sampleOrders: OrderItemProps[] = [
     selectUnit: "pack",
     unitSize: 10,
     total: 125,
-    fleet: { id: 2, name: "F/B Doña Librada" },
+    fleet: { id: 2, fleet_name: "F/B Doña Librada" },
     boat: { id: 9, fleet_id: 2, boat_name: "F/V Vadeo Scout" },
-    outDate: "Jan 30, 2024",
+    outDate: new Date("Jan 30, 2024"),
     archived: false,
   },
   {
@@ -53,14 +53,13 @@ const sampleOrders: OrderItemProps[] = [
     selectUnit: "roll",
     unitSize: 1,
     total: 3762.5,
-    fleet: { id: 2, name: "F/B Doña Librada" },
+    fleet: { id: 2, fleet_name: "F/B Doña Librada" },
     boat: { id: 6, fleet_id: 2, boat_name: "F/B Adomar" },
-    outDate: "Jan 20, 2024",
+    outDate: new Date("Jan 20, 2024"),
     archived: false,
   },
 ];
 
-// Template with state management
 const Template: Story["render"] = (args) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterValue, setFilterValue] = useState("All Boats");
@@ -108,8 +107,8 @@ export const WithSearch: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const searchInput = canvas.getByRole('textbox')
-    console.log(searchInput)
+    const searchInput = canvas.getByRole("textbox");
+    console.log(searchInput);
     await userEvent.type(searchInput, "Fishing Reel");
     await waitFor(() => {
       expect(canvas.getByText("Fishing Reel")).toBeInTheDocument();

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ExpandedOrderDetails } from "../../components/OrderFleetDisplay/ExpandedOrderDetails";
-import { OrderItemProps } from "@/types/fleet-order";
+import { OrderItem } from "@/types/order-item";
 
-const mockOrder: OrderItemProps = {
+const mockOrder: OrderItem = {
   id: 1,
   name: "Fishing Reel",
   note: "Spinning reel, corrosion-resistant",
@@ -11,9 +11,10 @@ const mockOrder: OrderItemProps = {
   selectUnit: "piece",
   unitSize: 2,
   total: 480.0,
-  fleet: { id: 2, name: "F/B Doña Librada" },
+  fleet: { id: 2, fleet_name: "F/B Doña Librada" },
   boat: { id: 8, fleet_id: 2, boat_name: "F/B Ruth Gaily" },
-  outDate: "Jan 15, 2024",
+  outDate: new Date("2024-01-15"),
+  lastUpdated: new Date("2025-04-29T14:24:43.369Z"),
   archived: false,
 };
 
@@ -42,17 +43,16 @@ export const UnassignedFleet: Story = {
   args: {
     order: {
       ...mockOrder,
-      fleet: { id: 0, name: "Unassigned" },
+      fleet: { id: 0, fleet_name: "Unassigned" },
     },
   },
 };
 
-export const NoUnit: Story = {
+export const NoLastUpdated: Story = {
   args: {
     order: {
       ...mockOrder,
-      selectUnit: "",
-      unitSize: "",
+      lastUpdated: undefined,
     },
   },
 };
