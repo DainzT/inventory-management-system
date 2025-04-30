@@ -15,34 +15,33 @@ const Orders: React.FC = () => {
   const [filteredOrders, setFilteredOrders] = useState<OrderItem[]>([]);
   const [archivedOrders, setArchivedOrders] = useState<OrderItem[]>([]);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
+
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
+  const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
 
   function toModifyOrderItem(
-    order: OrderItem, 
+    order: OrderItem,
     inventory: InventoryItem | undefined
   ): ModifyOrderItem {
-    const quantity = typeof order.quantity === 'number' 
-      ? order.quantity 
-      : Number(order.quantity) || 0;
-      
     return {
+      inventory: inventory || null,
       id: order.id,
       name: order.name,
-      note: order.note,
-      quantity: quantity,
-      unitPrice: Number(order.unitPrice),
+      note: order.note || "",
+      quantity: typeof order.quantity === 'number' ? order.quantity : Number(order.quantity) || 0,
+      unitPrice: Number(order.unitPrice) || 0,
+      selectUnit: order.selectUnit || "",
+      unitSize: Number(order.unitSize) || 0,
+      total: order.total ? Number(order.total) : 0,
       fleet: order.fleet,
       boat: order.boat,
-      currentQuantity: inventory ? Number(inventory.quantity) : Number(order.quantity)
+      lastUpdated: order.lastUpdated ? new Date(order.lastUpdated) : new Date()
     };
   }
-  
-  
 
   useEffect(() => {
     const fetchOrdersAndInventory = async () => {
@@ -62,22 +61,17 @@ const Orders: React.FC = () => {
 
     fetchOrdersAndInventory();
   }, []);
-  
+
   useEffect(() => {
-    if (isModalOpen && selectedOrder) {
-      console.log("Selected Order (before transform):", selectedOrder);
+    if (isModifyOpen && selectedOrder) {
       const inventoryMatch = inventoryItems.find(
         (item) => item.name === selectedOrder.name && item.unitPrice === selectedOrder.unitPrice
       );
-      console.log(inventoryMatch)
-      if (inventoryMatch) {
-        const transformed = toModifyOrderItem(selectedOrder, inventoryMatch);
-        console.log("Transformed Order:", transformed);
-        setModifyOrderItem(transformed);
-      }
+      
+      const transformed = toModifyOrderItem(selectedOrder, inventoryMatch);
+      setModifyOrderItem(transformed);
     }
-  }, [isModalOpen, selectedOrder, inventoryItems]);
-  
+  }, [isModifyOpen, selectedOrder, inventoryItems]);
 
   useEffect(() => {
     const currentMonth = new Date().getMonth();
@@ -147,25 +141,6 @@ const Orders: React.FC = () => {
     setFilteredOrders(filteredOrders);
   }, [archivedOrders, searchQuery, activeFleet, selectedBoat]);
 
-  const handleModify = (id: number) => {
-    const order = orders.find((order) => order.id === id);
-    if (order) {
-      // Try to find matching inventory item, but it's okay if it's undefined
-      const inventoryMatch = inventoryItems.find(
-        (inv) => inv.name === order.name && inv.unitPrice === order.unitPrice
-      );
-      
-      // Create the modified order item using either inventory quantity or order quantity
-      const transformed = toModifyOrderItem(order, inventoryMatch || undefined);
-      
-      setModifyOrderItem(transformed);
-      setSelectedOrder(order);
-      setIsModalOpen(true);
-    }
-  };
-  
-  
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
@@ -178,13 +153,7 @@ const Orders: React.FC = () => {
     setActiveFleet(fleet);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedOrder(null);
-    setModifyOrderItem(null);
-  };
-
-  const handleConfirmChanges = (quantity: number, fleet: string, boat: string) => {
+  const handleModifyItem = (quantity: number, fleet: string, boat: string) => {
     if (selectedOrder) {
       console.log("Changes confirmed:", {
         selectedOrder,
@@ -192,14 +161,14 @@ const Orders: React.FC = () => {
         fleet,
         boat,
       });
-      setIsModalOpen(false);
+      setIsModifyOpen(false);
     }
   };
 
   const handleRemoveItem = () => {
     if (selectedOrder) {
       console.log("Item removed:", selectedOrder);
-      setIsModalOpen(false);
+      setIsModifyOpen(false);
     }
   };
 
@@ -237,20 +206,21 @@ const Orders: React.FC = () => {
             onSearch={handleSearch}
             onFilter={handleFilter}
             activeFleet={activeFleet}
-            onModify={handleModify}
-            isModifyOpen={setIsModalOpen}
+            setIsModifyOpen={(isOpen, item) => {
+              setSelectedOrder(item || null)
+              setIsModifyOpen(isOpen)
+            }}
           />
         </div>
 
-        {modifyOrderItem && (
-          <ModifyModal
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            onConfirm={handleConfirmChanges}
-            onRemove={handleRemoveItem}
-            order={modifyOrderItem}
-          />
-        )}
+        <ModifyModal
+          isOpen={isModifyOpen}
+          setIsOpen={setIsModifyOpen}
+          onModify={handleModifyItem}
+          onRemove={handleRemoveItem}
+          selectedOrder={modifyOrderItem}
+        />
+
       </main>
     </div>
   );

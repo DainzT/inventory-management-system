@@ -10,21 +10,19 @@ interface OrdersTableProps {
   orders: OrderItem[];
   onSearch?: (query: string) => void;
   onFilter?: (filter: string) => void;
-  onModify?: (id: number) => void;
+  setIsModifyOpen: (isOpen: boolean, item?: OrderItem) => void;
   activeFleet: string;
-  isModifyOpen: (isopen: boolean) => void;
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
   orders,
   onSearch,
   onFilter,
-  onModify,
+  setIsModifyOpen,
   activeFleet,
-  isModifyOpen,
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-
+  
   const sortedOrders = [...orders].sort(
     (a, b) => new Date(a.outDate).getTime() - new Date(b.outDate).getTime()
   );
@@ -32,8 +30,6 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
-  
-
 
   const getFilterOptions = () => {
     switch (activeFleet) {
@@ -75,6 +71,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   };
 
   const filterOptions = getFilterOptions();
+
+  const handleModifyItemClick = (item: OrderItem) => {
+    setIsModifyOpen(true, item);
+  };
 
   return (
     <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm ">
@@ -147,28 +147,25 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 ">
                   <button
                     className="
-                    h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
-                    cursor-pointer hover:bg-emerald-600 transition-colors duration-200
-                  "
-                    onClick={() => {
-                      if (onModify) onModify(order.id);
-                      isModifyOpen(true);
-                    }}
+                        h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
+                        cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                    "
+                    onClick={() => handleModifyItemClick(order)}
                   >
                     Modify
                   </button>
-                  </div>
-                  <div
-                    className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
-                    onClick={() => toggleExpand(order.id)}
-                  >
-                    <ChevronIcon isExpanded={expandedOrderId === order.id} />
-                  </div>
+                </div>
+                <div
+                  className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+                  onClick={() => toggleExpand(order.id)}
+                >
+                  <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                </div>
               </div>
               <div
                 className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
-                    ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                    : "scale-100 opacity-0 max-h-0 overflow-auto"
+                  ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                  : "scale-100 opacity-0 max-h-0 overflow-auto"
                   }`}
               >
                 {expandedOrderId === order.id && (
