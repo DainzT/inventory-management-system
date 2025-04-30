@@ -26,6 +26,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   onRemove,
   order,
 }) => {
+  console.log(order)
   const [quantity, setQuantity] = useState<number>(order.quantity || 0);
   const [fleet, setFleet] = useState<string>(order.fleet?.fleet_name || "");
   const [boat, setBoat] = useState<string>(order.boat?.boat_name || "");  

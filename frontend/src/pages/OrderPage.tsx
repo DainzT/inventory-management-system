@@ -22,11 +22,14 @@ const Orders: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
 
-  function toModifyOrderItem(order: OrderItem, inventory: InventoryItem): ModifyOrderItem {
+  function toModifyOrderItem(
+    order: OrderItem, 
+    inventory: InventoryItem | undefined
+  ): ModifyOrderItem {
     const quantity = typeof order.quantity === 'number' 
       ? order.quantity 
       : Number(order.quantity) || 0;
-  
+      
     return {
       id: order.id,
       name: order.name,
@@ -35,7 +38,7 @@ const Orders: React.FC = () => {
       unitPrice: Number(order.unitPrice),
       fleet: order.fleet,
       boat: order.boat,
-      currentQuantity: Number(inventory.quantity)
+      currentQuantity: inventory ? Number(inventory.quantity) : Number(order.quantity)
     };
   }
   
@@ -59,13 +62,14 @@ const Orders: React.FC = () => {
 
     fetchOrdersAndInventory();
   }, []);
-
+  
   useEffect(() => {
     if (isModalOpen && selectedOrder) {
       console.log("Selected Order (before transform):", selectedOrder);
       const inventoryMatch = inventoryItems.find(
-        (item) => item.name === selectedOrder.name
+        (item) => item.name === selectedOrder.name && item.unitPrice === selectedOrder.unitPrice
       );
+      console.log(inventoryMatch)
       if (inventoryMatch) {
         const transformed = toModifyOrderItem(selectedOrder, inventoryMatch);
         console.log("Transformed Order:", transformed);
@@ -146,13 +150,15 @@ const Orders: React.FC = () => {
   const handleModify = (id: number) => {
     const order = orders.find((order) => order.id === id);
     if (order) {
-      const inventoryMatch = inventoryItems.find((inv) => inv.name === order.name);
-      if (inventoryMatch) {
-        const transformed = toModifyOrderItem(order, inventoryMatch);
-        setModifyOrderItem(transformed);
-      } else {
-        console.warn("No matching inventory item found for order:", order.name);
-      }
+      // Try to find matching inventory item, but it's okay if it's undefined
+      const inventoryMatch = inventoryItems.find(
+        (inv) => inv.name === order.name && inv.unitPrice === order.unitPrice
+      );
+      
+      // Create the modified order item using either inventory quantity or order quantity
+      const transformed = toModifyOrderItem(order, inventoryMatch || undefined);
+      
+      setModifyOrderItem(transformed);
       setSelectedOrder(order);
       setIsModalOpen(true);
     }
