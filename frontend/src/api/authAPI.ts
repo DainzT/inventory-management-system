@@ -1,4 +1,7 @@
-const API_URL = `${import.meta.env.VITE_API_URL}/api`;
+const API_URL =
+  typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : `${process.env.VITE_API_URL}/api`;
 
 interface AuthResponse {
   token?: string;
