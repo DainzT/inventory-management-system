@@ -1,3 +1,6 @@
+import { pluralize } from "@/utils/Pluralize";
+import { roundTo } from "@/utils/RoundTo";
+
 interface SummarySectionProps {
   totalPrice: number;
   remainingStock: number;
@@ -14,13 +17,13 @@ const SummarySection = ({
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-base font-semibold text-black inter-font">Total</h3>
         <p className="text-base font-semibold text-cyan-800 inter-font">
-          ₱{totalPrice.toFixed(2)}
+          ₱{roundTo(totalPrice, 2)}
         </p>
       </div>
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500 inter-font">Remaining Stock</p>
         <p className="text-sm text-gray-500 inter-font">
-          {remainingStock} {unit}
+          {roundTo(remainingStock, 2)} {pluralize(unit, remainingStock)}
         </p>
       </div>
     </section>

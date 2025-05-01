@@ -42,7 +42,6 @@ const AddProductForm = ({
         }));
     }, [productData.quantity, productData.unitPrice, productData.unitSize]);
 
-    console.log(productData.total)
     useEffect(() => {
         const hasChanges = Object.keys(productData).some(key => {
             if (key === 'dateCreated' || key === 'total') return false;
@@ -54,9 +53,15 @@ const AddProductForm = ({
     }, [productData, onFormChange, emptyFormState]);
 
     const handleInputChange = (field: keyof ItemFormData, value: string | number) => {
+        let processedValue = value;
+        
+        if (field === 'quantity' || field === 'unitPrice' || field === 'unitSize') {
+            processedValue = roundTo(Number(value), 2);
+        }
+
         setProductData((prevData) => ({
             ...prevData,
-            [field]: value,
+            [field]: processedValue,
         }));
 
         setErrors((prevErrors) => ({

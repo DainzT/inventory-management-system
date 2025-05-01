@@ -1,12 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FleetCard } from "../../components/OrderFleetDisplay/FleetCards";
+import { Decorator } from "@storybook/react";
 
 const defaultArgs = {
   title: "Fleet Card",
   backgroundColor: "bg-cyan-800",
   isActive: false,
-  onClick: () => console.log("Fleet card clicked"),
+  onClick: () => {},
 };
+
+const CenterDecorator: Decorator = (Story) => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+    }}
+  >
+    <Story />
+  </div>
+);
 
 const meta: Meta<typeof FleetCard> = {
   title: "Order Components/FleetCard",
@@ -28,6 +42,7 @@ const meta: Meta<typeof FleetCard> = {
       description: "Callback when card is clicked",
     },
   },
+  decorators: [CenterDecorator],
 } satisfies Meta<typeof FleetCard>;
 
 export default meta;
@@ -52,20 +67,11 @@ export const DonyaDonya: Story = {
   },
 };
 
-export const DonaLibrada: Story = {
-  args: {
-    ...defaultArgs,
-    title: "F/B Doña Librada",
-    backgroundColor: "bg-red-800",
-    isActive: true,
-  },
-};
-
 export const Inactive: Story = {
   args: {
     ...defaultArgs,
     title: "Inactive Fleet",
-    backgroundColor: "bg-cyan-800",
+    backgroundColor: "bg-red-800",
     isActive: false,
   },
 };

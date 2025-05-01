@@ -1,158 +1,88 @@
-import React, { useState, useEffect } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
 import { OrderItem } from "@/types/order-item";
+import { InventoryItem } from "@/types/inventory-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
-import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
+import { fetchAssignedItems } from "@/api/orderAPI";
+import { fetchInventoryItems } from "@/api/inventoryAPI";
 import { PageTitle } from "@/components/PageTitle";
+import { ModifyOrderItem } from "@/types/modify-order-item";
+import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import { useOrder } from "@/hooks/useOrder";
 
-const fleetBoats = {
-  "F/B DONYA DONYA 2X": [
-    "F/B Lady Rachelle",
-    "F/B Mariella",
-    "F/B My Shield",
-    "F/B Abigail",
-    "F/B DC-9",
-  ],
-  "F/B Doña Librada": [
-    "F/B Adomar",
-    "F/B Prince of Peace",
-    "F/B Ruth Gaily",
-    "F/V Vadeo Scout",
-    "F/B Mariene",
-  ],
-};
 
 const Orders: React.FC = () => {
-  const [orders, setOrders] = useState<OrderItem[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<OrderItem[]>([]);
-  const [archivedOrders, setArchivedOrders] = useState<OrderItem[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeFleet, setActiveFleet] = useState("All Fleets");
-  const [selectedBoat, setSelectedBoat] = useState("All Boats");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(
-    null
-  );
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isModifying, setIsModifying] = useState(false);
+
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
+  const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
+  const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
+  const {
+    filteredOrders,
+    activeFleet,
+    handleSearch,
+    handleFilter,
+    handleFleetSelect,
+    setFilteredOrders,
+    setOrders,
+  } = useOrder();
+
+
+  function toModifyOrderItem(
+    order: OrderItem,
+    inventory: InventoryItem | undefined
+  ): ModifyOrderItem {
+    return {
+      inventory: inventory || null,
+      id: order.id,
+      name: order.name,
+      note: order.note || "",
+      quantity: typeof order.quantity === 'number' ? order.quantity : Number(order.quantity) || 0,
+      unitPrice: Number(order.unitPrice) || 0,
+      selectUnit: order.selectUnit || "",
+      unitSize: Number(order.unitSize) || 0,
+      total: order.total ? Number(order.total) : 0,
+      fleet: order.fleet,
+      boat: order.boat,
+      lastUpdated: order.lastUpdated ? new Date(order.lastUpdated) : new Date()
+    };
+  }
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchOrdersAndInventory = async () => {
       try {
-        const response = await fetchAssignedItems();
-        console.log("Fetched orders:", response);
-        setOrders(response);
-        setFilteredOrders(response);
+        const [ordersResponse, inventoryResponse] = await Promise.all([
+          fetchAssignedItems(),
+          fetchInventoryItems()
+        ]);
+
+        setOrders(ordersResponse);
+        setFilteredOrders(ordersResponse);
+        setInventoryItems(inventoryResponse);
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchOrders();
+    fetchOrdersAndInventory();
   }, []);
 
   useEffect(() => {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-
-    const updatedArchivedOrders = orders.map((order) => {
-      const orderDate = new Date(order.outDate);
-      const isPastMonth =
-        orderDate.getFullYear() < currentYear ||
-        (orderDate.getFullYear() === currentYear &&
-          orderDate.getMonth() < currentMonth);
-
-      return {
-        ...order,
-        archived: isPastMonth,
-      };
-    });
-
-    setArchivedOrders(updatedArchivedOrders);
-
-    const updateArchiveInDB = async () => {
-      try {
-        console.log("Updating archive in DB:", updatedArchivedOrders); // Log the data
-        await updateArchivedStatus(updatedArchivedOrders);
-        console.log("Archived status updated in the database");
-      } catch (error) {
-        console.error(
-          "Failed to update archived status in the database:",
-          error
-        );
-      }
-    };
-
-    updateArchiveInDB();
-  }, [orders]);
-
-  useEffect(() => {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-
-    const filteredOrders = archivedOrders.filter((order) => {
-      const orderDate = new Date(order.outDate);
-      const isCurrentMonth =
-        orderDate.getMonth() === currentMonth &&
-        orderDate.getFullYear() === currentYear;
-
-      const matchesSearch = [
-        order.name.toLowerCase(),
-        order.note.toLowerCase(),
-        order.quantity.toString(),
-        order.unitPrice.toString(),
-        order.selectUnit.toLowerCase(),
-        order.unitSize.toString(),
-        order.total?.toString() || "",
-        order.boat.boat_name.toLowerCase(),
-        order.outDate.toString(),
-      ].some((field) => field.includes(searchQuery.toLowerCase()));
-
-      const matchesFleet =
-        activeFleet === "All Fleets" ||
-        fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(
-          order.boat.boat_name
-        ) ||
-        order.boat.boat_name === activeFleet;
-
-      const matchesBoat =
-        selectedBoat === "All Boats" || order.boat.boat_name === selectedBoat;
-
-      return isCurrentMonth && matchesSearch && matchesFleet && matchesBoat;
-    });
-
-    setFilteredOrders(filteredOrders);
-  }, [archivedOrders, searchQuery, activeFleet, selectedBoat]);
-
-  const handleModify = (id: number) => {
-    const order = orders.find((order) => order.id === id);
-    if (order) {
-      setSelectedOrder(order);
-      setIsModalOpen(true);
+    if (isModifyOpen && selectedOrder) {
+      const inventoryMatch = inventoryItems.find(
+        (item) => item.name === selectedOrder.name && item.unitPrice === selectedOrder.unitPrice
+      );
+      
+      const transformed = toModifyOrderItem(selectedOrder, inventoryMatch);
+      setModifyOrderItem(transformed);
     }
-  };
+  }, [isModifyOpen, selectedOrder, inventoryItems]);
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-  };
-
-  const handleFilter = (boat: string) => {
-    setSelectedBoat(boat);
-  };
-
-  const handleFleetSelect = (fleet: string) => {
-    setActiveFleet(fleet);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedOrder(null);
-  };
-
-  const handleConfirmChanges = (
-    quantity: number,
-    fleet: string,
-    boat: string,
-  ) => {
+  const handleModifyItem = (quantity: number, fleet: string, boat: string) => {
     if (selectedOrder) {
       console.log("Changes confirmed:", {
         selectedOrder,
@@ -160,20 +90,21 @@ const Orders: React.FC = () => {
         fleet,
         boat,
       });
-      setIsModalOpen(false);
+      setIsModifyOpen(false);
     }
   };
 
   const handleRemoveItem = () => {
     if (selectedOrder) {
       console.log("Item removed:", selectedOrder);
-      setIsModalOpen(false);
+      setIsModifyOpen(false);
     }
   };
 
   return (
     <div>
       <main className="flex-1 p-0">
+        <ToastContainer position="top-right" autoClose={3000} theme="light" />
         <PageTitle title={activeFleet} />
 
         <div className="flex justify-center items-center h-[230px]">
@@ -205,20 +136,22 @@ const Orders: React.FC = () => {
             onSearch={handleSearch}
             onFilter={handleFilter}
             activeFleet={activeFleet}
-            onModify={handleModify}
-            isModifyOpen={setIsModalOpen}
+            setIsModifyOpen={(isOpen, item) => {
+              setSelectedOrder(item || null)
+              setIsModifyOpen(isOpen)
+            }}
           />
         </div>
 
-        {selectedOrder && (
-          <ModifyModal
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            onConfirm={handleConfirmChanges}
-            onRemove={handleRemoveItem}
-            order={selectedOrder}
-          />
-        )}
+        <ModifyModal
+          isOpen={isModifyOpen}
+          setIsOpen={setIsModifyOpen}
+          onModify={handleModifyItem}
+          onRemove={handleRemoveItem}
+          selectedOrder={modifyOrderItem}
+          isModifying={isModifying}
+          isDeleting={isDeleting}
+        />
       </main>
     </div>
   );

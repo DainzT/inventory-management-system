@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from "../lib/prisma";
 
+export function roundTo(num: number, precision: number): number {
+    const factor = Math.pow(10, precision);
+    return Math.round(num * factor) / factor;
+}
+
 export const validateFetchInventoryItems = async (
     req: Request,
     res: Response,
@@ -77,7 +82,7 @@ export const validateAddInventoryItem = (
         return;
     }
 
-    if (!total || typeof total !== 'number' || total <= 0 || total !== ((unitPrice * quantity) / unitSize)) {
+    if (!total || typeof total !== 'number' || total <= 0 || total !== roundTo(((unitPrice * quantity) / unitSize), 2)) {
         res.status(400).json({
             message: "Incorrect computed total",
             error: "Valid total (number > 0 and total == ((unitPrice * quantity) / unitSize) is required"
@@ -136,7 +141,7 @@ export const validateAssignInventoryItem = async (
         return;
     }
 
-    if (!total || typeof total !== 'number' || total <= 0 || total != ((unitPrice * quantity) / unitSize)) {
+    if (!total || typeof total !== 'number' || total <= 0 || total != roundTo(((unitPrice * quantity) / unitSize), 2)) {
         res.status(400).json({
             message: "Incorrect computed total",
             error: "Valid total (number > 0 and total == ((unitPrice * quantity) / unitSize) is required"
@@ -267,7 +272,7 @@ export const validateEditInventoryItem = async (
     if (!updatedItem.total 
         || typeof updatedItem.total !== 'number' 
         || updatedItem.total <= 0
-        || updatedItem.total != ((updatedItem.unitPrice * updatedItem.quantity) / updatedItem.unitSize)) {
+        || updatedItem.total != roundTo(((updatedItem.unitPrice * updatedItem.quantity) / updatedItem.unitSize), 2)) {
 
         res.status(400).json({
             message: "Incorrect computed total",
