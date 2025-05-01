@@ -46,6 +46,7 @@ const EditProductForm = ({
             ...current,
             total: roundTo(Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)), 2),
         }));
+        console.log(productData.total)
     }, [productData.quantity, productData.unitPrice, productData.unitSize]);
 
     useEffect(() => {
@@ -59,9 +60,15 @@ const EditProductForm = ({
     }, [productData, initialData, onFormChange]);
 
     const handleInputChange = (field: keyof InventoryItem, value: string | number) => {
+        let processedValue = value;
+        
+        if (field === 'quantity' || field === 'unitPrice' || field === 'unitSize') {
+            processedValue = roundTo(Number(value), 2);
+        }
+
         setProductData((prevData) => ({
             ...prevData,
-            [field]: value,
+            [field]: processedValue,
         }));
 
         setErrors((prevErrors) => ({
