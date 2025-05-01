@@ -1,7 +1,7 @@
 import React from "react";
 import { FleetCardProps } from "@/types/fleet-card";
 
-// Combined component
+
 export const FleetCard: React.FC<FleetCardProps> = ({
   title,
   backgroundColor,
