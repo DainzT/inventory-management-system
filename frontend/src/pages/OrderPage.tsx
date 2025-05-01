@@ -1,25 +1,105 @@
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
+import { OrderItem } from "@/types/order-item";
+import { InventoryItem } from "@/types/inventory-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
+import { fetchAssignedItems } from "@/api/orderAPI";
+import { fetchInventoryItems } from "@/api/inventoryAPI";
 import { PageTitle } from "@/components/PageTitle";
+import { ModifyOrderItem } from "@/types/modify-order-item";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { useOrder } from "@/hooks/useOrder";
 
+
 const Orders: React.FC = () => {
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isModifying, setIsModifying] = useState(false);
+
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
+  const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
+  const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
   const {
     filteredOrders,
     activeFleet,
-    isModalOpen,
-    selectedOrder,
     handleSearch,
     handleFilter,
     handleFleetSelect,
-    handleModify,
-    handleCloseModal,
-    handleConfirmChanges,
-    handleRemoveItem,
-    setIsModalOpen,
+    setFilteredOrders,
+    setOrders,
   } = useOrder();
+
+
+  function toModifyOrderItem(
+    order: OrderItem,
+    inventory: InventoryItem | undefined
+  ): ModifyOrderItem {
+    return {
+      inventory: inventory || null,
+      id: order.id,
+      name: order.name,
+      note: order.note || "",
+      quantity: typeof order.quantity === 'number' ? order.quantity : Number(order.quantity) || 0,
+      unitPrice: Number(order.unitPrice) || 0,
+      selectUnit: order.selectUnit || "",
+      unitSize: Number(order.unitSize) || 0,
+      total: order.total ? Number(order.total) : 0,
+      fleet: order.fleet,
+      boat: order.boat,
+      lastUpdated: order.lastUpdated ? new Date(order.lastUpdated) : new Date()
+    };
+  }
+
+  useEffect(() => {
+    const fetchOrdersAndInventory = async () => {
+      try {
+        const [ordersResponse, inventoryResponse] = await Promise.all([
+          fetchAssignedItems(),
+          fetchInventoryItems()
+        ]);
+
+        setOrders(ordersResponse);
+        setFilteredOrders(ordersResponse);
+        setInventoryItems(inventoryResponse);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchOrdersAndInventory();
+  }, []);
+
+  useEffect(() => {
+    if (isModifyOpen && selectedOrder) {
+      const inventoryMatch = inventoryItems.find(
+        (item) => item.name === selectedOrder.name && item.unitPrice === selectedOrder.unitPrice
+      );
+      
+      const transformed = toModifyOrderItem(selectedOrder, inventoryMatch);
+      setModifyOrderItem(transformed);
+    }
+  }, [isModifyOpen, selectedOrder, inventoryItems]);
+
+  const handleModifyItem = (quantity: number, fleet: string, boat: string) => {
+    if (selectedOrder) {
+      console.log("Changes confirmed:", {
+        selectedOrder,
+        quantity,
+        fleet,
+        boat,
+      });
+      setIsModifyOpen(false);
+    }
+  };
+
+  const handleRemoveItem = () => {
+    if (selectedOrder) {
+      console.log("Item removed:", selectedOrder);
+      setIsModifyOpen(false);
+    }
+  };
 
   return (
     <div>
@@ -56,20 +136,22 @@ const Orders: React.FC = () => {
             onSearch={handleSearch}
             onFilter={handleFilter}
             activeFleet={activeFleet}
-            onModify={handleModify}
-            isModifyOpen={setIsModalOpen}
+            setIsModifyOpen={(isOpen, item) => {
+              setSelectedOrder(item || null)
+              setIsModifyOpen(isOpen)
+            }}
           />
         </div>
 
-        {selectedOrder && (
-          <ModifyModal
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            onConfirm={handleConfirmChanges}
-            onRemove={handleRemoveItem}
-            order={selectedOrder}
-          />
-        )}
+        <ModifyModal
+          isOpen={isModifyOpen}
+          setIsOpen={setIsModifyOpen}
+          onModify={handleModifyItem}
+          onRemove={handleRemoveItem}
+          selectedOrder={modifyOrderItem}
+          isModifying={isModifying}
+          isDeleting={isDeleting}
+        />
       </main>
     </div>
   );

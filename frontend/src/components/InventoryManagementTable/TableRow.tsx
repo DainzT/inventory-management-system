@@ -48,7 +48,7 @@ export function TableRow({
           text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#1F2937] text-left 
           shrink-0 break-all overflow-hidden hyphens-auto px-3 flex-1
         ">
-          {item.quantity}{" "}
+          {Number(item.quantity).toFixed(2)}{" "}
           {`${Number(item.quantity) > 1 && !/[sS]$/.test(item.selectUnit)
             ? `${item.selectUnit}s`
             : item.selectUnit

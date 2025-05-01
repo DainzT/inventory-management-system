@@ -97,7 +97,8 @@ const OutItemModal = ({
   };
 
   const handleQuantityChange = (newValue: number | "") => {
-    setQuantity(newValue);
+    const roundedValue = newValue === "" ? "" : roundTo(Number(newValue), 2);
+    setQuantity(roundedValue);
     clearError("quantity");
   };
 
@@ -105,7 +106,7 @@ const OutItemModal = ({
 
     if (!validateForm()) return;
 
-    const remainingStock = Number(selectedItem?.quantity) - Number(quantity);
+    const remainingStock = roundTo(Number(selectedItem?.quantity) - Number(quantity), 2);
 
     const updatedTotalPrice =
       roundTo(Number(selectedItem?.unitPrice) * (remainingStock / Number(selectedItem?.unitSize)), 2);
@@ -136,8 +137,8 @@ const OutItemModal = ({
     setQuantity("");
   };
 
-  const totalPrice = Number(selectedItem?.unitPrice) * (Number(quantity) / Number(selectedItem?.unitSize));
-  const remainingStock = Number(selectedItem?.quantity) - Number(quantity);
+  const totalPrice = roundTo(Number(selectedItem?.unitPrice) * (Number(quantity) / Number(selectedItem?.unitSize)), 2);
+  const remainingStock = roundTo(Number(selectedItem?.quantity) - Number(quantity), 2);
 
   const handleCloseAttempt = () => {
     if (hasChanges) {

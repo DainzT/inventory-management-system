@@ -25,11 +25,9 @@ export const useOrder = () => {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<OrderItem[]>([]);
   const [archivedOrders, setArchivedOrders] = useState<OrderItem[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
 
   const { showLoadingToast, showSuccessToast, showErrorToast } = useToast();
 
@@ -121,13 +119,6 @@ export const useOrder = () => {
     setFilteredOrders(filtered);
   }, [archivedOrders, searchQuery, activeFleet, selectedBoat]);
 
-  const handleModify = (id: number) => {
-    const order = orders.find((order) => order.id === id);
-    if (order) {
-      setSelectedOrder(order);
-      setIsModalOpen(true);
-    }
-  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -141,52 +132,18 @@ export const useOrder = () => {
     setActiveFleet(fleet);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedOrder(null);
-  };
-
-  const handleConfirmChanges = (
-    quantity: number,
-    fleet: string,
-    boat: string,
-    unit: string
-  ) => {
-    if (selectedOrder) {
-      console.log("Changes confirmed:", {
-        selectedOrder,
-        quantity,
-        fleet,
-        boat,
-        unit,
-      });
-      setIsModalOpen(false);
-    }
-  };
-
-  const handleRemoveItem = () => {
-    if (selectedOrder) {
-      console.log("Item removed:", selectedOrder);
-      setIsModalOpen(false);
-    }
-  };
 
   return {
     orders,
     filteredOrders,
-    isModalOpen,
     activeFleet,
     selectedBoat,
     searchQuery,
-    selectedOrder,
     setActiveFleet,
     handleSearch,
     handleFilter,
     handleFleetSelect,
-    handleModify,
-    handleCloseModal,
-    handleConfirmChanges,
-    handleRemoveItem,
-    setIsModalOpen,
+    setFilteredOrders,
+    setOrders,
   };
 };
