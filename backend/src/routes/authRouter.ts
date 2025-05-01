@@ -237,6 +237,45 @@ router.put(
   }
 );
 
+router.put(
+  "/change-email",
+  authenticateToken,
+  async (req: Request, res: Response): Promise<void> => {
+    const { oldEmail, newEmail } = req.body;
+
+    if (
+      !oldEmail ||
+      !newEmail ||
+      typeof oldEmail !== "string" ||
+      typeof newEmail !== "string"
+    ) {
+      res.status(400).json({ message: "Both old and new email are required." });
+      return;
+    }
+
+    try {
+      const user = await prisma.user.findFirst({
+        where: { email: oldEmail },
+      });
+
+      if (!user) {
+        res.status(404).json({ message: "Old email not found." });
+        return;
+      }
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { email: newEmail },
+      });
+
+      res.json({ message: "Email updated successfully." });
+    } catch (error) {
+      console.error("Change email error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
 router.get(
   "/check-user",
   async (req: Request, res: Response): Promise<void> => {
