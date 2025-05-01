@@ -1,29 +1,36 @@
-import React, { useState, useEffect } from "react";
 import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
 import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
 import { OrderItem } from "@/types/order-item";
 import { InventoryItem } from "@/types/inventory-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
-import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
+import { fetchAssignedItems } from "@/api/orderAPI";
 import { fetchInventoryItems } from "@/api/inventoryAPI";
 import { PageTitle } from "@/components/PageTitle";
-import { fleetBoats } from "@/utils/Fleets";
 import { ModifyOrderItem } from "@/types/modify-order-item";
+import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import { useOrder } from "@/hooks/useOrder";
+
 
 const Orders: React.FC = () => {
-  const [orders, setOrders] = useState<OrderItem[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<OrderItem[]>([]);
-  const [archivedOrders, setArchivedOrders] = useState<OrderItem[]>([]);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
-  const [activeFleet, setActiveFleet] = useState("All Fleets");
-  const [selectedBoat, setSelectedBoat] = useState("All Boats");
-  const [searchQuery, setSearchQuery] = useState("");
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModifying, setIsModifying] = useState(false);
 
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
   const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
+  const {
+    filteredOrders,
+    activeFleet,
+    handleSearch,
+    handleFilter,
+    handleFleetSelect,
+    setFilteredOrders,
+    setOrders,
+  } = useOrder();
+
 
   function toModifyOrderItem(
     order: OrderItem,
@@ -75,86 +82,6 @@ const Orders: React.FC = () => {
     }
   }, [isModifyOpen, selectedOrder, inventoryItems]);
 
-  useEffect(() => {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-
-    const updatedArchivedOrders = orders.map((order) => {
-      const orderDate = new Date(order.outDate);
-      const isPastMonth =
-        orderDate.getFullYear() < currentYear ||
-        (orderDate.getFullYear() === currentYear &&
-          orderDate.getMonth() < currentMonth);
-
-      return {
-        ...order,
-        archived: isPastMonth,
-      };
-    });
-
-    setArchivedOrders(updatedArchivedOrders);
-
-    const updateArchiveInDB = async () => {
-      try {
-        await updateArchivedStatus(updatedArchivedOrders);
-      } catch (error) {
-        console.error("Failed to update archived status:", error);
-      }
-    };
-
-    updateArchiveInDB();
-  }, [orders]);
-
-  useEffect(() => {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-
-    const filteredOrders = archivedOrders.filter((order) => {
-      const orderDate = new Date(order.outDate);
-      const isCurrentMonth =
-        orderDate.getMonth() === currentMonth &&
-        orderDate.getFullYear() === currentYear;
-
-      const matchesSearch = [
-        order.name.toLowerCase(),
-        order.note.toLowerCase(),
-        order.quantity.toString(),
-        order.unitPrice.toString(),
-        order.selectUnit.toLowerCase(),
-        order.unitSize.toString(),
-        order.total?.toString() || "",
-        order.boat.boat_name.toLowerCase(),
-        order.outDate.toString(),
-      ].some((field) => field.includes(searchQuery.toLowerCase()));
-
-      const matchesFleet =
-        activeFleet === "All Fleets" ||
-        fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(
-          order.boat.boat_name
-        ) ||
-        order.boat.boat_name === activeFleet;
-
-      const matchesBoat =
-        selectedBoat === "All Boats" || order.boat.boat_name === selectedBoat;
-
-      return isCurrentMonth && matchesSearch && matchesFleet && matchesBoat;
-    });
-
-    setFilteredOrders(filteredOrders);
-  }, [archivedOrders, searchQuery, activeFleet, selectedBoat]);
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-  };
-
-  const handleFilter = (boat: string) => {
-    setSelectedBoat(boat);
-  };
-
-  const handleFleetSelect = (fleet: string) => {
-    setActiveFleet(fleet);
-  };
-
   const handleModifyItem = (quantity: number, fleet: string, boat: string) => {
     if (selectedOrder) {
       console.log("Changes confirmed:", {
@@ -177,6 +104,7 @@ const Orders: React.FC = () => {
   return (
     <div>
       <main className="flex-1 p-0">
+        <ToastContainer position="top-right" autoClose={3000} theme="light" />
         <PageTitle title={activeFleet} />
 
         <div className="flex justify-center items-center h-[230px]">
