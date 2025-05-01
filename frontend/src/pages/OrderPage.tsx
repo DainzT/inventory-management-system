@@ -18,6 +18,8 @@ const Orders: React.FC = () => {
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isModifying, setIsModifying] = useState(false);
 
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
@@ -219,8 +221,9 @@ const Orders: React.FC = () => {
           onModify={handleModifyItem}
           onRemove={handleRemoveItem}
           selectedOrder={modifyOrderItem}
+          isModifying={isModifying}
+          isDeleting={isDeleting}
         />
-
       </main>
     </div>
   );

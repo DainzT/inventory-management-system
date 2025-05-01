@@ -7,6 +7,10 @@ interface DeleteButtonProps {
     className?: string;
     disabled?: boolean;
     isDeleting: boolean;
+    title?: string;
+    message?: string;
+    confirmButtonText?: string;
+    cancelButtonText?: string;
   }
 
 export const DeleteButton = ({
@@ -15,6 +19,10 @@ export const DeleteButton = ({
     onClick,
     disabled = false,
     isDeleting = false,
+    title,
+    message,
+    confirmButtonText,
+    cancelButtonText
 }: DeleteButtonProps) => {
     const [showConfirm, setShowConfirm] = useState(false);
     const handleConfirm = () => {
@@ -60,6 +68,10 @@ export const DeleteButton = ({
         onConfirm={handleConfirm}
         isDeleting={isDeleting}
         disabled={isDeleting}
+        title={title}
+        message={message}
+        confirmButtonText={confirmButtonText}
+        cancelButtonText={cancelButtonText}
       />
     </>
   );
