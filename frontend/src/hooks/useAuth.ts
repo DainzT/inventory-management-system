@@ -12,6 +12,7 @@ import {
   refreshTokenAPI,
   resetPinAPI,
   logoutAPI,
+  changeEmailAPI,
 } from "../api/authAPI";
 import { useToast } from "./useToast";
 
@@ -115,28 +116,6 @@ export const useAuth = () => {
       const error = err as ErrorWithMessage;
       setError(error.message);
       showErrorToast(logoutId, "Logout failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const setupNewPin = async (pin: string) => {
-    const setupPinId = "set-up-pin-toast";
-    showLoadingToast(setupPinId, "Setting up PIN...");
-    try {
-      setLoading(true);
-      const data = await setupPinAPI(pin);
-      if (data.message === "Pin set successfully") {
-        setIsPinSet(true);
-        setError(null);
-        showSuccessToast(setupPinId, "PIN set successfully.");
-      } else {
-        setError(data.message || "Unknown error occurred");
-        showErrorToast(setupPinId, data.message || "Unknown error occurred");
-      }
-    } catch (err) {
-      const error = err as ErrorWithMessage;
-      setError(error.message || "Failed to set PIN.");
     } finally {
       setLoading(false);
     }
@@ -317,6 +296,40 @@ export const useAuth = () => {
     }
   };
 
+  const changeEmail = async (oldEmail: string, newEmail: string) => {
+    const toastId = "change-email-toast";
+    showLoadingToast(toastId, "Changing email...");
+
+    const accessToken = sessionStorage.getItem(TOKEN_KEY);
+    if (!accessToken) {
+      showErrorToast(toastId, "No access token found. Please log in again.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data: AuthResponse = await changeEmailAPI(
+        oldEmail,
+        newEmail,
+        accessToken
+      );
+
+      if (data.message === "Email updated successfully.") {
+        setError(null);
+        showSuccessToast(toastId, "Email updated successfully.");
+      } else {
+        setError(data.message || "Unknown error occurred");
+        showErrorToast(toastId, data.message || "Unknown error occurred.");
+      }
+    } catch (err) {
+      const error = err as ErrorWithMessage;
+      setError(error.message || "Failed to change email.");
+      showErrorToast(toastId, error.message || "Failed to change email.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const refreshToken = async (showToast = false) => {
     try {
       const data = await refreshTokenAPI();
@@ -362,13 +375,14 @@ export const useAuth = () => {
     createAdmin,
     login,
     logout,
-    setupNewPin,
+    // setupNewPin,
     updatePin,
     sendOtpEmail,
     verifyPin,
     verifyEmail,
     verifyOtp,
     verifyAndResetPin,
+    changeEmail,
     refreshToken,
   };
 };

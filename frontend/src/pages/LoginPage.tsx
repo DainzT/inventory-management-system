@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Logo } from "@/components/SidebarComponents/Logo";
 import LoginInput from "@/components/AuthComponents/LoginInput";
-import ChangePinModal from "@/components/AuthComponents/ChangePin";
 import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";
 import { ToastContainer } from "react-toastify";
@@ -53,7 +52,7 @@ const LoginPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowForgotPin(true)}
-            className="mt-2 mb-4 text-sm text-cyan-700 underline hover:text-accent-light cursor-pointer"
+            className="mb-4 text-sm text-cyan-700 underline hover:text-accent-light cursor-pointer flex justify-end w-96 px-2"
           >
             Forgot PIN?
           </button>
@@ -63,7 +62,7 @@ const LoginPage: React.FC = () => {
 
         <button
           onClick={handleLogin}
-          className="w-40 h-12 bg-accent rounded-[11px] hover:bg-accent-light cursor-pointer active:scale-95 text-xl font-semibold text-white"
+          className="w-40 h-12 bg-accent rounded-[11px] hover:bg-accent-dark cursor-pointer active:scale-95 text-xl font-semibold text-white hover:text-white transition-all duration-200"
         >
           Login
         </button>

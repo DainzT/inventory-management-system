@@ -201,3 +201,26 @@ export const resetPinAPI = async (
     throw new Error(errorData.message || "Failed to reset PIN");
   }
 };
+
+export const changeEmailAPI = async (
+  oldEmail: string,
+  newEmail: string,
+  accessToken: string
+) => {
+  const res = await fetch(`${API_URL}/auth/change-email`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ oldEmail, newEmail }),
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to change email.");
+  }
+
+  return res.json();
+};

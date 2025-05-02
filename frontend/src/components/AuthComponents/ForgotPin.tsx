@@ -44,7 +44,9 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
       <div className="flex fixed inset-0 justify-center items-center select-none">
         <div className="relative px-6 py-4 w-[24rem] bg-white rounded-2xl z-50 border-2 shadow-sm border-zinc-300 animate-[fadeIn_0.2s_ease-out]">
           <header className="mb-4">
-            <h2 className="text-2xl font-semibold text-cyan-800">Forgot PIN</h2>
+            <h2 className="text-2xl font-semibold text-cyan-800">
+              Forgot your PIN?
+            </h2>
           </header>
           {!otpSent ? (
             <>

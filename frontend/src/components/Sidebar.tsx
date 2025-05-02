@@ -9,6 +9,7 @@ import { MdOutlineInventory2 } from "react-icons/md";
 import { BsBoxSeam } from "react-icons/bs";
 import { HiMenu, HiX } from "react-icons/hi";
 import ChangePinModal from "./AuthComponents/ChangePin";
+import ChangeEmailModal from "./AuthComponents/ChangeEmail";
 import { IoSettingsOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,8 +19,10 @@ const Sidebar: React.FC = () => {
     location.pathname
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [showChangePin, setShowChangePin] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showChangePinModal, setShowChangePinModal] = useState(false);
+  const [showChangeEmailModal, setShowChangeEmailModal] = useState(false);
 
   const handleLinkClick = (path: string) => {
     if (path === "/summary") {
@@ -50,15 +53,16 @@ const Sidebar: React.FC = () => {
   return (
     <>
       <button
-        className="fixed top-4 left-4  z-50 p-2 bg-gray-200/90 rounded-lg md:hidden"
+        className="fixed top-4 left-4 z-50 p-2 bg-gray-200/90 rounded-lg md:hidden"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
         {isSidebarOpen ? <HiX size={20} /> : <HiMenu size={20} />}
       </button>
 
       <aside
-        className={`fixed z-40 md:relative h-screen w-[256px] flex flex-col justify-between inter-font bg-[rgba(244,244,244,0.8)] border-r-[1px] border-r-[#E5E7EB] transform transition-transform duration-200 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0`}
+        className={`fixed z-40 md:relative h-screen w-[256px] flex flex-col justify-between inter-font bg-[rgba(244,244,244,0.8)] border-r-[1px] border-r-[#E5E7EB] transform transition-transform duration-200 ease-in-out ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
       >
         <div className="absolute top-4 left-4 z-10">
           <div className="relative flex">
@@ -68,11 +72,13 @@ const Sidebar: React.FC = () => {
                 bg-cyan-900 border border-gray-300 shadow-sm
                 hover:bg-cyan-800 hover:shadow-md
                 active:bg-cyan-800 active:scale-95
-                ${isSettingsOpen ? 'bg-cyan-800 shadow-md' : ''}`}
+                ${isSettingsOpen ? "bg-cyan-800 shadow-md" : ""}`}
               aria-label="Settings"
             >
               <IoSettingsOutline
-                className={`text-white transition-transform ${isSettingsOpen ? 'rotate-45' : ''}`}
+                className={`text-white transition-transform ${
+                  isSettingsOpen ? "rotate-45" : ""
+                }`}
                 size={18}
               />
             </button>
@@ -88,38 +94,36 @@ const Sidebar: React.FC = () => {
                 >
                   <button
                     onClick={() => {
-                      setShowChangePin(true);
+                      setShowChangePinModal(true);
                       setIsSettingsOpen(false);
                     }}
-                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors flex items-center gap-2
-                      bg-white text-gray-700
-                      hover:bg-blue-50 hover:text-blue-600
-                      active:bg-blue-100
-                      focus:outline-none focus:ring-2 focus:ring-blue-200`}
+                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors flex items-center rounded-sm gap-2
+                      bg-white text-accent
+                      hover:bg-accent hover:text-white
+                      active:bg-accent-dark active:scale-95 active:text-white
+                      focus:outline-none cursor-pointer focus:ring-blue-200`}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                      />
-                    </svg>
                     <span>Change PIN</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowChangeEmailModal(true);
+                      setIsSettingsOpen(false);
+                    }}
+                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors flex items-center rounded-sm gap-2
+                      bg-white text-accent
+                      hover:bg-accent hover:text-white
+                      active:bg-accent-dark active:scale-95 active:text-white
+                      focus:outline-none cursor-pointer focus:ring-blue-200`}
+                  >
+                    <span>Change Email</span>
                   </button>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
         </div>
-        <div className="h-full flex flex-col flex-grow overflow-y-auto ">
-
+        <div className="h-full flex flex-col flex-grow overflow-y-auto">
           <nav className="flex flex-col items-center justify-centers w-full h-full gap-1">
             <Logo width={12} height={12} />
             {navigationItems.map((item) => (
@@ -142,10 +146,13 @@ const Sidebar: React.FC = () => {
         <div className=" flex justify-center p-4 border-t-[1px] border-t-[#E5E7EB] mb-10 pt-6">
           <LogoutButton />
         </div>
-        {showChangePin && (
-          <ChangePinModal onClose={() => setShowChangePin(false)} />
-        )}
       </aside>
+      {showChangePinModal && (
+        <ChangePinModal onClose={() => setShowChangePinModal(false)} />
+      )}
+      {showChangeEmailModal && (
+        <ChangeEmailModal onClose={() => setShowChangeEmailModal(false)} />
+      )}
     </>
   );
 };

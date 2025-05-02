@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import prisma from "../lib/prisma";
 import { generateOtp, saveOtpToDatabase } from "../lib/otpService";
 import nodemailer from "nodemailer";
-import supabase from "../lib/supabaseClient";
 import { authenticateToken } from "../middleware/authMiddleware";
 
 dotenv.config();
@@ -238,6 +237,45 @@ router.put(
   }
 );
 
+router.put(
+  "/change-email",
+  authenticateToken,
+  async (req: Request, res: Response): Promise<void> => {
+    const { oldEmail, newEmail } = req.body;
+
+    if (
+      !oldEmail ||
+      !newEmail ||
+      typeof oldEmail !== "string" ||
+      typeof newEmail !== "string"
+    ) {
+      res.status(400).json({ message: "Both old and new email are required." });
+      return;
+    }
+
+    try {
+      const user = await prisma.user.findFirst({
+        where: { email: oldEmail },
+      });
+
+      if (!user) {
+        res.status(404).json({ message: "Old email not found." });
+        return;
+      }
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { email: newEmail },
+      });
+
+      res.json({ message: "Email updated successfully." });
+    } catch (error) {
+      console.error("Change email error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
 router.get(
   "/check-user",
   async (req: Request, res: Response): Promise<void> => {
@@ -290,24 +328,6 @@ router.post("/logout", async (req: Request, res: Response): Promise<void> => {
 });
 
 router.post(
-  "/otp-login",
-  async (req: Request, res: Response): Promise<void> => {
-    const { email } = req.body;
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: "http://localhost:5173/otp-callback" },
-    });
-
-    if (error) {
-      res.status(400).json({ message: error.message });
-      return;
-    }
-    res.status(200).json({ message: "Magic link sent" });
-  }
-);
-
-router.post(
   "/send-otp-email",
   async (req: Request, res: Response): Promise<void> => {
     try {
@@ -318,10 +338,15 @@ router.post(
         return;
       }
 
+      const user = await prisma.user.findFirst({ where: { email } });
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
       const otp = generateOtp();
       const otpExpiry = Date.now() + 10 * 60 * 1000;
 
-      await saveOtpToDatabase(email, otp, otpExpiry);
+      await saveOtpToDatabase(otp, otpExpiry, user.id);
 
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
@@ -391,8 +416,14 @@ router.post(
     const { email, otp } = req.body;
 
     try {
+      const user = await prisma.user.findFirst({ where: { email } });
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
       const otpRecord = await prisma.otp.findFirst({
-        where: { email, otp },
+        where: { userId: user.id, otp },
         orderBy: { createdAt: "desc" },
       });
 
