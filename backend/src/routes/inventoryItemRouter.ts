@@ -17,7 +17,11 @@ router.use(authenticateToken)
 
 router.get("/get-items", validateFetchInventoryItems, async (req: Request, res: Response) => {
     try {
-        const items = await prisma.inventoryItem.findMany();
+        const items = await prisma.inventoryItem.findMany({
+            orderBy: {
+                name: 'asc',
+            },
+        });
 
         res.status(200).json({
             success: true,
@@ -45,8 +49,8 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         const existingItem = await prisma.inventoryItem.findFirst({
             where: {
                 name: name,
-                note: note,
                 selectUnit: selectUnit,
+                unitPrice: unitPrice,
                 unitSize: unitSize,
             }
         });
@@ -54,7 +58,7 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         if (existingItem) {
             res.status(409).json({
                 success: false,
-                message: 'Item already exists in inventory',
+                message: `Item '${name}' already exists in inventory`,
                 error: 'ITEM_EXISTS',
                 existingItem: {
                     id: existingItem.id,
@@ -65,7 +69,7 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
             });
             return;
         }
-
+        
         const newItem = await prisma.inventoryItem.create({
             data: {
                 name: name,
@@ -81,7 +85,7 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
 
         res.status(201).json({
             success: true,
-            message: 'Item added successfully',
+            message: `Item '${name}' added successfully`,
             data: newItem
         });
         return;
@@ -164,7 +168,7 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
 
             res.status(200).json({
                 success: true,
-                message: 'Existing assignment updated successfully',
+                message: `Existing assignment to fleet '${fleet_name}' & boat '${boat_name}' updated successfully`,
                 data: updatedAssignment
             });
             return;
@@ -206,7 +210,7 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
 
         res.status(201).json({
             success: true,
-            message: 'Item assigned successfully',
+            message: `Item '${name}' assigned successfully to fleet '${fleet_name}' & boat '${boat_name}'`,
             data: newAssignment
         });
         return;
@@ -232,7 +236,7 @@ router.delete("/remove-item/:id", validateDeleteInventoryItem, async (req: Reque
         
         res.status(200).json({
             success: true,
-            message: "Item deleted successfully",
+            message: `Item '${deletedItem.name}' deleted successfully`,
             data: deletedItem,
         });
         return;
@@ -267,7 +271,7 @@ router.put("/update-item/:id", validateEditInventoryItem, async (req: Request, r
 
         res.status(200).json({
             success: true,
-            message: 'Inventory item updated successfully.',
+            message: `Inventory item '${updatedItem.name}' updated successfully.`,
             data: item,
         });
         return;

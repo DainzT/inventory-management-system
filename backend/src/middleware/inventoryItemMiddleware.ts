@@ -316,6 +316,33 @@ export const validateEditInventoryItem = async (
         return;
     }
 
+    const duplicateItem = await prisma.inventoryItem.findFirst({
+        where: {
+            AND: [
+                { id: { not: Number(id) } }, 
+                { name: updatedItem.name },
+                { unitPrice: Number(updatedItem.unitPrice) },
+                { unitSize: Number(updatedItem.unitSize) },
+                { selectUnit: updatedItem.selectUnit }
+            ]
+        }
+    });
+
+    if (duplicateItem) {
+        res.status(409).json({
+            message: "Duplicate item with matching 'name, unitPrice, unitSize, and selectUnit' found.",
+            error: `An item with these properties already exists (ID: ${duplicateItem.id})`,
+            conflictingItem: {
+                id: duplicateItem.id,
+                name: duplicateItem.name,
+                unitPrice: duplicateItem.unitPrice,
+                unitSize: duplicateItem.unitSize,
+                selectUnit: duplicateItem.selectUnit
+            }
+        });
+        return;
+    }
+
     next();
 }
 

@@ -33,6 +33,7 @@ const Inventory: React.FC = () => {
     handleOutItem,
     handleEditItem,
     handleDeleteItem,
+    highlightedItem,
   } = useInventory();
 
   useEffect(() => {
@@ -48,14 +49,12 @@ const Inventory: React.FC = () => {
     const lowerCaseSearchQuery = searchQuery.toLowerCase();
 
     const matchesSearch = [
-      item.name?.toLowerCase(),
-      item.note?.toLowerCase(),
-      item.quantity?.toString(),
-      item.unitPrice?.toString(),
+      item.name?.toString().toLowerCase(),
+      item.note?.toString().toLowerCase(),
+      item.quantity?.toString().toLowerCase(),
+      item.unitPrice?.toString().toLowerCase(),
       item.selectUnit?.toLowerCase(),
-      item.unitSize?.toString(),
-      item.total?.toString(),
-      item.dateCreated?.toISOString().toLowerCase(),
+      item.unitSize?.toString().toLowerCase(),
     ].some((field) => field?.includes(lowerCaseSearchQuery));
 
     return matchesSearch;
@@ -89,6 +88,8 @@ const Inventory: React.FC = () => {
         inventoryItems={filteredItems}
         onSearch={handleSearch}
         isLoading={isLoading}
+        searchQuery={searchQuery}
+        highlightedItem={highlightedItem}
       />
       <AddProductModal
         isOpen={isAddOpen}

@@ -63,7 +63,7 @@ const EditProductForm = ({
         let processedValue = value;
         
         if (field === 'quantity' || field === 'unitPrice' || field === 'unitSize') {
-            processedValue = roundTo(Number(value), 2);
+            processedValue = roundTo(Number(value), 2) || "";
         }
 
         setProductData((prevData) => ({

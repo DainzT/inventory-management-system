@@ -1,8 +1,8 @@
 import { SearchBar } from "./SearchBar";
 import { InventoryButton } from "./InventoryButton";
 import { InventoryTable } from "./InventoryTable";
-import { useState } from "react";
-import { InventoryItem } from "@/types";
+import { useEffect, useRef, useState } from "react";
+import { HighlightedItem, InventoryItem } from "@/types";
 import { TableHeader } from "./TableHeader";
 import { ClipLoader } from "react-spinners";
 import ReactPaginate from "react-paginate";
@@ -14,6 +14,8 @@ interface InventoryManagementTableProps {
   setIsEditOpen: (isOpen: boolean, item?: InventoryItem) => void;
   onSearch?: (query: string) => void;
   isLoading: boolean;
+  searchQuery: string;
+  highlightedItem?: HighlightedItem;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -25,10 +27,30 @@ const InventoryManagementTable = ({
   setIsEditOpen,
   onSearch,
   isLoading = false,
+  searchQuery,
+  highlightedItem,
 }: InventoryManagementTableProps) => {
-
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const itemRef = useRef<HTMLDivElement | null>(null); 
+  
+  useEffect(() => {
+    if (highlightedItem) {
+        const itemIndex = inventoryItems.findIndex(item => item.id === highlightedItem.id);
+        if (itemIndex >= 0) {
+            const page = Math.floor(itemIndex / ITEMS_PER_PAGE);
+            setCurrentPage(page);
+            setTimeout(() => {
+              if (itemRef.current) {
+                itemRef.current.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'center'
+                });
+              }
+            }, 100);
+        }
+    }
+}, [highlightedItem, inventoryItems]);
 
   const handleToggleExpand = (itemId: number) => {
     setExpandedItem(expandedItem === itemId ? null : itemId);
@@ -98,6 +120,9 @@ const InventoryManagementTable = ({
             onToggleExpand={handleToggleExpand}
             onOut={(item) => handleOutItemClick(item)}
             onEdit={(item) => handleEditItemClick(item)}
+            searchQuery={searchQuery}
+            highlightedItem={highlightedItem}
+            itemRef={itemRef}
           />
         </div>
         <div className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px]">

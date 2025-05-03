@@ -1,5 +1,6 @@
 import { GroupedOrders } from "@/types";
 import { pluralize } from "@/utils/Pluralize";
+import { roundTo } from "@/utils/RoundTo";
 
 export interface InvoiceTableProps {
   itemSummary: GroupedOrders[];
@@ -83,7 +84,7 @@ export const InvoiceTable = ({ itemSummary }: InvoiceTableProps) => {
                         shrink-0 break-all overflow-hidden hyphens-auto
                     "
                     >
-                      {order.quantity}{" "}
+                      {roundTo(Number(order.quantity), 2)}{" "}
                       {pluralize(order.selectUnit, Number(order.quantity))}
                     </div>
                     <div
