@@ -2,7 +2,7 @@ import express, { Router } from "express";
 import type { Request, Response } from "express";
 import dotenv from "dotenv";
 import prisma from "../lib/prisma";
-import {authenticateToken} from "../middleware/authMiddleware";
+import { authenticateToken } from "../middleware/authMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
@@ -56,3 +56,4 @@ router.post("/update-archive", async (req: Request, res: Response) => {
 });
 
 export default router;
+

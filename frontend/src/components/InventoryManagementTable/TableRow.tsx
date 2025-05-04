@@ -26,7 +26,7 @@ export function TableRow({
       <div className="flex items-center px-3 sm:px-0 md:px-6 lg:px-3 xl:px-5 p-2 sm:p-2 border-[1px] border-[#E5E7EB] bg-white shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] hover:bg-gray-50">
         <div className="
           min-w-[30px] xs:min-w-[40px] sm:min-w-[50px] lg:min-w-[50px] xl:min-w-[60px]
-          text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#1F2937] text-left 
+          text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#1F2937] text-left l-
           shrink-0 break-all overflow-hidden hyphens-auto  px-3 ">
           {index + 1}
         </div>
@@ -48,7 +48,7 @@ export function TableRow({
           text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#1F2937] text-left 
           shrink-0 break-all overflow-hidden hyphens-auto px-3 flex-1
         ">
-          {item.quantity}{" "}
+          {Number(item.quantity).toFixed(2)}{" "}
           {`${Number(item.quantity) > 1 && !/[sS]$/.test(item.selectUnit)
             ? `${item.selectUnit}s`
             : item.selectUnit
@@ -73,7 +73,10 @@ export function TableRow({
           <InventoryButton variant="actions" onOut={onOut} onEdit={onEdit} />
         </div>
         <div
-          className=" sm:mr-2 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+          className="
+            sm:mr-2 scale-80 cursor-pointer rounded-full 
+            transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50
+          "
           onClick={() => onToggle(item.id)}
         >
           <ChevronIcon isExpanded={isExpanded} />

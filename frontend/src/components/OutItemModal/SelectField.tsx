@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BsArrowDown } from "react-icons/bs";
 import { SelectFieldProps } from "@/types/select-field";
 
-const SelectField: React.FC<SelectFieldProps> = ({
+const SelectField = ({
   label,
   placeholder,
   value,
@@ -11,7 +11,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   required = false,
   disabled = false,
   error,
-}) => {
+}: SelectFieldProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleOptionClick = (option: string) => {

@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
-interface PinInputProps {
+interface LoginInputProps {
   pin: string;
   setPin: (pin: string) => void;
 }
 
-function PinInput({ pin, setPin }: PinInputProps) {
+function LoginInput({ pin, setPin }: LoginInputProps) {
   const [showPin, setShowPin] = useState(false);
 
   return (
-    <div className="w-96 h-12 bg-background rounded-xl flex items-center px-[19px] mb-[24px]">
+    <div className="w-96 h-12 bg-background rounded-xl flex items-center px-[19px] mb-1">
       <label htmlFor="pin-input" className="text-2xl font-bold text-black">
         PIN
       </label>
@@ -25,7 +25,7 @@ function PinInput({ pin, setPin }: PinInputProps) {
       <button
         onClick={() => setShowPin(!showPin)}
         aria-label={showPin ? "Show PIN" : "Hide PIN"}
-        className="ml-3 text-black"
+        className="ml-3 text-black cursor-pointer"
       >
         {showPin ? <EyeIcon /> : <EyeOffIcon />}
       </button>
@@ -33,4 +33,4 @@ function PinInput({ pin, setPin }: PinInputProps) {
   );
 }
 
-export default PinInput;
+export default LoginInput;

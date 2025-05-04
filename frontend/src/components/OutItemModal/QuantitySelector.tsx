@@ -1,5 +1,4 @@
-import React from "react";
-import { BsFileMinus, BsFilePlus } from "react-icons/bs";
+import { Minus, Plus } from "lucide-react";
 
 interface QuantitySelectorProps {
   value: number | "";
@@ -8,17 +7,18 @@ interface QuantitySelectorProps {
   unitSize: number;
   error: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
-
-const QuantitySelector: React.FC<QuantitySelectorProps> = ({
+const QuantitySelector = ({
   value,
   onChange,
   maxQuantity,
   unitSize,
   error,
   disabled,
-}) => {
+  required = true,
+}: QuantitySelectorProps) => {
   const decrementQuantity = () => {
     if (Number(value) > 0) {
       onChange((value || 0) - unitSize);
@@ -54,7 +54,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
         <label htmlFor="quantity" className="text-base font-bold text-black inter-font">
           Quantity
         </label>
-        <span className="ml-1 text-rose-500 inter-font">*</span>
+        {required && <span className="text-[#FF5757]">*</span>}
       </div>
       <div className="flex gap-2 items-center">
         <button
@@ -66,7 +66,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           aria-label="Decrease quantity"
           disabled={Number(value) <= 0 || disabled}
         >
-          <BsFileMinus />
+          <Minus size={20} />
         </button>
         <input
           type="number"
@@ -92,7 +92,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           aria-label="Increase quantity"
           disabled={Number(value) >= maxQuantity || disabled}
         >
-          <BsFilePlus />
+          <Plus size={20} />
         </button>
       </div>
       {error && <p className="absolute text-red-600 text-sm">{error}</p>}

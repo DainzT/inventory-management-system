@@ -1,66 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Logo } from "@/components/SidebarComponents/Logo";
-import PinInput from "@/components/AuthComponents/PinInput";
-import { ClipLoader } from "react-spinners";
-import { login, checkAdminExists } from "@/api/authAPI";
-import ChangePin from "@/components/AuthComponents/ChangePin";
+import LoginInput from "@/components/AuthComponents/LoginInput";
 import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";
-
-interface LoginResponse {
-  token?: string;
-  message?: string;
-}
-
-interface ApiError {
-  message: string;
-}
+import { ToastContainer } from "react-toastify";
 
 const LoginPage: React.FC = () => {
   const [pin, setPin] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showChangePin, setShowChangePin] = useState(false);
-  const [showCreateAdmin, setShowCreateAdmin] = useState(false);
   const [showForgotPin, setShowForgotPin] = useState(false);
+  const { login, showCreateAdmin, setShowCreateAdmin } = useAuth();
 
   const navigate = useNavigate();
 
-  function isApiError(error: unknown): error is ApiError {
-    return typeof error === "object" && error !== null && "message" in error;
-  }
-
-  useEffect(() => {
-    const fetchAdminStatus = async () => {
-      try {
-        const exists = await checkAdminExists();
-        setShowCreateAdmin(!exists);
-      } catch (err) {
-        console.error("Failed to check admin status", err);
-      }
-    };
-    fetchAdminStatus();
-  }, []);
-
   const handleLogin = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      await login(pin);
+    const success = await login(pin);
+    if (success) {
       navigate("/inventory");
-    } catch (err: unknown) {
-      if (isApiError(err)) {
-        setError(err.message);
-      } else if (typeof err === "string") {
-        setError(err);
-      } else {
-        setError("Login failed");
-      }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -70,29 +28,31 @@ const LoginPage: React.FC = () => {
 
   return (
     <main className="flex flex-col items-center justify-start h-screen w-screen bg-white">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Header />
 
       <section className="relative flex flex-col items-center justify-center flex-grow w-full">
         <Logo width={20} height={20} />
         <h1 className="text-4xl font-bold text-black mb-9">Welcome, Admin!</h1>
 
-        <PinInput pin={pin} setPin={setPin} />
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
-        <button
-          type="button"
-          onClick={() => setShowChangePin(true)}
-          className="mt-2 text-sm text-cyan-700 underline hover:text-cyan-900"
-        >
-          Change PIN?
-        </button>
-        {showChangePin && <ChangePin onClose={() => setShowChangePin(false)} />}
+        <LoginInput pin={pin} setPin={setPin} />
 
         <div className="mb-3">
           <button
             type="button"
             onClick={() => setShowForgotPin(true)}
-            className="mt-2 mb-4 text-sm text-cyan-700 underline hover:text-cyan-900"
+            className="mb-4 text-sm text-cyan-700 underline hover:text-accent-light cursor-pointer flex justify-end w-96 px-2"
           >
             Forgot PIN?
           </button>
@@ -102,9 +62,9 @@ const LoginPage: React.FC = () => {
 
         <button
           onClick={handleLogin}
-          className="w-40 h-12 bg-accent rounded-[11px] text-xl font-semibold text-white"
+          className="w-40 h-12 bg-accent rounded-[11px] hover:bg-accent-dark cursor-pointer active:scale-95 text-xl font-semibold text-white hover:text-white transition-all duration-200"
         >
-          {loading ? <ClipLoader color="#f4f4f4" size={20} /> : "Login"}
+          Login
         </button>
       </section>
     </main>

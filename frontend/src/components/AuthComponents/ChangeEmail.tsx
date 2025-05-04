@@ -5,19 +5,20 @@ import AuthInput from "./AuthInput";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
-interface ChangePinModalProps {
+interface ChangeEmailModalProps {
   onClose: () => void;
 }
 
-const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
+const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
   const [currentPin, setCurrentPin] = useState("");
-  const [newPin, setNewPin] = useState("");
-  const [email, setEmail] = useState("");
+  const [currentEmail, setCurrentEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentPinVerified, setCurrentPinVerified] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const { updatePin, sendOtpEmail, verifyOtp, verifyEmail, verifyPin } =
+
+  const { verifyPin, verifyEmail, sendOtpEmail, verifyOtp, changeEmail } =
     useAuth();
   const navigate = useNavigate();
 
@@ -35,8 +36,8 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
   const handleSendOTP = async () => {
     try {
       setLoading(true);
-      await verifyEmail(email);
-      await sendOtpEmail(email);
+      await verifyEmail(currentEmail);
+      await sendOtpEmail(currentEmail);
       setOtpSent(true);
       setLoading(false);
     } catch {
@@ -44,11 +45,11 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
     }
   };
 
-  const handleVerifyOTPAndUpdatePin = async () => {
+  const handleVerifyOTPAndUpdateEmail = async () => {
     try {
       setLoading(true);
-      await verifyOtp(email, otp);
-      await updatePin(currentPin, newPin);
+      await verifyOtp(currentEmail, otp);
+      await changeEmail(currentEmail, newEmail);
       setLoading(false);
       onClose();
       navigate("/login");
@@ -57,12 +58,20 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
     }
   };
 
+  const handleNextStep = () => {
+    if (!currentPinVerified) return handleVerifyCurrentPin();
+    if (!otpSent) return handleSendOTP();
+    return handleVerifyOTPAndUpdateEmail();
+  };
+
   return (
     <Portal>
       <div className="flex fixed inset-0 justify-center items-center select-none z-50">
         <div className="relative px-6 py-4 w-[24rem] bg-white z-50 rounded-2xl border-2 shadow-sm border-zinc-300 animate-[fadeIn_0.2s_ease-out]">
           <header className="mb-4">
-            <h2 className="text-2xl font-semibold text-cyan-800">Change PIN</h2>
+            <h2 className="text-2xl font-semibold text-cyan-800">
+              Change Email
+            </h2>
           </header>
 
           {!currentPinVerified ? (
@@ -76,16 +85,14 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
               required
             />
           ) : !otpSent ? (
-            <>
-              <AuthInput
-                label="Email"
-                value={email}
-                type="text"
-                onChange={setEmail}
-                placeholder="Enter your email"
-                required
-              />
-            </>
+            <AuthInput
+              label="Current Email"
+              value={currentEmail}
+              type="text"
+              onChange={setCurrentEmail}
+              placeholder="Enter your current email"
+              required
+            />
           ) : (
             <>
               <AuthInput
@@ -93,16 +100,15 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
                 value={otp}
                 type="text"
                 onChange={setOtp}
-                placeholder="Enter OTP"
+                placeholder="Enter OTP sent to your email"
                 required
               />
               <AuthInput
-                label="New PIN"
-                value={newPin}
-                type="password"
-                onChange={setNewPin}
-                isPin
-                placeholder="Enter new PIN"
+                label="New Email"
+                value={newEmail}
+                type="text"
+                onChange={setNewEmail}
+                placeholder="Enter new email"
                 required
               />
             </>
@@ -116,13 +122,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
               Cancel
             </button>
             <button
-              onClick={
-                !currentPinVerified
-                  ? handleVerifyCurrentPin
-                  : !otpSent
-                  ? handleSendOTP
-                  : handleVerifyOTPAndUpdatePin
-              }
+              onClick={handleNextStep}
               className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition cursor-pointer"
               disabled={loading}
             >
@@ -133,7 +133,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
               ) : !otpSent ? (
                 "Send OTP"
               ) : (
-                "Update PIN"
+                "Change Email"
               )}
             </button>
           </div>
@@ -148,4 +148,4 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
   );
 };
 
-export default ChangePinModal;
+export default ChangeEmailModal;

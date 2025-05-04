@@ -1,16 +1,41 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { userEvent, within, waitFor, expect, fn } from "@storybook/test";
-import { OrderItemProps } from "@/types/fleet-order";
 import ModifyModal from "@/components/ModifyModal/ModifyModal";
+import type { ModifyOrderItem } from "@/types/modify-order-item";
+import { Fleet, Boat } from "@/types";
+
+const sampleFleet: Fleet = {
+  id: 1,
+  fleet_name: "F/B DONYA DONYA 2X",
+};
+
+const sampleBoat: Boat = {
+  id: 1,
+  boat_name: "F/B Lady Rachelle",
+  fleet_id: 1,
+};
+
+const sampleOrder: ModifyOrderItem = {
+  id: 1,
+  name: "Marine Rope - 16mm",
+  note: "High strength nylon rope",
+  unitPrice: 125.75,
+  quantity: 3,
+  fleet: sampleFleet,
+  boat: sampleBoat,
+  currentQuantity: 10,
+};
 
 const meta: Meta<typeof ModifyModal> = {
   title: "Components/ModifyModal",
   component: ModifyModal,
   tags: ["autodocs"],
   args: {
+    isOpen: true,
     onClose: fn(),
     onConfirm: fn(),
     onRemove: fn(),
+    order: sampleOrder,
   },
   argTypes: {
     isOpen: { control: "boolean" },
@@ -20,54 +45,21 @@ const meta: Meta<typeof ModifyModal> = {
 export default meta;
 type Story = StoryObj<typeof ModifyModal>;
 
-const sampleOrder: OrderItemProps = {
-  id: 1,
-  productName: "Marine Rope - 16mm",
-  note: "High strength nylon rope",
-  unitPrice: 125.75,
-  quantity: 3,
-  selectUnit: "meter",
-  unitSize: "16mm",
-  fleet: "F/B DONYA DONYA 2X",
-  boat: "F/B Lady Rachelle",
-  dateOut: "2023-05-15",
-};
-
 export const Default: Story = {
-  args: {
-    isOpen: true,
-    order: sampleOrder,
-  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
     await expect(canvas.getByText("Modify Item")).toBeInTheDocument();
-    await expect(canvas.getByText(sampleOrder.productName)).toBeInTheDocument();
-    await expect(
-      canvas.getByText(`₱${sampleOrder.unitPrice.toFixed(2)}`)
-    ).toBeInTheDocument();
+    await expect(canvas.getByText(sampleOrder.name)).toBeInTheDocument();
+    await expect(canvas.getByText(`₱${sampleOrder.unitPrice.toFixed(2)}`)).toBeInTheDocument();
   },
 };
 
 export const QuantityAdjustment: Story = {
-  args: {
-    isOpen: true,
-    order: sampleOrder,
-  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    const buttons = canvas.getAllByRole("button");
-    const decrementButton = buttons[1];
-    const incrementButton = buttons[2];
-
-    const quantityDisplay =
-      canvas.getByTestId("quantity-display") ||
-      canvas.getByText("3").closest('div[class*="bg-gray-100"]');
-
-    if (!quantityDisplay) {
-      throw new Error("Quantity display not found");
-    }
+    const quantityDisplay = canvas.getByTestId("quantity-display");
+    const incrementButton = canvas.getByRole("button", { name: /increment quantity/i });
+    const decrementButton = canvas.getByRole("button", { name: /decrement quantity/i });
 
     await userEvent.click(decrementButton);
     await waitFor(() => {
@@ -82,61 +74,40 @@ export const QuantityAdjustment: Story = {
   },
 };
 
-export const UnitSelection: Story = {
-  args: {
-    isOpen: true,
-    order: sampleOrder,
-  },
+export const FleetAndBoatAssignment: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const quantityLabel = canvas.getByText("Quantity");
-    const unitSelect = quantityLabel.parentElement?.querySelector("select");
-
-    if (!unitSelect) {
-      throw new Error("Unit select not found");
-    }
-
-    await userEvent.selectOptions(unitSelect, "kilogram");
-    await expect(unitSelect).toHaveValue("kilogram");
-  },
-};
-
-export const FleetAssignment: Story = {
-  args: {
-    isOpen: true,
-    order: sampleOrder,
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    const fleetLabel = canvas.getByText("Fleet Assignment");
-    const fleetSelect = fleetLabel.nextElementSibling;
-
-    if (!fleetSelect || !(fleetSelect instanceof HTMLSelectElement)) {
-      throw new Error("Fleet select not found");
-    }
+    const fleetSelect = canvas.getByLabelText("Fleet Assignment") as HTMLSelectElement;
+    const boatSelect = canvas.getByLabelText("Boat Assignment") as HTMLSelectElement;
 
     await userEvent.selectOptions(fleetSelect, "F/B Doña Librada");
     await expect(fleetSelect).toHaveValue("F/B Doña Librada");
 
-    const boatLabel = canvas.getByText("Boat Assignment");
-    const boatSelect = boatLabel.nextElementSibling;
-
-    if (!boatSelect || !(boatSelect instanceof HTMLSelectElement)) {
-      throw new Error("Boat select not found");
-    }
-
-    await expect(boatSelect.options[0]).toHaveValue("F/B Adomar");
+    await waitFor(() => {
+      expect(boatSelect.options.length).toBeGreaterThan(0);
+    });
   },
 };
 
-export const ConfirmationFlow: Story = {
-  args: {
-    isOpen: true,
-    order: sampleOrder,
-    onConfirm: fn(),
+export const UnsavedChanges: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const fleetSelect = canvas.getByLabelText("Fleet Assignment") as HTMLSelectElement;
+    await userEvent.selectOptions(fleetSelect, "F/B Doña Librada");
+    await expect(fleetSelect).toHaveValue("F/B Doña Librada");
+
+    const boatSelect = canvas.getByLabelText("Boat Assignment") as HTMLSelectElement;
+
+    await waitFor(() => {
+      expect(boatSelect.options[0].value).toBe("F/B Adomar");
+    });
   },
+};
+
+
+export const ConfirmationFlow: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const confirmButton = canvas.getByRole("button", {
@@ -148,9 +119,8 @@ export const ConfirmationFlow: Story = {
     await waitFor(() => {
       expect(args.onConfirm).toHaveBeenCalledWith(
         sampleOrder.quantity,
-        sampleOrder.fleet,
-        sampleOrder.boat,
-        sampleOrder.selectUnit
+        sampleFleet.fleet_name,
+        sampleBoat.boat_name
       );
     });
   },

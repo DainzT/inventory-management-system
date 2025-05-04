@@ -1,5 +1,6 @@
 import React from "react";
 import { OrderItem } from "@/types/order-item"
+import { fixEncoding } from "@/utils/Normalization";
 
 interface ExpandedOrderDetailsProps {
   order: OrderItem;
@@ -19,7 +20,7 @@ export const ExpandedOrderDetails: React.FC<ExpandedOrderDetailsProps> = ({
       </div>
       <div>
         <div className="mb-1 text-sm text-gray-500">Fleet Assigned:</div>
-        <div className="text-base text-gray-800">{order.fleet.fleet_name}</div>
+        <div className="text-base text-gray-800">{fixEncoding(order.fleet.fleet_name)}</div>
       </div>
       <div>
         <div className="mb-1 text-sm text-gray-500">Last Updated</div>

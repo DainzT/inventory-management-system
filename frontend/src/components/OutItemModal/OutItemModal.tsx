@@ -3,7 +3,7 @@ import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
 import SelectField from "./SelectField";
 import QuantitySelector from "./QuantitySelector";
 import SummarySection from "./SummarySection";
-import { InventoryItem, OrderItem } from "@/types";
+import { InventoryItem, OutItemData } from "@/types";
 import { MdAdd } from "react-icons/md";
 import ItemDetails from "./ItemDetails";
 import { ClipLoader } from "react-spinners";
@@ -14,17 +14,17 @@ interface OutItemModalProps {
   isOpen: boolean,
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   selectedItem: InventoryItem | null;
-  onOutItem: (outItem: OrderItem) => void;
+  onOutItem: (outItem: OutItemData) => void;
   isAssigning?: boolean;
 }
 
-const OutItemModal: React.FC<OutItemModalProps> = ({
+const OutItemModal = ({
   isOpen,
   setIsOpen,
   selectedItem,
   onOutItem,
   isAssigning,
-}) => {
+}: OutItemModalProps) => {
   const [fleet, setFleet] = useState<string>("");
   const [boat, setBoat] = useState<string>("");
   const [quantity, setQuantity] = useState<number | "">("");
@@ -97,7 +97,8 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
   };
 
   const handleQuantityChange = (newValue: number | "") => {
-    setQuantity(newValue);
+    const roundedValue = newValue === "" ? "" : roundTo(Number(newValue), 2);
+    setQuantity(roundedValue);
     clearError("quantity");
   };
 
@@ -105,12 +106,12 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
 
     if (!validateForm()) return;
 
-    const remainingStock = Number(selectedItem?.quantity) - Number(quantity);
+    const remainingStock = roundTo(Number(selectedItem?.quantity) - Number(quantity), 2);
 
     const updatedTotalPrice =
       roundTo(Number(selectedItem?.unitPrice) * (remainingStock / Number(selectedItem?.unitSize)), 2);
 
-    const outItem: OrderItem = {
+    const outItem: OutItemData = {
       item_id: {
         ...selectedItem!,
         quantity: remainingStock,
@@ -136,8 +137,8 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
     setQuantity("");
   };
 
-  const totalPrice = Number(selectedItem?.unitPrice) * (Number(quantity) / Number(selectedItem?.unitSize));
-  const remainingStock = Number(selectedItem?.quantity) - Number(quantity);
+  const totalPrice = roundTo(Number(selectedItem?.unitPrice) * (Number(quantity) / Number(selectedItem?.unitSize)), 2);
+  const remainingStock = roundTo(Number(selectedItem?.quantity) - Number(quantity), 2);
 
   const handleCloseAttempt = () => {
     if (hasChanges) {
@@ -153,7 +154,7 @@ const OutItemModal: React.FC<OutItemModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <section className="flex fixed inset-0 justify-center items-center">
+    <section className="flex z-50 fixed inset-0 justify-center items-center">
       <article className="relative z-50 px-6 py-4 w-96 bg-white rounded-[19px] border-[1px] border-[#E0D8D8] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] animate-[fadeIn_0.2s_ease-out] h-[36rem]">
         <header className="flex justify-between items-center mb-4">
           <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Out Product</h1>
