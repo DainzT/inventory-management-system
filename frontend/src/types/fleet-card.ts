@@ -3,6 +3,7 @@ export interface FleetCardProps {
     backgroundColor: string;
     isActive?: boolean;
     onClick?: () => void;
+    orderCount?: number;
   }
 
   export interface FleetListProps {

@@ -38,7 +38,7 @@ export const useOrder = () => {
       const response = await fetchAssignedItems();
       setOrders(response);
       setFilteredOrders(response);
-      showSuccessToast(toastId, "Orders loaded successfully!");
+      showSuccessToast(toastId, `Loaded ${response.length} ${response.length > 1 ? "items" : "item"} successfully`);
     } catch (error) {
       console.error("Error fetching orders:", error);
       showErrorToast(toastId, "Failed to load orders.");
