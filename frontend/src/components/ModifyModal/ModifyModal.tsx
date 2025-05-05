@@ -8,16 +8,17 @@ import { pluralize } from "@/utils/Pluralize";
 import SummarySection from "../OutItemModal/SummarySection";
 import { fixEncoding } from "@/utils/Normalization";
 import QuantitySelector from "../OutItemModal/QuantitySelector";
-
+import { useDeleteOrder } from "@/hooks/useDeleteOrder";
+import { toast } from "react-toastify";
 
 interface ModifyModalProps {
   isOpen: boolean,
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   selectedOrder: ModifyOrderItem | null;
-  onModify: (quantity: number, fleet: string, boat: string) => void;
+  onModify: (quantity: number, fleet: string, boat: string) => Promise<void>;
   onRemove: (id: number) => void;
-  isModifying?: boolean;
   isDeleting: boolean;
+  isModifying?: boolean; 
 }
 
 export const ModifyModal: React.FC<ModifyModalProps> = ({
@@ -26,17 +27,17 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   onModify,
   onRemove,
   selectedOrder,
-  isModifying,
-  isDeleting
+  isDeleting,
+  isModifying = false 
 }) => {
   const [quantity, setQuantity] = useState<number | "">("");
   const [fleet, setFleet] = useState<string>("");
   const [boat, setBoat] = useState<string>("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] =
-    useState(false);
+  const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [quantityError, setQuantityError] = useState("");
+  const { deleteOrderItem, isDeleting: hookIsDeleting, error: deleteError } = useDeleteOrder();
 
   useEffect(() => {
     if (selectedOrder) {
@@ -58,27 +59,15 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const getBoatOptions = (fleet: string) => {
     switch (fleet) {
       case "F/B DONYA DONYA 2x":
-        return [
-          "F/B Lady Rachelle",
-          "F/B Mariella",
-          "F/B My Shield",
-          "F/B Abigail",
-          "F/B DC-9"
-        ];
+        return ["F/B Lady Rachelle", "F/B Mariella", "F/B My Shield", "F/B Abigail", "F/B DC-9"];
       case "F/B Doña Librada":
-        return [
-          "F/B Adomar",
-          "F/B Prince of Peace",
-          "F/B Ruth Gaily",
-          "F/V Vadeo Scout",
-          "F/B Mariene"
-        ];
+        return ["F/B Adomar", "F/B Prince of Peace", "F/B Ruth Gaily", "F/V Vadeo Scout", "F/B Mariene"];
       default:
         return [];
     }
   };
   const boatOptions = getBoatOptions(fleet);
-  const fleetOptions = ["F/B DONYA DONYA 2x", "F/B Doña Librada"]
+  const fleetOptions = ["F/B DONYA DONYA 2x", "F/B Doña Librada"];
 
   const currentInventory = selectedOrder?.inventory?.quantity ?? 0;
   const originalOrderQty = selectedOrder?.quantity ?? 0;
@@ -91,27 +80,42 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     ? Number(currentInventory) + Number(originalOrderQty)
     : originalOrderQty;
 
-  const handleFleetChange = (newFleet: string) => {
-    setFleet(newFleet);
-  };
+    const handleFleetChange = (newFleet: string) => {
+      setFleet(newFleet);
+      setHasChanges(true);
+    };
+    
+    const handleBoatChange = (newBoat: string) => {
+      setBoat(newBoat);
+      setHasChanges(true);
+    };
+    
 
-  const handleBoatChange = (newBoat: string) => {
-    setBoat(newBoat);
-  };
+    const handleConfirm = async () => {
+      console.log("Quantity:", quantity, "Fleet:", fleet, "Boat:", boat); // Log the values before proceeding
+    
+      // Log the onModify function to check if it's passed and available
+      console.log("onModify function:", onModify);
+    
+      // Validate the quantity
+      if (Number(quantity) > Number(maxAllowed)) {
+        setQuantityError(
+          selectedOrder?.inventory !== undefined
+            ? `Cannot exceed available stock (${maxAllowed})`
+            : `Cannot exceed original order quantity (${maxAllowed})`
+        );
+        return;
+      }
+      setQuantityError("");
 
-  const handleConfirm = () => {
-    if (Number(quantity) > Number(maxAllowed)) {
-      setQuantityError(
-        selectedOrder?.inventory !== undefined
-          ? `Cannot exceed available stock (${maxAllowed})`
-          : `Cannot exceed original order quantity (${maxAllowed})`
-      );
-      return;
-    }
+      console.log("Calling onModify with:", Number(quantity), fleet, boat);
 
-    setQuantityError("");
-    onModify(Number(quantity), fleet, boat);
-  };
+      await onModify(Number(quantity), fleet, boat);
+    
+
+      console.log("onModify completed");
+    };
+    
 
   const handleQuantityChange = (newValue: number | "") => {
     if (newValue === "") {
@@ -119,7 +123,6 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
       setQuantityError("");
       return;
     }
-    
     setQuantity(newValue);
   };
 
@@ -129,6 +132,17 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     } else {
       setIsOpen(false);
       setQuantityError("");
+    }
+  };
+
+  const handleRemove = async (id: number) => {
+    const result = await deleteOrderItem(id);
+    if (result.success) {
+      toast.success("Item removed successfully.");
+      onRemove(id);
+      setIsOpen(false);
+    } else {
+      toast.error(result.error || "Failed to remove item.");
     }
   };
 
@@ -148,13 +162,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             disabled={isModifying}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M18 6L6 18M6 6L18 18"
-                stroke="black"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <path d="M18 6L6 18M6 6L18 18" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </header>
@@ -171,11 +179,11 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               <p className="text-sm text-gray-500 inter-font">Stock Available:</p>
               <p className="text-sm font-semibold text-black">
                 {currentInventory === 0 ? (
-                  <p className="text-xs font-semibold text-red-500">This item no longer exists in inventory</p>
+                  <span className="text-xs font-semibold text-red-500">This item no longer exists in inventory</span>
                 ) : (
-                  <p className="text-sm font-semibold text-black">
+                  <span className="text-sm font-semibold text-black">
                     {currentInventory} {pluralize(selectedOrder.selectUnit, Number(currentInventory))}
-                  </p>
+                  </span>
                 )}
               </p>
             </div>
@@ -191,11 +199,8 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none"
             >
               {fleetOptions.map((fleetName) => (
-                <option key={fleetName} value={fleetName}>
-                  {fleetName}
-                </option>
+                <option key={fleetName} value={fleetName}>{fleetName}</option>
               ))}
-
             </select>
             <div className="flex items-center mb-2">
               <label htmlFor="boat-select" className="text-base font-bold text-black inter-font">Assign to Boat</label>
@@ -207,69 +212,64 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none"
             >
               {boatOptions.map((boatName) => (
-                <option key={boatName} value={boatName}>
-                  {boatName}
-                </option>
+                <option key={boatName} value={boatName}>{boatName}</option>
               ))}
             </select>
           </div>
           <QuantitySelector
             value={quantity}
             onChange={handleQuantityChange}
-            error={
-              quantityError
-            }
+            error={quantityError}
             required={false}
             maxQuantity={Number(maxAllowed)}
             unitSize={Number(selectedOrder.unitSize)}
           />
-          <SummarySection
-            totalPrice={totalPrice}
-            remainingStock={Number(remainingStock)}
-            unit={selectedOrder.selectUnit}
-          />
+          <SummarySection totalPrice={totalPrice} remainingStock={Number(remainingStock)} unit={selectedOrder.selectUnit} />
           <div className="pl-1 flex gap-18">
             <DeleteButton
               onClick={() => {
                 if (selectedOrder) {
-                  onRemove(selectedOrder.id);
+                  handleRemove(selectedOrder.id);
                 }
                 setIsDeleteModalOpen(false);
                 setQuantityError("");
-                setIsOpen(false);
-              }
-              }
+              }}
               className="text-s"
-              disabled={isModifying || isDeleting}
-              isDeleting={isDeleting}
+              isDeleting={hookIsDeleting}
               title="Remove Item"
               message="Are you sure you want to remove this item from your order? This action cannot be undone."
               confirmButtonText="Remove Item"
             >
               Delete
             </DeleteButton>
-            <div className="flex item-center justify-end ">
-              <Button
-                type="button"
-                className="text-s h-[3rem] w-[11rem]"
-                disabled={isModifying}
-                onClick={handleConfirm}
-              >
-                {isModifying ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <ClipLoader color="#ffffff" size={20} className="mr-2" />
-                    Updating...
-                  </div>
-                ) : (
-                  "Confirm Changes"
-                )}
-              </Button>
+            <div className="flex item-center justify-end">
+            <Button
+              type="button"
+              className="text-s h-[3rem] w-[11rem]"
+              disabled={isModifying}
+              onClick={async () => {
+                try {
+                  await handleConfirm();
+                } catch (error) {
+                  console.error("Error confirming changes:", error);
+                }
+              }}
+            >
+              {isModifying ? (
+                <div className="flex items-center justify-center gap-2">
+                  <ClipLoader color="#ffffff" size={20} className="mr-2" />
+                  Updating...
+                </div>
+              ) : (
+                "Confirm Changes"
+              )}
+            </Button>
             </div>
           </div>
         </div>
       </div>
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity "
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={!isModifying ? handleCloseAttempt : undefined}
         aria-hidden="true"
       />
@@ -277,7 +277,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
       <UnsavedChangesModal
         isOpen={isUnsavedChangesModalOpen}
         onClose={() => {
-          setIsUnsavedChangesModalOpen(false)
+          setIsUnsavedChangesModalOpen(false);
           setQuantityError("");
         }}
         onConfirm={() => {

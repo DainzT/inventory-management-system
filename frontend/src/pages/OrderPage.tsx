@@ -16,12 +16,12 @@ const Orders: React.FC = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
 
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isModifying, setIsModifying] = useState(false);
-
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
   const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
+  const [isModifying, setIsModifying] = useState(false);
   const {
+
     filteredOrders,
     activeFleet,
     handleSearch,
@@ -82,24 +82,19 @@ const Orders: React.FC = () => {
     }
   }, [isModifyOpen, selectedOrder, inventoryItems]);
 
-  const handleModifyItem = (quantity: number, fleet: string, boat: string) => {
-    if (selectedOrder) {
-      console.log("Changes confirmed:", {
-        selectedOrder,
-        quantity,
-        fleet,
-        boat,
-      });
-      setIsModifyOpen(false);
-    }
+  const handleModifyItem = async (quantity: number, fleet: string, boat: string) => {
+    console.log("to be updated sa next push");
   };
+  
 
-  const handleRemoveItem = () => {
-    if (selectedOrder) {
-      console.log("Item removed:", selectedOrder);
-      setIsModifyOpen(false);
-    }
+  const handleRemoveItem = (id: number) => {
+    setFilteredOrders((prev) => prev.filter((order) => order.id !== id));
+    setOrders((prev) => prev.filter((order) => order.id !== id));
+    setSelectedOrder(null);
+    setIsModifyOpen(false);
   };
+  
+  
 
   return (
     <div>
@@ -149,8 +144,8 @@ const Orders: React.FC = () => {
           onModify={handleModifyItem}
           onRemove={handleRemoveItem}
           selectedOrder={modifyOrderItem}
-          isModifying={isModifying}
           isDeleting={isDeleting}
+          isModifying={isModifying}
         />
       </main>
     </div>
