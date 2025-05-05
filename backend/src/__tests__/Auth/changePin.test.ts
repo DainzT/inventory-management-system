@@ -1,0 +1,159 @@
+import request from "supertest";
+import express from "express";
+import authRoutes from "../../routes/authRouter";
+import prisma from "../../lib/prisma";
+import bcrypt from "bcrypt";
+
+jest.mock("../../middleware/authMiddleware", () => ({
+  authenticateToken: (req: any, res: any, next: any) => {
+    req.user = { userId: 1 };
+    next();
+  },
+}));
+
+const app = express();
+app.use(express.json());
+app.use("/api/auth", authRoutes);
+
+jest.setTimeout(90000);
+
+describe("PUT /api/auth/change-pin", () => {
+  let user: any;
+
+  beforeAll(async () => {
+    await prisma.otp.deleteMany();
+    await prisma.user.deleteMany();
+    user = await prisma.user.create({
+      data: {
+        id: 1,
+        email: "test@example.com",
+        pin: await bcrypt.hash("123456", 10),
+      },
+    });
+  });
+
+  afterAll(async () => {
+    await prisma.otp.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.$disconnect();
+  });
+
+  it("should successfully change PIN with valid credentials", async () => {
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ oldPin: "123456", newPin: "654321" });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: "PIN updated successfully" });
+
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: user.id },
+    });
+    expect(await bcrypt.compare("654321", updatedUser?.pin || "")).toBe(true);
+  });
+
+  it("should return 401 with incorrect old PIN", async () => {
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ oldPin: "wrongpin", newPin: "654321" });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: "Incorrect old PIN" });
+  });
+
+  it("should return 400 when new PIN is same as old PIN", async () => {
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ oldPin: "123456", newPin: "123456" });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "New PIN must be different from old PIN",
+    });
+  });
+
+  it("should return 400 for invalid new PIN format", async () => {
+    const testCases = [
+      { pin: "12345", message: "New PIN must be exactly 6 characters long" },
+      { pin: "", message: "Both PINs must be strings" },
+    ];
+
+    for (const testCase of testCases) {
+      const response = await request(app)
+        .put("/api/auth/change-pin")
+        .send({ oldPin: "123456", newPin: testCase.pin });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty("message", testCase.message);
+    }
+  });
+
+  it("should return 401 without authentication", async () => {
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ oldPin: "123456", newPin: "654321" });
+
+    expect(response.status).toBe(401);
+  });
+});
+
+describe("PUT /api/auth/change-pin (Negative Cases)", () => {
+  it("should return 404 with invalid authentication", async () => {
+    jest.mock("../../middleware/authMiddleware", () => ({
+      authenticateToken: (req: any, res: any) =>
+        res.status(404).json({ message: "Not found" }),
+    }));
+
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ oldPin: "123456", newPin: "654321" });
+
+    expect(response.status).toBe(404);
+    jest.restoreAllMocks();
+  });
+
+  it("should return 404 when user doesn't exist", async () => {
+    await prisma.user.deleteMany();
+
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ oldPin: "123456", newPin: "654321" });
+
+    expect(response.status).toBe(404);
+  });
+
+  it("should return 400 when oldPin is missing", async () => {
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ newPin: "654321" });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: "Both PINs must be strings" });
+  });
+
+  it("should return 400 when newPin is missing", async () => {
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ oldPin: "123456" });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: "Both PINs must be strings" });
+  });
+
+  it("should handle authentication failure", async () => {
+    jest.mock("../../middleware/authMiddleware", () => ({
+      authenticateToken: (req: any, res: any, next: any) => {
+        return res.status(401).json({ message: "Unauthorized" });
+      },
+    }));
+
+    const response = await request(app)
+      .put("/api/auth/change-pin")
+      .send({ oldPin: "123456", newPin: "654321" });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("message");
+
+    jest.restoreAllMocks();
+  });
+});

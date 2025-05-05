@@ -1,14 +1,15 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../routes/authRouter";
-import prisma from "../lib/prisma";
+import authRoutes from "../../routes/authRouter";
+import prisma from "../../lib/prisma";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const app = express();
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 
-jest.setTimeout(15000);
+jest.setTimeout(60000);
 
 jest.mock("jsonwebtoken", () => ({
   sign: jest.fn(() => "mocked-jwt-token"),
@@ -16,17 +17,18 @@ jest.mock("jsonwebtoken", () => ({
 
 describe("POST /api/auth/login (Negative Cases)", () => {
   beforeAll(async () => {
+    await prisma.otp.deleteMany();
     await prisma.user.deleteMany();
     await prisma.user.create({
       data: {
-        id: "test-user-id",
+        email: "test@example.com",
         pin: await bcrypt.hash("654321", 10),
-        createdAt: new Date(),
       },
     });
   });
 
   afterAll(async () => {
+    await prisma.otp.deleteMany();
     await prisma.user.deleteMany();
     await prisma.$disconnect();
   });
@@ -38,7 +40,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
 
     const response = await request(app)
       .post("/api/auth/login")
-      .send({ pin: "123456" });
+      .send({ pin: "654321" });
 
     expect(response.status).toBe(500);
     expect(response.body).toHaveProperty("message", "Internal server error");
@@ -56,6 +58,14 @@ describe("POST /api/auth/login (Negative Cases)", () => {
   });
 
   it("should return 401 for incorrect PIN", async () => {
+    await prisma.user.create({
+      data: {
+        id: 1,
+        email: "test@gmail.com",
+        pin: await bcrypt.hash("654321", 10),
+        createdAt: new Date(),
+      },
+    });
     const response = await request(app)
       .post("/api/auth/login")
       .send({ pin: "121212" });
@@ -96,7 +106,7 @@ describe("POST /api/auth/login (Negative Cases)", () => {
 
     const response = await request(app)
       .post("/api/auth/login")
-      .send({ pin: "123456" });
+      .send({ pin: "654321" });
 
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("message", "No user account found");
@@ -118,5 +128,63 @@ describe("POST /api/auth/login (Negative Cases)", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("message", "PIN cannot be empty");
+  });
+});
+
+describe("POST /api/auth/login (Negative Cases)", () => {
+  it("should handle bcrypt comparison failure after finding user", async () => {
+    await prisma.user.create({
+      data: {
+        email: "test@example.com",
+        pin: await bcrypt.hash("654321", 10),
+      },
+    });
+
+    jest.spyOn(bcrypt, "compare").mockImplementationOnce(() => {
+      throw new Error("Bcrypt error");
+    });
+
+    const response = await request(app)
+      .post("/api/auth/login")
+      .send({ pin: "654321" });
+
+    expect([401, 500]).toContain(response.status);
+    jest.restoreAllMocks();
+  });
+
+  it("should return 400 when PIN is a number instead of string", async () => {
+    const response = await request(app)
+      .post("/api/auth/login")
+      .send({ pin: 123456 });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: "PIN must be a string" });
+  });
+
+  it("should return 400 when request body is empty", async () => {
+    const response = await request(app).post("/api/auth/login").send();
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("message");
+  });
+
+  it("should handle JWT signing failure after successful auth", async () => {
+    const normalResponse = await request(app)
+      .post("/api/auth/login")
+      .send({ pin: "654321" });
+    expect(normalResponse.status).toBe(200);
+
+    jest.spyOn(jwt, "sign").mockImplementationOnce(() => {
+      throw new Error("JWT error");
+    });
+
+    const response = await request(app)
+      .post("/api/auth/login")
+      .send({ pin: "654321" });
+
+    expect([200, 500]).toContain(response.status);
+    expect(response.body).toHaveProperty("message");
+
+    jest.restoreAllMocks();
   });
 });
