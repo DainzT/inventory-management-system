@@ -36,6 +36,7 @@ const AuthInput: React.FC<AuthInputProps> = ({
       </label>
       <div className="flex">
         <input
+          role="input"
           type={type === "password" && !showPin ? "password" : "text"}
           value={value}
           placeholder={placeholder}

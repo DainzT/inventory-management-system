@@ -5,15 +5,18 @@ import dotenv from "dotenv";
 import prisma from "../lib/prisma";
 import { generateOtp, saveOtpToDatabase } from "../lib/otpService";
 import nodemailer from "nodemailer";
+import supabase from "../lib/supabaseClient";
 import { authenticateToken } from "../middleware/authMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
 
 const transporter = nodemailer.createTransport({
-  // host: "smtp.gmail.com",
-  // port: 465,
-  service: "gmail",
+  pool: true,
+  maxConnections: 5,
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -69,7 +72,6 @@ router.post(
       });
       res.json({ message: "Admin account created successfully" });
     } catch (error) {
-      console.error("Error creating admin:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -115,7 +117,6 @@ router.post(
       });
       res.json({ message: "Pin set successfully" });
     } catch (error) {
-      console.error("Error in setup-pin:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -168,14 +169,14 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
       httpOnly: true,
       secure:
         process.env.NODE_ENV === "development" ||
-        process.env.NODE_ENV === "test",
+        process.env.NODE_ENV === "test" ||
+        process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.json({ accessToken });
   } catch (error) {
-    console.error("Login error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -231,7 +232,6 @@ router.put(
 
       res.json({ message: "PIN updated successfully" });
     } catch (error) {
-      console.error("Change PIN error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -270,7 +270,6 @@ router.put(
 
       res.json({ message: "Email updated successfully." });
     } catch (error) {
-      console.error("Change email error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -279,16 +278,19 @@ router.put(
 router.get(
   "/check-user",
   async (req: Request, res: Response): Promise<void> => {
-    const hasRefreshToken = Boolean(req.cookies["refresh_token"]);
-    const user = await prisma.user.findFirst();
+    try {
+      const hasRefreshToken = Boolean(req.cookies["refresh_token"]);
+      const user = await prisma.user.findFirst();
 
-    if (!user) {
-      res.status(200).json({ message: "No admin found", isPinSet: false });
-      return;
+      if (!user) {
+        res.status(200).json({ message: "No admin found", isPinSet: false });
+        return;
+      }
+
+      res.json({ isPinSet: true, isAuthenticated: hasRefreshToken });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    res.json({ isPinSet: true, isAuthenticated: hasRefreshToken });
-    return;
   }
 );
 
@@ -322,10 +324,27 @@ router.post("/logout", async (req: Request, res: Response): Promise<void> => {
     res.clearCookie("refresh_token");
     res.json({ message: "Logged out successfully" });
   } catch (error) {
-    console.error("Logout error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+router.post(
+  "/otp-login",
+  async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: "http://localhost:5173/otp-callback" },
+    });
+
+    if (error) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+    res.status(200).json({ message: "Magic link sent" });
+  }
+);
 
 router.post(
   "/send-otp-email",
@@ -338,11 +357,12 @@ router.post(
         return;
       }
 
-      const user = await prisma.user.findFirst({ where: { email } });
+      const user = await prisma.user.findUnique({ where: { email } });
       if (!user) {
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "User not found." });
         return;
       }
+
       const otp = generateOtp();
       const otpExpiry = Date.now() + 10 * 60 * 1000;
 
@@ -356,8 +376,7 @@ router.post(
       });
 
       res.status(200).json({ message: "OTP sent successfully", success: true });
-    } catch (error: any) {
-      console.error("Error sending OTP email:", error.message);
+    } catch (error) {
       res.status(500).json({ message: "Failed to send OTP" });
     }
   }
@@ -383,7 +402,6 @@ router.post(
 
       res.status(200).json({ message: "PIN verified successfully" });
     } catch (error) {
-      console.error(error);
       res.status(500).json({ message: "Failed to verify PIN" });
     }
   }
@@ -404,7 +422,6 @@ router.post(
 
       res.status(200).json({ message: "Email verified successfully" });
     } catch (error) {
-      console.error(error);
       res.status(500).json({ message: "Failed to verify email" });
     }
   }
@@ -416,7 +433,7 @@ router.post(
     const { email, otp } = req.body;
 
     try {
-      const user = await prisma.user.findFirst({ where: { email } });
+      const user = await prisma.user.findUnique({ where: { email } });
       if (!user) {
         res.status(404).json({ message: "User not found" });
         return;
@@ -440,7 +457,6 @@ router.post(
 
       res.status(200).json({ message: "OTP verified successfully" });
     } catch (error) {
-      console.error(error);
       res.status(500).json({ message: "Failed to verify OTP" });
     }
   }
@@ -478,7 +494,6 @@ router.post(
 
       res.json({ message: "PIN reset successfully" });
     } catch (error) {
-      console.error("Reset PIN error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
