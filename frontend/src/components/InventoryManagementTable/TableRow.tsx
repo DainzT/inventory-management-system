@@ -16,6 +16,8 @@ interface TableRowProps {
   onEdit?: () => void;
   searchQuery: string;
   highlightedItem?: HighlightedItem;
+  currentPage: number;
+  itemsPerPage: number;
 }
 
 export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
@@ -28,9 +30,13 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
     onEdit,
     searchQuery,
     highlightedItem,
+    itemsPerPage,
+    currentPage
   },
   ref
 ) =>  {
+  const globalIndex = currentPage * itemsPerPage + index + 1;
+
   return (
     <article>
       <div className={`
@@ -53,7 +59,7 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
           min-w-[30px] xs:min-w-[40px] sm:min-w-[50px] lg:min-w-[50px] xl:min-w-[60px]
           text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#1F2937] text-left l-
           shrink-0 break-all overflow-hidden hyphens-auto  px-3 ">
-          {index + 1}
+          {globalIndex}
         </div>
         <div className="
           w-[98px] xs:min-w-[80px] sm:min-w-[100px] md:min-w-[140px] lg:min-w-[130px] xl:min-w-[160px]

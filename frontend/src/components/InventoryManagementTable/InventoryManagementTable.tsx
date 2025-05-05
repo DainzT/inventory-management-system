@@ -123,6 +123,8 @@ const InventoryManagementTable = ({
             searchQuery={searchQuery}
             highlightedItem={highlightedItem}
             itemRef={itemRef}
+            currentPage={currentPage}
+            itemsPerPage={ITEMS_PER_PAGE}
           />
         </div>
         <div className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px]">

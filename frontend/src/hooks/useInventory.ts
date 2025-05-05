@@ -71,7 +71,7 @@ export const useInventory = () => {
     };
 
     const handleAddProduct = async (newProduct: ItemFormData) => {
-        console.log(newProduct)
+
         showLoadingToast("adding-product", "Adding product...");
         try {
             setIsAdding(true);
@@ -188,7 +188,7 @@ export const useInventory = () => {
 
         try {
             setIsDeleting(true);
-            console.log(id)
+
             const res = await deleteInventoryitem(id);
 
             showSuccessToast("deleting-product", res.message);

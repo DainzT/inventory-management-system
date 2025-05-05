@@ -84,6 +84,7 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
                 unitSize: Number(unitSize),
                 total: Number(total),
                 dateCreated: new Date(dateCreated),
+                lastUpdated: null,
             },
         });
 
@@ -157,7 +158,7 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
                     boat: true
                 }
             });
-
+            
             await prisma.inventoryItem.update({
                 where: { id: item_id.id },
                 data: {
@@ -189,10 +190,11 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
                 selectUnit: selectUnit,
                 unitSize: Number(unitSize),
                 total: Number(total),
+                lastUpdated: null,
+                outDate: new Date(outDate),
                 fleet_id: fleet.id,
                 boat_id: boat.id,
                 archived: false,
-                outDate: new Date(outDate),
             },
             include: {
                 fleet: true,

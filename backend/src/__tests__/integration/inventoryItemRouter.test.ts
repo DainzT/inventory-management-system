@@ -397,7 +397,7 @@ describe("Inventory Items API", () => {
             unitPrice: baseItem.unitPrice,
             unitSize: baseItem.unitSize,
             outDate: assignedItem?.outDate?.toISOString(),
-            lastUpdated: assignedItem?.lastUpdated?.toISOString(),
+            lastUpdated: null,
             boat_id: boat?.id,
             fleet_id: fleet.id,
             fleet: fleet,

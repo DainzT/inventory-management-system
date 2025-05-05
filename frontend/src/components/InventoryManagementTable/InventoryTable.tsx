@@ -10,6 +10,8 @@ interface InventoryTableProps {
   searchQuery: string;
   highlightedItem?: HighlightedItem;
   itemRef?: React.RefObject<HTMLDivElement | null>;
+  currentPage: number;
+  itemsPerPage: number;
 }
 
 export const InventoryTable = ({ 
@@ -21,6 +23,8 @@ export const InventoryTable = ({
   searchQuery,
   highlightedItem,
   itemRef,
+  itemsPerPage,
+  currentPage,
 }: InventoryTableProps) => {
   const inventoryItems: InventoryItem[] = items;
 
@@ -38,6 +42,8 @@ export const InventoryTable = ({
             searchQuery={searchQuery}
             highlightedItem={highlightedItem}
             ref={highlightedItem?.id === item.id ? itemRef : null}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
           />
         ))}
     </section>
