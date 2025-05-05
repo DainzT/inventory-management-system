@@ -5,6 +5,7 @@ import { FilterDropdown } from "./FilterDropdown";
 import { ExpandedOrderDetails } from "./ExpandedOrderDetails";
 import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 import { pluralize } from "@/utils/Pluralize";
+import { roundTo } from "@/utils/RoundTo";
 
 interface OrdersTableProps {
   orders: OrderItem[];
@@ -127,13 +128,13 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   text-[16px] text-gray-800 px-3
                   shrink-0 break-all overflow-hidden hyphens-auto flex-1
                 ">
-                  {order.quantity} {pluralize(order.selectUnit, Number(order.quantity))}
+                  {roundTo(Number(order.quantity), 2)} {pluralize(order.selectUnit, Number(order.quantity))}
                 </div>
                 <div className="
                   text-[16px] text-gray-800 px-3
                   shrink-0 break-all overflow-hidden hyphens-auto flex-1
                 ">
-                  ₱{order.unitPrice} / {order.unitSize} {pluralize(order.selectUnit, Number(order.unitSize))}
+                  ₱{Number(order.unitPrice).toFixed(2)} / {order.unitSize} {pluralize(order.selectUnit, Number(order.unitSize))}
                 </div>
                 <div className="
                   text-[16px] text-gray-600 px-3

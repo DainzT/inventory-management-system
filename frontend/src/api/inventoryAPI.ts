@@ -4,6 +4,7 @@ import { InventoryItem, ItemFormData, OutItemData } from "@/types";
 
 type InventoryResponse = {
   message: string;
+  data: InventoryItem;
 };
 
 export const fetchInventoryItems = async (
@@ -43,7 +44,7 @@ export const fetchInventoryItems = async (
 
 export const addInventoryItem = async (
   item: ItemFormData
-): Promise<InventoryItem> => {
+): Promise<InventoryResponse> => {
   try {
 
     const response = await apiClient.post('/inventory-item/add-item', item);

@@ -46,7 +46,7 @@ const EditProductForm = ({
             ...current,
             total: roundTo(Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)), 2),
         }));
-        console.log(productData.total)
+
     }, [productData.quantity, productData.unitPrice, productData.unitSize]);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ const EditProductForm = ({
         let processedValue = value;
         
         if (field === 'quantity' || field === 'unitPrice' || field === 'unitSize') {
-            processedValue = roundTo(Number(value), 2);
+            processedValue = roundTo(Number(value), 2) || "";
         }
 
         setProductData((prevData) => ({

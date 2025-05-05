@@ -17,7 +17,11 @@ router.use(authenticateToken)
 
 router.get("/get-items", validateFetchInventoryItems, async (req: Request, res: Response) => {
     try {
-        const items = await prisma.inventoryItem.findMany();
+        const items = await prisma.inventoryItem.findMany({
+            orderBy: {
+                name: 'asc',
+            },
+        });
 
         res.status(200).json({
             success: true,
@@ -30,7 +34,9 @@ router.get("/get-items", validateFetchInventoryItems, async (req: Request, res: 
         res.status(500).json({
             success: false,
             message: 'Failed to fetch items from inventory',
-            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
         return;
 
@@ -45,8 +51,8 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         const existingItem = await prisma.inventoryItem.findFirst({
             where: {
                 name: name,
-                note: note,
                 selectUnit: selectUnit,
+                unitPrice: unitPrice,
                 unitSize: unitSize,
             }
         });
@@ -54,13 +60,15 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         if (existingItem) {
             res.status(409).json({
                 success: false,
-                message: 'Item already exists in inventory',
+                message: `Item '${name}' already exists in inventory`,
                 error: 'ITEM_EXISTS',
                 existingItem: {
                     id: existingItem.id,
                     name: existingItem.name,
-                    note: existingItem.note,
-                    quantity: existingItem.quantity
+                    quantity: existingItem.quantity,
+                    selectUnit: existingItem.selectUnit,
+                    unitPrice: existingItem.unitPrice,
+                    unitSize: existingItem.unitSize,
                 }
             });
             return;
@@ -76,12 +84,13 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
                 unitSize: Number(unitSize),
                 total: Number(total),
                 dateCreated: new Date(dateCreated),
+                lastUpdated: null,
             },
         });
 
         res.status(201).json({
             success: true,
-            message: 'Item added successfully',
+            message: `Item '${name}' added successfully`,
             data: newItem
         });
         return;
@@ -90,7 +99,9 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         res.status(500).json({
             success: false,
             message: 'Failed to add item to inventory',
-            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
         return;
 
@@ -147,7 +158,7 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
                     boat: true
                 }
             });
-
+            
             await prisma.inventoryItem.update({
                 where: { id: item_id.id },
                 data: {
@@ -164,7 +175,7 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
 
             res.status(200).json({
                 success: true,
-                message: 'Existing assignment updated successfully',
+                message: `Existing assignment to fleet '${fleet_name}' & boat '${boat_name}' updated successfully`,
                 data: updatedAssignment
             });
             return;
@@ -179,10 +190,11 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
                 selectUnit: selectUnit,
                 unitSize: Number(unitSize),
                 total: Number(total),
+                lastUpdated: null,
+                outDate: new Date(outDate),
                 fleet_id: fleet.id,
                 boat_id: boat.id,
                 archived: false,
-                outDate: new Date(outDate),
             },
             include: {
                 fleet: true,
@@ -206,7 +218,7 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
 
         res.status(201).json({
             success: true,
-            message: 'Item assigned successfully',
+            message: `Item '${name}' assigned successfully to fleet '${fleet_name}' & boat '${boat_name}'`,
             data: newAssignment
         });
         return;
@@ -215,7 +227,9 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
         res.status(500).json({
             success: false,
             message: 'Failed to assign item',
-            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
         return;
 
@@ -224,15 +238,15 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
 
 router.delete("/remove-item/:id", validateDeleteInventoryItem, async (req: Request, res: Response) => {
     try {
-        const {id} = req.params
+        const { id } = req.params
 
         const deletedItem = await prisma.inventoryItem.delete({
-            where: {id: Number(id)}
+            where: { id: Number(id) }
         })
-        
+
         res.status(200).json({
             success: true,
-            message: "Item deleted successfully",
+            message: `Item '${deletedItem.name}' deleted successfully`,
             data: deletedItem,
         });
         return;
@@ -241,7 +255,9 @@ router.delete("/remove-item/:id", validateDeleteInventoryItem, async (req: Reque
         res.status(500).json({
             success: false,
             message: "Failed to delete item",
-            error:  process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
     }
 });
@@ -267,7 +283,7 @@ router.put("/update-item/:id", validateEditInventoryItem, async (req: Request, r
 
         res.status(200).json({
             success: true,
-            message: 'Inventory item updated successfully.',
+            message: `Inventory item '${updatedItem.name}' updated successfully.`,
             data: item,
         });
         return;
@@ -276,7 +292,9 @@ router.put("/update-item/:id", validateEditInventoryItem, async (req: Request, r
         res.status(500).json({
             success: false,
             message: 'Failed to edit item',
-            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
         return;
     }
