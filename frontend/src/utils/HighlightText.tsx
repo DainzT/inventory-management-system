@@ -1,6 +1,6 @@
 export const highlightText = (text: string, query: string) => {
     if (!query || !text) return text;
-
+    
     const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
     return text.toString().split(regex).map((part, index) =>
         regex.test(part) ? (

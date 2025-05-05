@@ -46,7 +46,7 @@ const EditProductForm = ({
             ...current,
             total: roundTo(Number(current.unitPrice) * (Number(current.quantity) / Number(current.unitSize)), 2),
         }));
-        console.log(productData.total)
+
     }, [productData.quantity, productData.unitPrice, productData.unitSize]);
 
     useEffect(() => {

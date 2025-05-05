@@ -35,14 +35,15 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
     <article>
       <div className={`
           flex items-center px-3 sm:px-0 md:px-6 lg:px-3 xl:px-5 p-2 sm:p-2 shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] hover:bg-gray-50 
+          transition-colors duration-150 ease-in-out
           ${highlightedItem?.id === item.id ? '' : 'border border-[#E5E7EB] bg-white'}
             ${highlightedItem?.id === item.id
             ? highlightedItem.type === 'added'
-              ? 'bg-green-50 border-l-4 border-green-500'
+              ? 'bg-emerald-50/70 border-l-4 border-emerald-400'
               : highlightedItem.type === 'assigned'
-                ? 'bg-blue-50 border-l-4 border-blue-500'
+                ? 'bg-sky-50/70 border-l-4 border-sky-400'
                 : highlightedItem.type === 'edited'
-                  ? 'bg-yellow-50 border-l-4 border-yellow-500'
+                  ? 'bg-amber-50/70 border-l-4 border-amber-400'
                   : 'border border-[#E5E7EB] bg-white'
           : ''
         } `}
@@ -72,22 +73,14 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
           text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#1F2937] text-left 
           shrink-0 break-all overflow-hidden hyphens-auto px-3 flex-1
         ">
-          {highlightText(roundTo(Number(item.quantity), 2).toString(), searchQuery)}{" "}
-          {highlightText(
-            pluralize(item.selectUnit, Number(item.quantity)),
-            searchQuery
-          )}
+          {highlightText(`${roundTo(Number(item.quantity), 2)} ${pluralize(item.selectUnit, Number(item.quantity))}`, searchQuery)}
         </div>
         <div className="
           w-[90px] xs:min-w-[80px] sm:min-w-[100px] md:min-w-[170px] lg:min-w-[120px] xl:min-w-[180px]
           text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#1F2937] text-left
           shrink-0 break-all overflow-hidden hyphens-auto px-3 flex-1 
         ">
-          {highlightText(`₱${typeof item.unitPrice === "number" ? item.unitPrice.toFixed(2) : "0.00"}`, searchQuery)} / {highlightText(`${item.unitSize}`, searchQuery)} {" "}
-          {highlightText(
-            pluralize(item.selectUnit, Number(item.unitSize)),
-            searchQuery
-          )}
+          {highlightText(`₱${Number(item.unitPrice).toFixed(2)} / ${item.unitSize} ${pluralize(item.selectUnit, Number(item.unitSize))}`, searchQuery)}
         </div>
         <div className="
           min-w-[120px] sm:min-w-[120px] lg:min-w-[120px] xl:min-w-[160px]

@@ -12,7 +12,11 @@ export const validateFetchInventoryItems = async (
     next: NextFunction,
 ) => {
 
-    const items = await prisma.inventoryItem.findMany();
+    const items = await prisma.inventoryItem.findMany({
+        orderBy: {
+            name: 'asc',
+        },
+    });
 
     if (!items || items.length === 0) {
         res.status(404).json({
@@ -66,7 +70,7 @@ export const validateAddInventoryItem = (
         return;
     }
 
-    if (selectUnit == 'Unit' || typeof selectUnit !== 'string') {
+    if (!selectUnit || selectUnit == 'Unit' || typeof selectUnit !== 'string') {
         res.status(400).json({
             message: "Please select a unit.",
             error: "Valid selectUnit (string) is required",
@@ -174,8 +178,8 @@ export const validateDeleteInventoryItem = async (
     res: Response,
     next: NextFunction
 ) => {
-    const {id} = req.params
-    
+    const { id } = req.params
+
     const existingItem = await prisma.inventoryItem.findUnique({
         where: { id: Number(id) }
     });
@@ -233,7 +237,7 @@ export const validateEditInventoryItem = async (
         return;
     }
 
-    if (!updatedItem.quantity || typeof updatedItem.quantity !== 'number') {
+    if (!updatedItem.quantity || typeof updatedItem.quantity !== 'number' || updatedItem.quantity <=0) {
         res.status(400).json({
             message: "Enter a valid quantity.",
             error: "Valid quantity (number > 0) is required.",
@@ -249,7 +253,7 @@ export const validateEditInventoryItem = async (
         return;
     }
 
-    if (updatedItem.selectUnit == 'Unit' || typeof updatedItem.selectUnit !== 'string') {
+    if (!updatedItem.selectUnit || updatedItem.selectUnit == 'Unit' || typeof updatedItem.selectUnit !== 'string') {
         res.status(400).json({
             message: "Please select a unit.",
             error: "Valid selectUnit (string) is required",
@@ -261,7 +265,7 @@ export const validateEditInventoryItem = async (
         || typeof updatedItem.unitSize !== 'number'
         || updatedItem.unitSize <= 0
         || updatedItem.unitSize > updatedItem.quantity) {
-            
+
         res.status(400).json({
             message: "Enter a valid unit size.",
             error: "Valid unitSize (number > 0 and number <= quantity) is required",
@@ -269,8 +273,8 @@ export const validateEditInventoryItem = async (
         return;
     }
 
-    if (!updatedItem.total 
-        || typeof updatedItem.total !== 'number' 
+    if (!updatedItem.total
+        || typeof updatedItem.total !== 'number'
         || updatedItem.total <= 0
         || updatedItem.total != roundTo(((updatedItem.unitPrice * updatedItem.quantity) / updatedItem.unitSize), 2)) {
 
@@ -319,7 +323,7 @@ export const validateEditInventoryItem = async (
     const duplicateItem = await prisma.inventoryItem.findFirst({
         where: {
             AND: [
-                { id: { not: Number(id) } }, 
+                { id: { not: Number(id) } },
                 { name: updatedItem.name },
                 { unitPrice: Number(updatedItem.unitPrice) },
                 { unitSize: Number(updatedItem.unitSize) },

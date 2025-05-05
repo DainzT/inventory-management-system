@@ -34,7 +34,9 @@ router.get("/get-items", validateFetchInventoryItems, async (req: Request, res: 
         res.status(500).json({
             success: false,
             message: 'Failed to fetch items from inventory',
-            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
         return;
 
@@ -63,13 +65,15 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
                 existingItem: {
                     id: existingItem.id,
                     name: existingItem.name,
-                    note: existingItem.note,
-                    quantity: existingItem.quantity
+                    quantity: existingItem.quantity,
+                    selectUnit: existingItem.selectUnit,
+                    unitPrice: existingItem.unitPrice,
+                    unitSize: existingItem.unitSize,
                 }
             });
             return;
         }
-        
+
         const newItem = await prisma.inventoryItem.create({
             data: {
                 name: name,
@@ -94,7 +98,9 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         res.status(500).json({
             success: false,
             message: 'Failed to add item to inventory',
-            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
         return;
 
@@ -219,7 +225,9 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
         res.status(500).json({
             success: false,
             message: 'Failed to assign item',
-            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
         return;
 
@@ -228,12 +236,12 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
 
 router.delete("/remove-item/:id", validateDeleteInventoryItem, async (req: Request, res: Response) => {
     try {
-        const {id} = req.params
+        const { id } = req.params
 
         const deletedItem = await prisma.inventoryItem.delete({
-            where: {id: Number(id)}
+            where: { id: Number(id) }
         })
-        
+
         res.status(200).json({
             success: true,
             message: `Item '${deletedItem.name}' deleted successfully`,
@@ -245,7 +253,9 @@ router.delete("/remove-item/:id", validateDeleteInventoryItem, async (req: Reque
         res.status(500).json({
             success: false,
             message: "Failed to delete item",
-            error:  process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
     }
 });
@@ -280,7 +290,9 @@ router.put("/update-item/:id", validateEditInventoryItem, async (req: Request, r
         res.status(500).json({
             success: false,
             message: 'Failed to edit item',
-            error: process.env.NODE_ENV === 'development' || 'testing' ? error : undefined,
+            error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+                ? { message: (error as Error).message }
+                : undefined,
         });
         return;
     }
