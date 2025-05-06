@@ -4,7 +4,7 @@ dotenv.config();
 
 test.describe("Inventory Page", () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto("http://localhost:5173/login");
+        await page.goto("/login");
 
         const pinInput = page.locator("#pin-input");
         await pinInput.fill(process.env.PW_TEST_PIN || "");

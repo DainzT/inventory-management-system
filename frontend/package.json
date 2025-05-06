@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "backend": "cd ../backend && npm run dev",
+    "dev:backend": "cd ../backend && npm run dev",
+    "start:backend": "cd ../backend && npm run build && npm run start",
+    "start:frontend": "npm run build && npm run start",
     "build": "tsc -b && vite build",
     "test": "jest",
     "test:watch": "jest --watchAll",
