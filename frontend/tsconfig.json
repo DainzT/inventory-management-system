@@ -38,6 +38,5 @@
     "build",
     "dist",
     "e2e",
-    "../src/stories"
   ]
 }

@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import prisma from "../lib/prisma";
 import { generateOtp, saveOtpToDatabase } from "../lib/otpService";
 import nodemailer from "nodemailer";
-import supabase from "../lib/supabaseClient";
+// import supabase from "../lib/supabaseClient";
 import { authenticateToken } from "../middleware/authMiddleware";
 
 dotenv.config();
@@ -167,11 +167,8 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === "development" ||
-        process.env.NODE_ENV === "test" ||
-        process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -328,23 +325,23 @@ router.post("/logout", async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-router.post(
-  "/otp-login",
-  async (req: Request, res: Response): Promise<void> => {
-    const { email } = req.body;
+// router.post(
+//   "/otp-login",
+//   async (req: Request, res: Response): Promise<void> => {
+//     const { email } = req.body;
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: "http://localhost:5173/otp-callback" },
-    });
+//     const { error } = await supabase.auth.signInWithOtp({
+//       email,
+//       options: { emailRedirectTo: "http://localhost:5173/otp-callback" },
+//     });
 
-    if (error) {
-      res.status(400).json({ message: error.message });
-      return;
-    }
-    res.status(200).json({ message: "Magic link sent" });
-  }
-);
+//     if (error) {
+//       res.status(400).json({ message: error.message });
+//       return;
+//     }
+//     res.status(200).json({ message: "Magic link sent" });
+//   }
+// );
 
 router.post(
   "/send-otp-email",
