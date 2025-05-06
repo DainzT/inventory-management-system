@@ -8,115 +8,124 @@ const router: Router = express.Router();
 
 router.use(authenticateToken);
 
-router.get("/assigned-items", async (req: Request, res: Response) => {
-    try {
-        const assignedItems = await prisma.assignedItem.findMany({
-            where: {
-                archived: false
-            },
-            include: {
-                fleet: true,
-                boat: true
-            },
-            orderBy: {
-                outDate: 'desc'
-            }
-        });
-
-        if (!assignedItems || assignedItems.length === 0) {
-            res.status(404).json({
-                success: false,
-                message: "No assigned items found",
-                error: "NO_ASSIGNED_ITEMS"
-            });
-            return;
-        }
-
-        res.status(200).json({
-            success: true,
-            data: assignedItems
-        });
-        return;
-
-    } catch (error) {
-        console.error('Error fetching assigned items:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch assigned items',
-            error: process.env.NODE_ENV === 'development' ? error : undefined,
-        });
-        return;
-    }
-});
-
-router.get("/get-fleets-boats", async (req: Request, res: Response) => {
-    try {
-        const fleets = await prisma.fleet.findMany({
-            include: {
-                Boat: {
-                    select: {
-                        id: true,
-                        boat_name: true
-                    }
-                }
-            }
-        });
-
-        const formattedFleets = fleets.map(fleet => ({
-            id: fleet.id,
-            fleet_name: fleet.fleet_name,
-            boats: fleet.Boat.map(boat => ({
-                id: boat.id,
-                boat_name: boat.boat_name
-            }))
-        }));
-
-        res.status(200).json({
-            success: true,
-            data: formattedFleets
-        });
-        return;
-
-    } catch (error) {
-        console.error('Error fetching fleets and boats:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch fleets and boats',
-            error: process.env.NODE_ENV === 'development' ? error : undefined,
-        });
-        return;
-    }
-});
-
 router.put("/update/:id", async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
-        const { quantity, fleet_id, boat_id, archived } = req.body;
+        const { quantity, fleet_id, boat_id, fleet_name, boat_name, note, archived } = req.body;
 
-        if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
-            res.status(400).json({ error: "Valid quantity (number > 0) is required" });
+        if (typeof quantity !== 'number' || quantity < 0) {
+            res.status(400).json({ error: "Valid quantity (number >= 0) is required" });
             return;
         }
 
         const existingAssignment = await prisma.assignedItem.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                fleet: true,
+                boat: true
+            }
         });
 
         if (!existingAssignment) {
-            res.status(404).json({ error: "Assigned item not found" });
+            res.status(404).json({ success: false, error: "Assigned item not found" });
             return;
         }
 
-        if (fleet_id) {
-            const boatBelongsToFleet = await prisma.boat.findFirst({
-                where: {
-                    id: boat_id,
-                    fleet_id: fleet_id
+        let inventoryItem = await prisma.inventoryItem.findFirst({
+            where: {
+                name: existingAssignment.name,
+                unitSize: existingAssignment.unitSize,
+                unitPrice: existingAssignment.unitPrice,
+                selectUnit: existingAssignment.selectUnit
+            }
+        });
+
+        if (quantity === 0) {
+            if (!inventoryItem) {
+                inventoryItem = await prisma.inventoryItem.create({
+                    data: {
+                        name: existingAssignment.name,
+                        unitSize: existingAssignment.unitSize,
+                        unitPrice: existingAssignment.unitPrice,
+                        selectUnit: existingAssignment.selectUnit,
+                        quantity: existingAssignment.quantity,
+                        note: existingAssignment.note || "",
+                        total: existingAssignment.total || 0,
+                    }
+                });
+            } else {
+                await prisma.inventoryItem.update({
+                    where: { id: inventoryItem.id },
+                    data: {
+                        quantity: inventoryItem.quantity + existingAssignment.quantity
+                    }
+                });
+            }
+
+            await prisma.assignedItem.delete({
+                where: { id }
+            });
+
+            res.status(200).json({
+                success: true,
+                deleted: true,
+                message: "Assigned item deleted and quantity returned to inventory",
+                inventoryItemId: inventoryItem.id,
+                restoredQuantity: existingAssignment.quantity
+            });
+            return;
+        }
+
+        const quantityDifference = quantity - existingAssignment.quantity;
+
+        if (quantityDifference !== 0) {
+            if (!inventoryItem) {
+                inventoryItem = await prisma.inventoryItem.create({
+                    data: {
+                        name: existingAssignment.name,
+                        unitSize: existingAssignment.unitSize,
+                        unitPrice: existingAssignment.unitPrice,
+                        selectUnit: existingAssignment.selectUnit,
+                        quantity: quantityDifference > 0 ? 0 : Math.abs(quantityDifference),
+                        note: existingAssignment.note || "",
+                        total: existingAssignment.total || 0,
+                    }
+                });
+            } else {
+                const newInventoryQuantity = inventoryItem.quantity - quantityDifference;
+
+                if (newInventoryQuantity < 0) {
+                    res.status(400).json({ success: false, error: "Insufficient inventory quantity" });
+                    return;
                 }
+
+                await prisma.inventoryItem.update({
+                    where: { id: inventoryItem.id },
+                    data: { quantity: newInventoryQuantity }
+                });
+            }
+        }
+
+        if (fleet_name && existingAssignment.fleet?.fleet_name !== fleet_name) {
+            await prisma.fleet.update({
+                where: { id: existingAssignment.fleet_id || undefined },
+                data: { fleet_name }
+            });
+        }
+        if (boat_name && existingAssignment.boat?.boat_name !== boat_name) {
+            await prisma.boat.update({
+                where: { id: existingAssignment.boat_id || undefined },
+                data: { boat_name }
+            });
+        }
+
+        if (fleet_id && boat_id) {
+            const boatBelongsToFleet = await prisma.boat.findFirst({
+                where: { id: boat_id, fleet_id }
             });
 
             if (!boatBelongsToFleet) {
-                res.status(400).json({ error: "Boat does not belong to the specified fleet" });
+                res.status(400).json({ success: false, error: "Boat does not belong to fleet" });
                 return;
             }
         }
@@ -124,7 +133,8 @@ router.put("/update/:id", async (req: Request, res: Response) => {
         const updatedAssignment = await prisma.assignedItem.update({
             where: { id },
             data: {
-                quantity: Number(quantity),
+                quantity,
+                note: note !== undefined ? note : existingAssignment.note,
                 fleet_id: fleet_id ? Number(fleet_id) : existingAssignment.fleet_id,
                 boat_id: boat_id ? Number(boat_id) : existingAssignment.boat_id,
                 archived: archived !== undefined ? Boolean(archived) : existingAssignment.archived,
@@ -139,64 +149,20 @@ router.put("/update/:id", async (req: Request, res: Response) => {
 
         res.status(200).json({
             success: true,
-            message: 'Assigned item updated successfully',
+            message: "Assigned item updated successfully",
             data: updatedAssignment
         });
-        return;
 
     } catch (error) {
-        console.error('Error updating assigned item:', error);
+        console.error("Error updating assigned item:", error);
         res.status(500).json({
             success: false,
-            message: 'Failed to update assigned item',
+            message: "Failed to update assigned item",
             error: process.env.NODE_ENV === 'development' ? error : undefined,
         });
-        return;
     }
 });
 
-router.put("/archive/:id", async (req: Request, res: Response) => {
-    try {
-        const id = parseInt(req.params.id);
-
-        const existingAssignment = await prisma.assignedItem.findUnique({
-            where: { id }
-        });
-
-        if (!existingAssignment) {
-            res.status(404).json({ error: "Assigned item not found" });
-            return;
-        }
-
-        const updatedAssignment = await prisma.assignedItem.update({
-            where: { id },
-            data: {
-                archived: true,
-                lastUpdated: new Date()
-            },
-            include: {
-                fleet: true,
-                boat: true
-            }
-        });
-
-        res.status(200).json({
-            success: true,
-            message: 'Assigned item archived successfully',
-            data: updatedAssignment
-        });
-        return;
-
-    } catch (error) {
-        console.error('Error archiving assigned item:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to archive assigned item',
-            error: process.env.NODE_ENV === 'development' ? error : undefined,
-        });
-        return;
-    }
-});
 
 router.delete("/delete/:id", async (req: Request, res: Response) => {
     try {
