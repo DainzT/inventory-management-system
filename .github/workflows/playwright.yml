@@ -9,6 +9,7 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
+      CI: true 
       BASE_URL: ${{ secrets.BASE_URL }}
       PW_TEST_PIN: ${{ secrets.PW_TEST_PIN }}
       ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
