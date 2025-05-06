@@ -13,7 +13,6 @@ dotenv.config();
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const isProd = process.env.USE_PROD === 'true';
 
 export default defineConfig({
   testDir: './e2e',
