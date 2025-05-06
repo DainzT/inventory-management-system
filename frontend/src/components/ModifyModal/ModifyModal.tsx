@@ -92,28 +92,31 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     
 
     const handleConfirm = async () => {
-      console.log("Quantity:", quantity, "Fleet:", fleet, "Boat:", boat); // Log the values before proceeding
-    
-      // Log the onModify function to check if it's passed and available
-      console.log("onModify function:", onModify);
-    
-      // Validate the quantity
-      if (Number(quantity) > Number(maxAllowed)) {
-        setQuantityError(
-          selectedOrder?.inventory !== undefined
-            ? `Cannot exceed available stock (${maxAllowed})`
-            : `Cannot exceed original order quantity (${maxAllowed})`
-        );
+      if (quantity === "" || Number(quantity) < 0) {
+        setQuantityError("Please enter a valid quantity");
         return;
       }
-      setQuantityError("");
-
-      console.log("Calling onModify with:", Number(quantity), fleet, boat);
-
-      await onModify(Number(quantity), fleet, boat);
     
+      if (selectedOrder?.inventory !== undefined && Number(quantity) > Number(maxAllowed)) {
+        setQuantityError(`Cannot exceed available stock (${maxAllowed})`);
+        return;
+      }
+    
+      if (!fleet || !boat) {
+        toast.error("Please select both fleet and boat");
+        return;
+      }
+    
+      setQuantityError("");
+    
+      try {
+        await onModify(Number(quantity), fleet, boat);
 
-      console.log("onModify completed");
+        setIsOpen(false);
+      } catch (error) {
+        console.error("Error confirming changes:", error);
+        toast.error("Failed to update item. Please try again.");
+      }
     };
     
 
