@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import SummaryDesign from "@/components/Summary/SummaryDesign";
 import { PageTitle } from "@/components/PageTitle";
 import { OrderItem } from "@/types";
@@ -13,31 +13,49 @@ const Summary: React.FC = () => {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { showLoadingToast, showSuccessToast, showErrorToast } = useToast();
+
+  // Memoize the toast functions to prevent unnecessary re-renders
+  const memoizedShowLoadingToast = useCallback(showLoadingToast, []);
+  const memoizedShowSuccessToast = useCallback(showSuccessToast, []);
+  const memoizedShowErrorToast = useCallback(showErrorToast, []);
+
   const modifiedName =
     fleetName === "f/b-dona-librada"
       ? fleetName.replace(/n/g, "ñ")?.replaceAll("-", " ").toUpperCase()
       : fleetName?.replaceAll("-", " ").toUpperCase();
 
   useEffect(() => {
+    const toastId = "fetch-orders-toast";
+
     const fetchOrders = async () => {
-      const toastId = "fetch-orders-toast";
       try {
         setIsLoading(true);
         const fetchedOrders = await fetchAssignedItems();
-        await new Promise((res) => setTimeout(res, 1000));
+        await new Promise((res) => setTimeout(res, 3000));
         setOrders(fetchedOrders);
-        showSuccessToast(toastId, "All invoice items loaded successfully");
+        memoizedShowSuccessToast(
+          toastId,
+          "All invoice items loaded successfully"
+        );
       } catch (error) {
         console.error("Error fetching orders:", error);
-        showErrorToast(toastId, "Failed to fetch orders.");
+        memoizedShowErrorToast(toastId, "Failed to fetch orders.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    showLoadingToast("fetch-orders-toast", "Fetching orders...");
-    fetchOrders();
-  }, [showLoadingToast, showSuccessToast, showErrorToast]);
+    const initializeFetch = () => {
+      memoizedShowLoadingToast(toastId, "Fetching orders...");
+      fetchOrders();
+    };
+
+    initializeFetch();
+  }, [
+    memoizedShowLoadingToast,
+    memoizedShowSuccessToast,
+    memoizedShowErrorToast,
+  ]);
 
   const filteredOrders =
     !fleetName || fleetName === "all-fleets"

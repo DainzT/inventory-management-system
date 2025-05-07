@@ -16,6 +16,17 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
       },
+      keyframes: {
+        bounceCustom: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-0.5rem)" },
+        },
+      },
+      animation: {
+        bounce1: "bounceCustom 0.6s infinite ease-in-out",
+        bounce2: "bounceCustom 0.6s infinite ease-in-out 0.15s",
+        bounce3: "bounceCustom 0.6s infinite ease-in-out 0.3s",
+      },
     },
   },
   plugins: [],

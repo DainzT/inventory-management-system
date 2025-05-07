@@ -1,3 +1,4 @@
+
 interface YearSelectorProps {
     availableYears: number[];
     selectedYear: number;
