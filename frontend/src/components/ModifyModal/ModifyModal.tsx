@@ -163,6 +163,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
             aria-label="Close dialog"
             disabled={isModifying}
+            data-testid="close-button"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18 6L6 18M6 6L18 18" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -173,7 +174,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           <section className="p-2 bg-gray-50 rounded-lg">
             <div className="flex justify-between items-start mb-2">
               <h2 className="text-base font-semibold text-black">{selectedOrder.name}</h2>
-              <p className="text-base font-semibold text-cyan-800 inter-font">
+              <p className="text-base font-semibold text-cyan-800 inter-font" data-testid="price-display">
                 ₱{Number(selectedOrder.unitPrice).toFixed(2)} / {selectedOrder.unitSize} {pluralize(selectedOrder.selectUnit, Number(selectedOrder.unitSize))}
               </p>
             </div>
@@ -242,6 +243,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               title="Remove Item"
               message="Are you sure you want to remove this item from your order? This action cannot be undone."
               confirmButtonText="Remove Item"
+              data-testid="delete-button"
             >
               Delete
             </DeleteButton>
