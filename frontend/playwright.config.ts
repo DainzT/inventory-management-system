@@ -33,7 +33,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'concurrently -k -s first -n FRONTEND,BACKEND "npm run start:frontend" "npm run start:backend"',
+    command: 'concurrently -k -s first -n FRONTEND,BACKEND "npm run start:test:frontend" "npm run start:test:backend"',
     url: process.env.BASE_URL || 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
