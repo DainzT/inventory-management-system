@@ -17,6 +17,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [currentPinVerified, setCurrentPinVerified] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
   const { updatePin, sendOtpEmail, verifyOtp, verifyEmail, verifyPin } =
     useAuth();
   const navigate = useNavigate();
@@ -44,16 +45,41 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
     }
   };
 
-  const handleVerifyOTPAndUpdatePin = async () => {
+  const handleVerifyOtp = async () => {
     try {
       setLoading(true);
-      await verifyOtp(email, otp);
-      await updatePin(currentPin, newPin);
+      await verifyOtp(otp);
+      setOtpVerified(true);
       setLoading(false);
-      onClose();
-      navigate("/login");
     } catch {
       setLoading(false);
+      throw new Error("OTP verification failed");
+    }
+  };
+
+  const handleUpdatePin = async () => {
+    setLoading(true);
+    const success = await updatePin(newPin);
+    setLoading(false);
+    if (success) {
+      navigate("/login");
+    }
+  };
+
+  const handleNextStep = () => {
+    if (!currentPinVerified) return handleVerifyCurrentPin();
+    if (!otpSent) return handleSendOTP();
+    if (!otpVerified) return handleVerifyOtp();
+    return handleUpdatePin();
+  };
+
+  const handleBack = () => {
+    if (otpVerified) {
+      setOtpVerified(false);
+    } else if (otpSent) {
+      setOtpSent(false);
+    } else if (currentPinVerified) {
+      setCurrentPinVerified(false);
     }
   };
 
@@ -86,7 +112,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
                 required
               />
             </>
-          ) : (
+          ) : !otpVerified ? (
             <>
               <AuthInput
                 label="OTP"
@@ -96,6 +122,9 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
                 placeholder="Enter OTP"
                 required
               />
+            </>
+          ) : (
+            <>
               <AuthInput
                 label="New PIN"
                 value={newPin}
@@ -109,20 +138,23 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
           )}
 
           <div className="flex justify-end gap-2 mt-6">
+            {currentPinVerified ? (
+              <button
+                onClick={handleBack}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
+              >
+                Back
+              </button>
+            ) : (
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+            )}
             <button
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={
-                !currentPinVerified
-                  ? handleVerifyCurrentPin
-                  : !otpSent
-                  ? handleSendOTP
-                  : handleVerifyOTPAndUpdatePin
-              }
+              onClick={handleNextStep}
               className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition cursor-pointer"
               disabled={loading}
             >
@@ -132,6 +164,8 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
                 "Verify PIN"
               ) : !otpSent ? (
                 "Send OTP"
+              ) : !otpVerified ? (
+                "Verify OTP"
               ) : (
                 "Update PIN"
               )}
@@ -140,7 +174,6 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
         </div>
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={onClose}
           aria-hidden="true"
         />
       </div>

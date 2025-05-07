@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   checkUserAPI,
-  setupPinAPI,
   loginAPI,
   changePinAPI,
   sendOtpEmailAPI,
@@ -121,7 +120,7 @@ export const useAuth = () => {
     }
   };
 
-  const updatePin = async (currentPin: string, newPin: string) => {
+  const updatePin = async (newPin: string) => {
     const updatePinId = "update-pin-toast";
     showLoadingToast(updatePinId, "Updating PIN...");
 
@@ -136,23 +135,22 @@ export const useAuth = () => {
 
     try {
       setLoading(true);
-      const data: AuthResponse = await changePinAPI(
-        currentPin,
-        newPin,
-        accessToken
-      );
+      const data: AuthResponse = await changePinAPI(newPin, accessToken);
 
       if (data.message === "PIN updated successfully") {
         setError(null);
         showSuccessToast(updatePinId, "PIN updated successfully.");
+        return true;
       } else {
         setError(data.message || "Unknown error occurred");
         showErrorToast(updatePinId, data.message || "Unknown error occurred.");
+        return false;
       }
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to change PIN.");
       showErrorToast(updatePinId, error.message || "Failed to change PIN.");
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -170,16 +168,29 @@ export const useAuth = () => {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(payload.email)) {
+      showErrorToast(createAdminId, "Old email format is invalid.");
+      return;
+    }
+
+    if (!emailRegex.test(payload.email)) {
+      showErrorToast(createAdminId, "New email format is invalid.");
+      return;
+    }
     try {
       setLoading(true);
       const data = await createAdminAPI(payload);
-      showSuccessToast(createAdminId, "Admin account created successfully.");
+      showSuccessToast(
+        createAdminId,
+        "Admin account created successfully.\nEnter OTP to verify."
+      );
       return data;
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to create admin");
       showErrorToast(createAdminId, error.message || "Failed to create admin");
-      throw err;
+      return false;
     } finally {
       setLoading(false);
     }
@@ -192,10 +203,12 @@ export const useAuth = () => {
       setLoading(true);
       await sendOtpEmailAPI(email);
       showSuccessToast(sendOtpId, "OTP sent to email.");
+      return true;
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to send OTP");
       showErrorToast(sendOtpId, error.message || "Failed to send OTP");
+      return false;
     } finally {
       setLoading(false);
     }
@@ -249,12 +262,13 @@ export const useAuth = () => {
     }
   };
 
-  const verifyOtp = async (email: string, otp: string) => {
+  const verifyOtp = async (otp: string) => {
     const verifyOtpId = "verify-otp-toast";
     showLoadingToast(verifyOtpId, "Verifying OTP...");
+
     try {
       setLoading(true);
-      const data = await verifyOtpAPI(email, otp);
+      const data = await verifyOtpAPI(otp);
 
       if (data.message === "OTP verified successfully") {
         showSuccessToast(verifyOtpId, "OTP verified successfully.");
@@ -282,15 +296,16 @@ export const useAuth = () => {
     try {
       setLoading(true);
       setError(null);
-      await verifyOtpAPI(email, otp);
+      await verifyOtpAPI(otp);
       await resetPinAPI(email, newPin);
       showSuccessToast(verifyResetId, "PIN reset successfully.");
       setIsPinSet(true);
+      return true;
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "PIN reset failed");
       showErrorToast(verifyResetId, error.message || "PIN reset failed");
-      throw err;
+      return false;
     } finally {
       setLoading(false);
     }
@@ -306,6 +321,33 @@ export const useAuth = () => {
       return;
     }
 
+    if (!newEmail || !newEmail.trim()) {
+      showErrorToast(toastId, "New email is required.");
+      setLoading(false);
+      return;
+    }
+
+    if (!oldEmail || !newEmail || oldEmail === "" || newEmail === "") {
+      showErrorToast(toastId, "Both old and new email are required.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(oldEmail)) {
+      showErrorToast(toastId, "Old email format is invalid.");
+      return;
+    }
+
+    if (!emailRegex.test(newEmail)) {
+      showErrorToast(toastId, "New email format is invalid.");
+      return;
+    }
+
+    if (oldEmail === newEmail) {
+      showErrorToast(toastId, "New email must be different from old email.");
+      return;
+    }
+
     try {
       setLoading(true);
       const data: AuthResponse = await changeEmailAPI(
@@ -317,9 +359,11 @@ export const useAuth = () => {
       if (data.message === "Email updated successfully.") {
         setError(null);
         showSuccessToast(toastId, "Email updated successfully.");
+        return true;
       } else {
         setError(data.message || "Unknown error occurred");
         showErrorToast(toastId, data.message || "Unknown error occurred.");
+        return false;
       }
     } catch (err) {
       const error = err as ErrorWithMessage;

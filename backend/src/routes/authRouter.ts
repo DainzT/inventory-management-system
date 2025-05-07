@@ -55,7 +55,20 @@ router.post(
         return;
       }
 
+      const { email } = req.body;
       const { pin } = req.body;
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !pin || email === "" || pin === "") {
+        res.status(400).json({ message: "Fill in the requirements." });
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        res.status(400).json({ message: "Email format is invalid." });
+        return;
+      }
+
       if (!pin || pin.length !== 6 || !/^\d+$/.test(pin)) {
         res.status(400).json({
           message: "PIN is required and must be exactly 6 digits long.",
@@ -186,15 +199,10 @@ router.put(
   authenticateToken,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const { oldPin, newPin } = req.body;
+      const { newPin } = req.body;
 
-      if (
-        !oldPin ||
-        !newPin ||
-        typeof oldPin !== "string" ||
-        typeof newPin !== "string"
-      ) {
-        res.status(400).json({ message: "Both PINs must be strings" });
+      if (!newPin || newPin === "") {
+        res.status(400).json({ message: "PIN is required." });
         return;
       }
 
@@ -205,22 +213,17 @@ router.put(
         return;
       }
 
-      if (oldPin === newPin) {
-        res.status(400).json({
-          message: "New PIN must be different from old PIN",
-        });
-        return;
-      }
-
       const user = await prisma.user.findFirst();
       if (!user) {
         res.status(404).json({ message: "No user account found" });
         return;
       }
 
-      const isMatch = await bcrypt.compare(oldPin, user.pin);
-      if (!isMatch) {
-        res.status(401).json({ message: "Incorrect old PIN" });
+      const isSamePin = await bcrypt.compare(newPin, user.pin);
+      if (isSamePin) {
+        res.status(400).json({
+          message: "New PIN must be different from current PIN",
+        });
         return;
       }
 
@@ -253,7 +256,35 @@ router.put(
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(oldEmail)) {
+      res.status(400).json({ message: "Old email format is invalid." });
+      return;
+    }
+
+    if (!emailRegex.test(newEmail)) {
+      res.status(400).json({ message: "New email format is invalid." });
+      return;
+    }
+
+    if (oldEmail === newEmail) {
+      res
+        .status(400)
+        .json({ message: "New email must be different from old email." });
+      return;
+    }
+
     try {
+      const emailExists = await prisma.user.findFirst({
+        where: { email: newEmail },
+      });
+
+      if (emailExists) {
+        res.status(409).json({ message: "New email is already in use." });
+        return;
+      }
+
       const user = await prisma.user.findFirst({
         where: { email: oldEmail },
       });
@@ -352,6 +383,13 @@ router.post(
     try {
       const { email } = req.body;
 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
+        res.status(400).json({ message: "Email format is invalid." });
+        return;
+      }
+
       if (!email) {
         res.status(400).json({ message: "Email is required." });
         return;
@@ -360,6 +398,24 @@ router.post(
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user) {
         res.status(404).json({ message: "User not found." });
+        return;
+      }
+
+      const existingOtp = await prisma.otp.findFirst({
+        where: {
+          userId: user.id,
+          otpExpiration: { gt: new Date() },
+        },
+      });
+
+      if (existingOtp) {
+        res.status(429).json({
+          message: "An active OTP already exists. Please check your email.",
+          success: true,
+          retryAfter: Math.ceil(
+            (existingOtp.otpExpiration.getTime() - Date.now()) / 1000
+          ),
+        });
         return;
       }
 
@@ -377,7 +433,7 @@ router.post(
 
       res.status(200).json({ message: "OTP sent successfully", success: true });
     } catch (error) {
-      res.status(500).json({ message: "Failed to send OTP" });
+      res.status(500).json({ message: "Failed to send OTP", success: false });
     }
   }
 );
@@ -430,17 +486,16 @@ router.post(
 router.post(
   "/verify-otp",
   async (req: Request, res: Response): Promise<void> => {
-    const { email, otp } = req.body;
+    const { otp } = req.body;
+
+    if (!otp || otp === "") {
+      res.status(400).json({ message: "OTP is required." });
+      return;
+    }
 
     try {
-      const user = await prisma.user.findUnique({ where: { email } });
-      if (!user) {
-        res.status(404).json({ message: "User not found" });
-        return;
-      }
-
       const otpRecord = await prisma.otp.findFirst({
-        where: { userId: user.id, otp },
+        where: { otp },
         orderBy: { createdAt: "desc" },
       });
 
@@ -468,13 +523,16 @@ router.post(
     try {
       const { email, newPin } = req.body;
 
-      if (
-        !newPin ||
-        newPin.length !== MAX_PIN_LENGTH ||
-        !/^\d+$/.test(newPin)
-      ) {
+      if (!newPin || newPin === "") {
         res.status(400).json({
-          message: `New PIN must be exactly ${MAX_PIN_LENGTH} digits long and only contain numbers.`,
+          message: "PIN is required.",
+        });
+        return;
+      }
+      if (newPin.length !== MAX_PIN_LENGTH || !/^\d+$/.test(newPin)) {
+        res.status(400).json({
+          message:
+            "New PIN must be exactly ${MAX_PIN_LENGTH} digits long and only contain numbers.",
         });
         return;
       }

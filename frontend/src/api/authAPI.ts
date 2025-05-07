@@ -55,7 +55,6 @@ export const logoutAPI = async (): Promise<void> => {
 };
 
 export const changePinAPI = async (
-  oldPin: string,
   newPin: string,
   accessToken: string
 ): Promise<AuthResponse> => {
@@ -65,7 +64,7 @@ export const changePinAPI = async (
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ oldPin, newPin }),
+    body: JSON.stringify({ newPin }),
     credentials: "include",
   });
 
@@ -165,13 +164,13 @@ export const verifyEmailAPI = async (
   return res.json();
 };
 
-export const verifyOtpAPI = async (email: string, otp: string) => {
+export const verifyOtpAPI = async (otp: string) => {
   const res = await fetch(`${API_URL}/auth/verify-otp`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, otp }),
+    body: JSON.stringify({ otp }),
     credentials: "include",
   });
 

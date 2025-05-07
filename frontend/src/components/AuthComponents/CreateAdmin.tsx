@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Portal from "@/utils/Portal";
-import { sendOtpEmailAPI, verifyOtpAPI, createAdminAPI } from "@/api/authAPI";
 import { ClipLoader } from "react-spinners";
 import AuthInput from "@/components/AuthComponents/AuthInput";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,13 +18,17 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const { sendOtpEmail, verifyOtp, createAdmin } = useAuth();
 
-  const handleSendOTP = async () => {
+  const handleCreateAdmin = async () => {
     try {
       setLoading(true);
-      await sendOtpEmail(email);
-      setOtpSent(true);
-      setLoading(false);
+      const success = await createAdmin({ email, pin, confirmPin });
+      if (success) {
+        await sendOtpEmail(email);
+        setOtpSent(true);
+        setLoading(false);
+      }
     } catch {
+    } finally {
       setLoading(false);
     }
   };
@@ -33,22 +36,25 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
   const handleVerifyOTP = async () => {
     try {
       setLoading(true);
-      await verifyOtp(email, otp);
+      await verifyOtp(otp);
       setOtpVerified(true);
       setLoading(false);
+      onSuccess();
     } catch {
       setLoading(false);
     }
   };
 
-  const handleCreateAdmin = async () => {
-    try {
-      setLoading(true);
-      await createAdmin({ email, pin, confirmPin });
-      setLoading(false);
-      onSuccess();
-    } catch {
-      setLoading(false);
+  const handleNextStep = () => {
+    if (!otpSent) return handleCreateAdmin();
+    if (!otpVerified) return handleVerifyOTP();
+  };
+
+  const handleBack = () => {
+    if (otpVerified) {
+      setOtpVerified(false);
+    } else if (otpSent) {
+      setOtpSent(false);
     }
   };
 
@@ -63,22 +69,6 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
           </header>
 
           {!otpSent ? (
-            <AuthInput
-              label="Email"
-              placeholder="Enter admin email first"
-              value={email}
-              onChange={setEmail}
-              type="text"
-            />
-          ) : !otpVerified ? (
-            <AuthInput
-              label="OTP"
-              placeholder="Enter OTP sent to your email"
-              value={otp}
-              onChange={setOtp}
-              type="text"
-            />
-          ) : (
             <>
               <AuthInput
                 label="PIN"
@@ -96,18 +86,35 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
                 type="password"
                 isPin
               />
+              <AuthInput
+                label="Enter Email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={setEmail}
+                type="text"
+              />
             </>
+          ) : (
+            <AuthInput
+              label="OTP"
+              placeholder="Enter OTP sent to your email"
+              value={otp}
+              onChange={setOtp}
+              type="text"
+            />
           )}
 
           <div className="flex justify-end gap-2 mt-6">
+            {otpSent && (
+              <button
+                onClick={handleBack}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+              >
+                Back
+              </button>
+            )}
             <button
-              onClick={
-                !otpSent
-                  ? handleSendOTP
-                  : !otpVerified
-                  ? handleVerifyOTP
-                  : handleCreateAdmin
-              }
+              onClick={handleNextStep}
               className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition"
               disabled={loading}
             >
@@ -123,6 +130,10 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
             </button>
           </div>
         </div>
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+          aria-hidden="true"
+        />
       </div>
     </Portal>
   );
