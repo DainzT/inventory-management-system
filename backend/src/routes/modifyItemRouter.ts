@@ -106,19 +106,6 @@ router.put("/update/:id", async (req: Request, res: Response) => {
             }
         }
 
-        if (fleet_name && existingAssignment.fleet?.fleet_name !== fleet_name) {
-            await prisma.fleet.update({
-                where: { id: existingAssignment.fleet_id || undefined },
-                data: { fleet_name }
-            });
-        }
-        if (boat_name && existingAssignment.boat?.boat_name !== boat_name) {
-            await prisma.boat.update({
-                where: { id: existingAssignment.boat_id || undefined },
-                data: { boat_name }
-            });
-        }
-
         if (fleet_id && boat_id) {
             const boatBelongsToFleet = await prisma.boat.findFirst({
                 where: { id: boat_id, fleet_id }
