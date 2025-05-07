@@ -3,6 +3,7 @@ import { pluralize } from "@/utils/Pluralize";
 
 export interface InvoiceTableProps {
   itemSummary: GroupedOrders[];
+  
 }
 
 export const InvoiceTable = ({ itemSummary }: InvoiceTableProps) => {

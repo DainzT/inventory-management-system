@@ -1,6 +1,6 @@
 import React from "react";
 
-interface ThreeDotsLoaderProps {
+export interface ThreeDotsLoaderProps {
   className?: string;
 }
 

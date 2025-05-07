@@ -7,7 +7,7 @@ import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 
-interface InvoiceProps {
+export interface InvoiceProps {
   orders: OrderItem[];
   selectedMonth: string;
   selectedYear: number;
