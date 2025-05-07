@@ -14,9 +14,6 @@ test.describe("Inventory Page", () => {
     });
 
     test("should load inventory items and search correctly", async ({ page }) => {
-        await page.waitForLoadState('networkidle');
-        await expect(page.getByText("Main Inventory")).toBeVisible({
-            timeout: 15000,
-        });
+        await expect(page.getByText("Main Inventory")).toBeVisible();
     })
 })
