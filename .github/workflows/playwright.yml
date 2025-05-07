@@ -15,7 +15,7 @@ jobs:
         node-version: lts/*
     - name: Create test environment file
       run: |
-        cat <<EOF > frontend/.env.test
+        cat <<EOF > ./frontend/.env.test
         BASE_URL=${{ secrets.BASE_URL }}
         PW_TEST_PIN=${{ secrets.PW_TEST_PIN }}
         ACCESS_SECRET=${{ secrets.ACCESS_SECRET }}
