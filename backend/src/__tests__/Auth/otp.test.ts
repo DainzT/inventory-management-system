@@ -226,14 +226,14 @@ describe("OTP Related Routes (Negative Cases)", () => {
     expect(response.body).toEqual({ message: "User not found." });
   });
 
-  // it("should return 404 for invalid email format", async () => {
-  //   const response = await request(app)
-  //     .post("/api/auth/send-otp-email")
-  //     .send({ email: "invalid-email" });
+  it("should return 404 for invalid email format", async () => {
+    const response = await request(app)
+      .post("/api/auth/send-otp-email")
+      .send({ email: "invalid-email" });
 
-  //   expect(response.status).toBe(404);
-  //   expect(response.body).toEqual({ message: "User not found." });
-  // });
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ message: "User not found." });
+  });
 
   it("should handle database errors during OTP save", async () => {
     (saveOtpToDatabase as jest.Mock).mockImplementationOnce(() => {
@@ -246,12 +246,12 @@ describe("OTP Related Routes (Negative Cases)", () => {
     expect([404, 500]).toContain(response.status);
   });
 
-  it("should return 404 for malformed OTP verification request", async () => {
+  it("should return 400 for malformed OTP verification request", async () => {
     const response = await request(app)
       .post("/api/auth/verify-otp")
       .send("invalid-json");
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
   });
 
   it("should handle OTP database query failures", async () => {

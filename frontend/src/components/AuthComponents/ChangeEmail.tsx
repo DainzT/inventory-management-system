@@ -17,7 +17,7 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [currentPinVerified, setCurrentPinVerified] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-
+  const [otpVerified, setOtpVerified] = useState(false);
   const { verifyPin, verifyEmail, sendOtpEmail, verifyOtp, changeEmail } =
     useAuth();
   const navigate = useNavigate();
@@ -45,14 +45,27 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
     }
   };
 
-  const handleVerifyOTPAndUpdateEmail = async () => {
+  const handleVerifyOtp = async () => {
     try {
       setLoading(true);
-      await verifyOtp(currentEmail, otp);
-      await changeEmail(currentEmail, newEmail);
+      await verifyOtp(otp);
+      setOtpVerified(true);
       setLoading(false);
-      onClose();
-      navigate("/login");
+    } catch {
+      setLoading(false);
+      throw new Error("OTP verification failed");
+    }
+  };
+
+  const handleUpdateEmail = async () => {
+    try {
+      setLoading(true);
+      const success = await changeEmail(currentEmail, newEmail);
+      setLoading(false);
+      if (success) {
+        onClose();
+        navigate("/login");
+      }
     } catch {
       setLoading(false);
     }
@@ -61,7 +74,18 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
   const handleNextStep = () => {
     if (!currentPinVerified) return handleVerifyCurrentPin();
     if (!otpSent) return handleSendOTP();
-    return handleVerifyOTPAndUpdateEmail();
+    if (!otpVerified) return handleVerifyOtp();
+    return handleUpdateEmail();
+  };
+
+  const handleBack = () => {
+    if (otpVerified) {
+      setOtpVerified(false);
+    } else if (otpSent) {
+      setOtpSent(false);
+    } else if (currentPinVerified) {
+      setCurrentPinVerified(false);
+    }
   };
 
   return (
@@ -93,34 +117,42 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
               placeholder="Enter your current email"
               required
             />
+          ) : !otpVerified ? (
+            <AuthInput
+              label="OTP"
+              value={otp}
+              type="text"
+              onChange={setOtp}
+              placeholder="Enter OTP sent to your email"
+              required
+            />
           ) : (
-            <>
-              <AuthInput
-                label="OTP"
-                value={otp}
-                type="text"
-                onChange={setOtp}
-                placeholder="Enter OTP sent to your email"
-                required
-              />
-              <AuthInput
-                label="New Email"
-                value={newEmail}
-                type="text"
-                onChange={setNewEmail}
-                placeholder="Enter new email"
-                required
-              />
-            </>
+            <AuthInput
+              label="New Email"
+              value={newEmail}
+              type="text"
+              onChange={setNewEmail}
+              placeholder="Enter new email"
+              required
+            />
           )}
 
           <div className="flex justify-end gap-2 mt-6">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
-            >
-              Cancel
-            </button>
+            {currentPinVerified ? (
+              <button
+                onClick={handleBack}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
+              >
+                Back
+              </button>
+            ) : (
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+            )}
             <button
               onClick={handleNextStep}
               className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition cursor-pointer"
@@ -132,6 +164,8 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
                 "Verify PIN"
               ) : !otpSent ? (
                 "Send OTP"
+              ) : !otpVerified ? (
+                "Verify OTP"
               ) : (
                 "Change Email"
               )}
@@ -140,7 +174,6 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
         </div>
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={onClose}
           aria-hidden="true"
         />
       </div>
