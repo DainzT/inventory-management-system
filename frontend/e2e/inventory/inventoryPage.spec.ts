@@ -7,13 +7,14 @@ test.describe("Inventory Page", () => {
         await page.goto("/login");
 
         const pinInput = page.locator("#pin-input");
-        await pinInput.fill(process.env.PW_TEST_PIN || "");
+        await pinInput.fill("222222");
 
         await page.getByRole("button", { name: "Login" }).click();
         await page.waitForURL('**/inventory')
     });
 
     test("should load inventory items and search correctly", async ({ page }) => {
+        await page.waitForLoadState('networkidle');
         await expect(page.getByText("Main Inventory")).toBeVisible();
     })
 })

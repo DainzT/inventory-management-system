@@ -37,10 +37,10 @@ jest.mock("nodemailer", () => ({
 jest.mock("../../lib/otpService", () => ({
   generateOtp: jest.fn(() => "123456"),
   saveOtpToDatabase: jest.fn(
-    async (otp: string, otpExpiry: number, userId: number) => {
+    async (otp: string, otpExpiry: number, email: string) => {
       await prisma.otp.create({
         data: {
-          userId,
+          email,
           otp,
           otpExpiration: new Date(otpExpiry),
         },
@@ -121,7 +121,7 @@ describe("OTP Related Routes", () => {
     it("should verify valid OTP", async () => {
       await prisma.otp.create({
         data: {
-          userId: user.id,
+          email: user.id,
           otp: "123456",
           otpExpiration: new Date(Date.now() + 10 * 60 * 1000),
         },
@@ -147,7 +147,7 @@ describe("OTP Related Routes", () => {
     it("should return 400 for expired OTP", async () => {
       await prisma.otp.create({
         data: {
-          userId: user.id,
+          email: user.id,
           otp: "654321",
           otpExpiration: new Date(Date.now() - 1000),
         },
