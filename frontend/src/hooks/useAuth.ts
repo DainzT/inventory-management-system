@@ -9,9 +9,10 @@ import {
   verifyOtpAPI,
   createAdminAPI,
   refreshTokenAPI,
-  resetPinAPI,
+
   logoutAPI,
   changeEmailAPI,
+  resetPinAPI,
 } from "../api/authAPI";
 import { useToast } from "./useToast";
 
@@ -33,11 +34,14 @@ export const useAuth = () => {
     return sessionStorage.getItem(TOKEN_KEY);
   });
   const [isPinSet, setIsPinSet] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showCreateAdmin, setShowCreateAdmin] = useState<boolean>(false);
   const { showErrorToast, showLoadingToast, showSuccessToast } = useToast();
   const isAuthenticated = !!token;
+
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
 
   useEffect(() => {
     const statusId = "pin-status-toast";
@@ -123,7 +127,6 @@ export const useAuth = () => {
   const updatePin = async (newPin: string) => {
     const updatePinId = "update-pin-toast";
     showLoadingToast(updatePinId, "Updating PIN...");
-
     const accessToken = sessionStorage.getItem(TOKEN_KEY);
     if (!accessToken) {
       showErrorToast(
@@ -132,20 +135,10 @@ export const useAuth = () => {
       );
       return;
     }
-
     try {
       setLoading(true);
-      const data: AuthResponse = await changePinAPI(newPin, accessToken);
-
-      if (data.message === "PIN updated successfully") {
-        setError(null);
-        showSuccessToast(updatePinId, "PIN updated successfully.");
-        return true;
-      } else {
-        setError(data.message || "Unknown error occurred");
-        showErrorToast(updatePinId, data.message || "Unknown error occurred.");
-        return false;
-      }
+      await changePinAPI(newPin, accessToken);
+      showSuccessToast(updatePinId, "PIN updated successfully.");
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to change PIN.");
@@ -156,59 +149,41 @@ export const useAuth = () => {
     }
   };
 
-  const createAdmin = async (payload: {
+  const handleCreateAdmin = async (payload: {
     email: string;
     pin: string;
     confirmPin: string;
   }) => {
     const createAdminId = "create-admin-toast";
-    showLoadingToast(createAdminId, "Creating admin account...");
-    if (payload.pin !== payload.confirmPin) {
-      setError("PIN and Confirm PIN do not match.");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(payload.email)) {
-      showErrorToast(createAdminId, "Old email format is invalid.");
-      return;
-    }
-
-    if (!emailRegex.test(payload.email)) {
-      showErrorToast(createAdminId, "New email format is invalid.");
-      return;
-    }
     try {
       setLoading(true);
-      const data = await createAdminAPI(payload);
+      showLoadingToast(createAdminId, "creating account for Admin");
+      await createAdminAPI(payload);
       showSuccessToast(
         createAdminId,
-        "Admin account created successfully.\nEnter OTP to verify."
+        "Admin account created successfully."
       );
-      return data;
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to create admin");
       showErrorToast(createAdminId, error.message || "Failed to create admin");
-      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const sendOtpEmail = async (email: string) => {
+  const handleSendOTP = async (email: string, pin: string, confirmPin: string,) => {
     const sendOtpId = "send-otp-toast";
     showLoadingToast(sendOtpId, "Sending OTP...");
     try {
       setLoading(true);
-      await sendOtpEmailAPI(email);
+      await sendOtpEmailAPI(email, pin, confirmPin);
       showSuccessToast(sendOtpId, "OTP sent to email.");
-      return true;
+      setOtpSent(true)
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to send OTP");
       showErrorToast(sendOtpId, error.message || "Failed to send OTP");
-      return false;
     } finally {
       setLoading(false);
     }
@@ -224,8 +199,6 @@ export const useAuth = () => {
         verifyPinId,
         data.message || "PIN verified successfully."
       );
-      setError(null);
-      return data;
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "PIN verification failed");
@@ -236,19 +209,17 @@ export const useAuth = () => {
     }
   };
 
-  const verifyEmail = async (email: string) => {
+  const handleVerifyEmail = async (email: string) => {
     const verifyEmailId = "verify-email-toast";
     showLoadingToast(verifyEmailId, "Verifying email...");
     try {
       setLoading(true);
       const data = await verifyEmailAPI(email);
-
+      setOtpSent(true);
       showSuccessToast(
         verifyEmailId,
         data.message || "Email verified successfully."
       );
-      setError(null);
-      return data;
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Email verification failed");
@@ -262,20 +233,14 @@ export const useAuth = () => {
     }
   };
 
-  const verifyOtp = async (otp: string) => {
+  const handleVerifyOTP = async (otp: string) => {
     const verifyOtpId = "verify-otp-toast";
     showLoadingToast(verifyOtpId, "Verifying OTP...");
-
     try {
       setLoading(true);
-      const data = await verifyOtpAPI(otp);
-
-      if (data.message === "OTP verified successfully") {
-        showSuccessToast(verifyOtpId, "OTP verified successfully.");
-      } else {
-        showErrorToast(verifyOtpId, data.message || "OTP verification failed");
-      }
-      return data;
+      await verifyOtpAPI(otp);
+      setOtpVerified(true);
+      showSuccessToast(verifyOtpId, "OTP verified successfully.");
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "OTP verification failed");
@@ -286,32 +251,29 @@ export const useAuth = () => {
     }
   };
 
-  const verifyAndResetPin = async (
+  const ResetPin = async (
     email: string,
-    otp: string,
     newPin: string
   ) => {
     const verifyResetId = "verify-reset-toast";
-    showLoadingToast(verifyResetId, "Verifying and resetting PIN...");
+    showLoadingToast(verifyResetId, "resetting PIN...");
     try {
       setLoading(true);
-      setError(null);
-      await verifyOtpAPI(otp);
       await resetPinAPI(email, newPin);
       showSuccessToast(verifyResetId, "PIN reset successfully.");
       setIsPinSet(true);
-      return true;
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "PIN reset failed");
       showErrorToast(verifyResetId, error.message || "PIN reset failed");
-      return false;
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
   const changeEmail = async (oldEmail: string, newEmail: string) => {
+    
     const toastId = "change-email-toast";
     showLoadingToast(toastId, "Changing email...");
 
@@ -321,54 +283,19 @@ export const useAuth = () => {
       return;
     }
 
-    if (!newEmail || !newEmail.trim()) {
-      showErrorToast(toastId, "New email is required.");
-      setLoading(false);
-      return;
-    }
-
-    if (!oldEmail || !newEmail || oldEmail === "" || newEmail === "") {
-      showErrorToast(toastId, "Both old and new email are required.");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(oldEmail)) {
-      showErrorToast(toastId, "Old email format is invalid.");
-      return;
-    }
-
-    if (!emailRegex.test(newEmail)) {
-      showErrorToast(toastId, "New email format is invalid.");
-      return;
-    }
-
-    if (oldEmail === newEmail) {
-      showErrorToast(toastId, "New email must be different from old email.");
-      return;
-    }
-
     try {
       setLoading(true);
-      const data: AuthResponse = await changeEmailAPI(
+      await changeEmailAPI(
         oldEmail,
         newEmail,
         accessToken
       );
-
-      if (data.message === "Email updated successfully.") {
-        setError(null);
-        showSuccessToast(toastId, "Email updated successfully.");
-        return true;
-      } else {
-        setError(data.message || "Unknown error occurred");
-        showErrorToast(toastId, data.message || "Unknown error occurred.");
-        return false;
-      }
+      showSuccessToast(toastId, "Email updated successfully.");
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to change email.");
       showErrorToast(toastId, error.message || "Failed to change email.");
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -414,18 +341,22 @@ export const useAuth = () => {
     loading,
     error,
     showCreateAdmin,
+    otpSent,
+    otpVerified,
+    setOtpSent,
+    setOtpVerified,
     setShowCreateAdmin,
     setIsPinSet,
-    createAdmin,
+    handleCreateAdmin,
     login,
     logout,
-    // setupNewPin,
+    setLoading,
     updatePin,
-    sendOtpEmail,
+    handleSendOTP,
     verifyPin,
-    verifyEmail,
-    verifyOtp,
-    verifyAndResetPin,
+    handleVerifyEmail,
+    handleVerifyOTP,
+    ResetPin,
     changeEmail,
     refreshToken,
   };

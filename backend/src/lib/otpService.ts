@@ -7,15 +7,15 @@ export const generateOtp = (): string => {
 
 export const saveOtpToDatabase = async (
   otp: string,
-  otpExpiry: number,
-  userId: number
+  email: string,
+  otpExpiry: Date,
 ) => {
   try {
     await prisma.otp.create({
       data: {
-        otp,
-        otpExpiration: new Date(otpExpiry),
-        userId,
+        otp: otp,
+        email: email,
+        otpExpiration: otpExpiry,
       },
     });
   } catch (error) {
