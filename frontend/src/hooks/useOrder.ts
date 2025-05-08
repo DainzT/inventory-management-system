@@ -114,7 +114,11 @@ export const useOrder = () => {
           order.unitSize,
           order.boat.boat_name,
           `${order.quantity} ${order.selectUnit}`,
-          `${order.unitPrice} ${order.selectUnit}`
+          `${order.unitPrice} ${order.selectUnit}`,
+          typeof order.unitPrice === "number" 
+            ? `${order.unitPrice.toFixed(2)} / ${order.unitSize} ${order.selectUnit}`
+            : `${order.unitPrice} / ${order.unitSize} ${order.selectUnit}`,
+          new Date(order.outDate).toLocaleDateString()
         ].join(" ").toLowerCase();
         
         const matchesSearch = rowString.includes(searchQuery.toLowerCase());

@@ -12,7 +12,7 @@ export const FleetCard: React.FC<FleetCardProps> = ({
   return (
     <article
       className={`relative p-4 rounded-xl ${
-        isActive ? "h-[170px] w-[320px]" : "h-[120px] w-[250px]"
+        isActive ? "h-[170px] w-[300px]" : "h-[120px] w-[230px]"
       } cursor-pointer transition-all duration-300 ease-in-out shadow-lg ${
         isActive ? "shadow-2xl" : "shadow-md"
       } ${backgroundColor} ${isActive ? "" : "opacity-70"}`}
