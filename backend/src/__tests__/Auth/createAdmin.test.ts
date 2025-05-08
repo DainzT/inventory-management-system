@@ -79,7 +79,7 @@ describe("POST /api/auth/create-admin", () => {
       .post("/api/auth/create-admin")
       .send({ pin: "123456" });
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
   });
 
   it("should handle database errors", async () => {
@@ -112,19 +112,19 @@ describe("POST /api/auth/create-admin (Negative Cases)", () => {
     jest.restoreAllMocks();
   });
 
-  // it("should return 400 when email is invalid format", async () => {
-  //   const response = await request(app)
-  //     .post("/api/auth/create-admin")
-  //     .send({ email: "invalid-email", pin: "123456" });
+  it("should return 400 when email is invalid format", async () => {
+    const response = await request(app)
+      .post("/api/auth/create-admin")
+      .send({ email: "invalid-email", pin: "123456" });
 
-  //   expect(response.status).toBe(500);
-  // });
+    expect(response.status).toBe(400);
+  });
 
   it("should return 400 when request body is empty", async () => {
     const response = await request(app).post("/api/auth/create-admin").send({});
 
     expect(response.status).toBe(400);
-    expect(response.body.message).toContain("PIN is required");
+    expect(response.body.message).toContain("Fill in the requirements.");
   });
 
   it("should return 400 when PIN is null", async () => {
@@ -133,6 +133,6 @@ describe("POST /api/auth/create-admin (Negative Cases)", () => {
       .send({ email: "admin@example.com", pin: null });
 
     expect(response.status).toBe(400);
-    expect(response.body.message).toContain("PIN is required");
+    expect(response.body.message).toContain("Fill in the requirements.");
   });
 });

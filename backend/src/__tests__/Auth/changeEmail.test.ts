@@ -39,6 +39,15 @@ describe("PUT /api/auth/change-email", () => {
     await prisma.$disconnect();
   });
 
+  it("should return 404 with incorrect old email", async () => {
+    const response = await request(app)
+      .put("/api/auth/change-email")
+      .send({ oldEmail: "wrong@example.com", newEmail: "new@example.com" });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ message: "Old email not found." });
+  });
+
   it("should successfully change email with valid credentials", async () => {
     const response = await request(app)
       .put("/api/auth/change-email")
@@ -53,37 +62,22 @@ describe("PUT /api/auth/change-email", () => {
     expect(updatedUser?.email).toBe("new@example.com");
   });
 
-  it("should return 404 with incorrect old email", async () => {
+  it("should return 400 for invalid email format", async () => {
     const response = await request(app)
       .put("/api/auth/change-email")
-      .send({ oldEmail: "wrong@example.com", newEmail: "new@example.com" });
+      .send({ oldEmail: "invalid", newEmail: "alsoinvalid" });
 
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ message: "Old email not found." });
+    expect(response.status).toBe(400);
+    expect(response.body.message).toMatch(/email format is invalid/i);
   });
 
-  // it("should return 400 for invalid email format", async () => {
-  //   const testCases = [
-  //     { email: "invalid", message: "Both old and new email are required." },
-  //     { email: "", message: "Both old and new email are required." },
-  //   ];
-
-  //   for (const testCase of testCases) {
-  //     const response = await request(app)
-  //       .put("/api/auth/change-email")
-  //       .send({ oldEmail: testCase.email, newEmail: testCase.email });
-
-  //     expect(response.status).toBe(400);
-  //     expect(response.body).toHaveProperty("message", testCase.message);
-  //   }
-  // });
-
-  it("should return 401 without authentication", async () => {
+  it("should error with the same email", async () => {
     const response = await request(app)
       .put("/api/auth/change-email")
       .send({ oldEmail: "old@example.com", newEmail: "new@example.com" });
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(409);
+    expect(response.body).toEqual({ message: "New email is already in use." });
   });
 });
 
@@ -106,6 +100,23 @@ describe("PUT /api/auth/change-email (Negative Cases)", () => {
     await prisma.$disconnect();
   });
 
+  it("should return 409 when new email is already in use", async () => {
+    await prisma.user.create({
+      data: {
+        id: 2,
+        email: "taken@example.com",
+        pin: await bcrypt.hash("123456", 10),
+      },
+    });
+
+    const response = await request(app)
+      .put("/api/auth/change-email")
+      .send({ oldEmail: "old@example.com", newEmail: "taken@example.com" });
+
+    expect(response.status).toBe(409);
+    expect(response.body).toEqual({ message: "New email is already in use." });
+  });
+
   it("should handle database update failure", async () => {
     jest.spyOn(prisma.user, "update").mockRejectedValue(new Error("DB Error"));
 
@@ -120,20 +131,20 @@ describe("PUT /api/auth/change-email (Negative Cases)", () => {
     jest.restoreAllMocks();
   });
 
-  // it("should return 400 when new email is invalid format", async () => {
-  //   const response = await request(app)
-  //     .put("/api/auth/change-email")
-  //     .send({ oldEmail: "old@example.com", newEmail: "invalid-email" });
+  it("should return 400 when new email is invalid format", async () => {
+    const response = await request(app)
+      .put("/api/auth/change-email")
+      .send({ oldEmail: "old@example.com", newEmailt: "invalid-email" });
 
-  //   expect(response.status).toBe(200);
-  // });
+    expect(response.status).toBe(400);
+  });
 
   it("should allow same email when old and new emails match", async () => {
     const response = await request(app)
       .put("/api/auth/change-email")
       .send({ oldEmail: "old@example.com", newEmail: "old@example.com" });
 
-    expect([200, 404]).toContain(response.status);
+    expect(response.status).toBe(400);
   });
 
   it("should handle authentication failure", async () => {

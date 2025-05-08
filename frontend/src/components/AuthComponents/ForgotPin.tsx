@@ -3,6 +3,7 @@ import Portal from "@/utils/Portal";
 import { ClipLoader } from "react-spinners";
 import AuthInput from "@/components/AuthComponents/AuthInput";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "react-toastify";
 
 interface ForgotPinProps {
   onClose: () => void;
@@ -12,31 +13,26 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPin, setNewPin] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { sendOtpEmail, verifyAndResetPin, verifyEmail } = useAuth();
+  const { loading, otpSent, setOtpSent, otpVerified, handleVerifyEmail, handleVerifyOTP, ResetPin } = useAuth();
 
   const handleSendOTP = async () => {
-    try {
-      setLoading(true);
-      await verifyEmail(email);
-      await sendOtpEmail(email);
-      setOtpSent(true);
-      setLoading(false);
-    } catch {
-      setLoading(false);
-    }
+    await handleVerifyEmail(email);
   };
 
-  const handleVerifyOTP = async () => {
-    try {
-      setLoading(true);
-      await verifyAndResetPin(email, otp, newPin);
-      setLoading(false);
-      onClose();
-    } catch {
-      setLoading(false);
-    }
+  const handleOTPVerification = async () => {
+    await handleVerifyOTP(otp)
+  };
+
+  const handleResetPin = async () => {
+    await ResetPin(email, newPin);
+    toast.success("Closing modal...", {
+      autoClose: 1500,
+      onClose,
+    });
+  }
+
+  const handleBack = () => {
+    setOtpSent(false);
   };
 
   return (
@@ -49,54 +45,65 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
             </h2>
           </header>
           {!otpSent ? (
-            <>
-              <AuthInput
-                label="Email"
-                value={email}
-                type="text"
-                onChange={setEmail}
-                placeholder="Enter your email"
-                required
-              />
-            </>
+            <AuthInput
+              label="Email"
+              value={email}
+              type="text"
+              onChange={setEmail}
+              placeholder="Enter your email"
+              required
+              disabled={loading}
+            />
+          ) : !otpVerified ? (
+            <AuthInput
+              label="OTP"
+              value={otp}
+              type="text"
+              onChange={setOtp}
+              placeholder="Enter OTP"
+              required
+              disabled={loading}
+            />
           ) : (
-            <>
-              <AuthInput
-                label="OTP"
-                value={otp}
-                type="text"
-                onChange={setOtp}
-                placeholder="Enter OTP"
-                required
-              />
-              <AuthInput
-                label="New PIN"
-                value={newPin}
-                type="password"
-                onChange={setNewPin}
-                placeholder="Enter new PIN"
-                isPin
-                required
-              />
-            </>
+            <AuthInput
+              label="New PIN"
+              value={newPin}
+              type="password"
+              onChange={setNewPin}
+              placeholder="Enter new PIN"
+              isPin
+              required
+              disabled={loading}
+            />
           )}
 
           <div className="flex justify-end gap-2 mt-6">
+            {otpSent ? (
+              <button
+                onClick={handleBack}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
+                disabled={loading}
+              >
+                Back
+              </button>
+            ) : (
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+            )}
             <button
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={otpSent ? handleVerifyOTP : handleSendOTP}
+              onClick={otpSent ? (otpVerified ? handleResetPin : handleOTPVerification) : handleSendOTP}
               className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition cursor-pointer"
               disabled={loading}
             >
               {loading ? (
                 <ClipLoader size={20} color="#f4f4f4" />
               ) : otpSent ? (
-                "Verify OTP"
+                otpVerified ? "Reset PIN" : "Verify OTP"
               ) : (
                 "Send OTP"
               )}
@@ -106,7 +113,6 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
 
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={onClose}
           aria-hidden="true"
         />
       </div>
