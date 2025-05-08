@@ -14,7 +14,7 @@ export const validateFetchInventoryItems = async (
 
     const items = await prisma.inventoryItem.findMany({
         orderBy: {
-            name: 'asc',
+            dateCreated: 'asc',
         },
     });
 
@@ -46,10 +46,26 @@ export const validateAddInventoryItem = (
         return;
     }
 
+    if (name.length > 40) {
+        res.status(400).json({
+            message: "Product name name must be 40 characters or less.",
+            error: "Name.length <= 40 is required",
+        });
+        return;
+    }
+
     if (!note || typeof note !== 'string') {
         res.status(400).json({
             message: "Note is required.",
             error: "Valid note (string) is required",
+        });
+        return;
+    }
+
+    if (note.length > 120) {
+        res.status(400).json({
+            message: "Product note must be 120 characters or less.",
+            error: "Name.length <= 120 is required",
         });
         return;
     }
@@ -228,11 +244,27 @@ export const validateEditInventoryItem = async (
         return;
     }
 
+    
+    if (updatedItem.name.length > 40) {
+        res.status(400).json({
+            message: "Product name name must be 40 characters or less.",
+            error: "Name.length <= 40 is required",
+        });
+        return;
+    }
 
     if (!updatedItem.note || typeof updatedItem.note !== 'string') {
         res.status(400).json({
             message: "Enter a valid note.",
             error: "Valid note (string) is required.",
+        });
+        return;
+    }
+
+    if (updatedItem.note.length > 120) {
+        res.status(400).json({
+            message: "Product note must be 120 characters or less.",
+            error: "Name.length <= 120 is required",
         });
         return;
     }

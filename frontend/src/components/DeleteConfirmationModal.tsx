@@ -11,7 +11,6 @@ interface DeleteConfirmationModalProps {
   confirmButtonText?: string;
   cancelButtonText?: string;
   isDeleting?: boolean;
-  disabled?: boolean;
 }
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
@@ -23,7 +22,6 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   confirmButtonText = "Delete field",
   cancelButtonText = "Cancel",
   isDeleting = false,
-  disabled = false,
 }) => {
   if (!isOpen) return null;
 
@@ -43,8 +41,8 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               type="button"
               data-testid="confirm-removal-button"
               onClick={onConfirm}
-              className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition-colors cursor-pointer"
-              disabled={disabled}
+              className={`w-full ${isDeleting ? "bg-red-500/60 text-white/60 cursor-not-allowed" : "bg-red-500 hover:bg-red-600 text-white cursor-pointer`"}  font-medium py-2 px-4 rounded transition-colors`}
+              disabled={isDeleting}
             >
               {isDeleting ? (
                 <div className="flex items-center justify-center gap-2">
@@ -58,8 +56,8 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             </button>
             <button
               onClick={onClose}
-              disabled={disabled}
-              className="w-full bg-white hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded border border-gray-300 transition-colors cursor-pointer"
+              disabled={isDeleting}
+              className={`w-full ${isDeleting ? 'bg-gray-200/30 text-gray-700/60 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300 text-gray-700 cursor-pointer'}  font-medium py-2 px-4 rounded border border-gray-300 transition-colors `}
             >
               {cancelButtonText}
             </button>

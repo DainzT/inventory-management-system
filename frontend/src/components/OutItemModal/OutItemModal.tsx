@@ -34,7 +34,7 @@ const OutItemModal = ({
   const hasChanges = useMemo(() => {
     return !!fleet || !!boat || !!quantity;
   }, [fleet, boat, quantity]);
-  
+
   const clearError = (field: string) => {
     setErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
@@ -147,7 +147,8 @@ const OutItemModal = ({
       setFleet("");
       setBoat("");
       setQuantity("");
-      setIsOpen(false);
+      setIsOpen(false)
+      setErrors({});
     }
   };
 
@@ -155,19 +156,23 @@ const OutItemModal = ({
 
   return (
     <section className="flex z-50 fixed inset-0 justify-center items-center">
-      <article className="relative z-50 px-6 py-4 w-96 bg-white rounded-[19px] border-[1px] border-[#E0D8D8] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] animate-[fadeIn_0.2s_ease-out] h-[36rem]">
+      <article className="
+        relative z-50 px-6 py-4 w-96 bg-white rounded-[19px] border-[1px] border-[#E0D8D8] 
+        shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] animate-[fadeIn_0.2s_ease-out] h-[36rem]
+        flex flex-col
+      ">
         <header className="flex justify-between items-center mb-4">
           <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Out Product</h1>
           <button
             onClick={handleCloseAttempt}
-            className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
+            className={`${isAssigning ? "text-black/60 cursor-not-allowed" : "text-black active:bg-black/10 cursor-pointer"} hover:bg-black/5 rounded-full transition-colors `}
             aria-label="Close dialog"
             disabled={isAssigning}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
                 d="M18 6L6 18M6 6L18 18"
-                stroke="black"
+                stroke={`${isAssigning ? "gray" : "black"}`}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -177,70 +182,74 @@ const OutItemModal = ({
         </header>
 
         {selectedItem && <ItemDetails item={selectedItem} />}
-        <div className="mb-3">
-          <SelectField
-            label="Choose a fleet"
-            placeholder="Select a fleet"
-            value={fleet}
-            onChange={handleFleetChange}
-            options={fleetOptions}
-            error={errors.fleet}
-            disabled={isAssigning}
-            required
-          />
-        </div>
+        <div className="flex-grow overflow-y-auto">
 
-        {fleet && (
-          <div className="mb-3">
+          <div className="mb-1">
             <SelectField
-              label="Choose a boat"
-              placeholder="Select a boat"
-              value={boat}
-              onChange={handleBoatChange}
-              options={boatOptions}
-              error={errors.boat}
-              disabled={!fleet || isAssigning}
+              label="Choose a fleet"
+              placeholder="Select a fleet"
+              value={fleet}
+              onChange={handleFleetChange}
+              options={fleetOptions}
+              error={errors.fleet}
+              disabled={isAssigning}
+              required
             />
           </div>
-        )}
 
-        <div className="mb-3">
-          <QuantitySelector
-            value={quantity}
-            onChange={handleQuantityChange}
-            maxQuantity={Number(selectedItem?.quantity)}
-            unitSize={Number(selectedItem?.unitSize)}
-            error={errors.quantity}
-            disabled={isAssigning}
+          {fleet && (
+            <div className="mb-1">
+              <SelectField
+                label="Choose a boat"
+                placeholder="Select a boat"
+                value={boat}
+                onChange={handleBoatChange}
+                options={boatOptions}
+                error={errors.boat}
+                disabled={!fleet || isAssigning}
+              />
+            </div>
+          )}
+
+          <div className="mb-3">
+            <QuantitySelector
+              value={quantity}
+              onChange={handleQuantityChange}
+              maxQuantity={Number(selectedItem?.quantity)}
+              unitSize={Number(selectedItem?.unitSize)}
+              error={errors.quantity}
+              disabled={isAssigning}
+            />
+          </div>
+
+          <SummarySection
+            totalPrice={totalPrice}
+            remainingStock={remainingStock}
+            unit={selectedItem!.selectUnit}
           />
         </div>
-
-        <SummarySection
-          totalPrice={totalPrice}
-          remainingStock={remainingStock}
-          unit={selectedItem!.selectUnit}
-        />
-
-        <button
-          onClick={handleAssign}
-          className="
-            flex absolute right-6 bottom-6 gap-2 justify-center items-center h-10 text-white
-            bg-[#1B626E] rounded-md w-28 transition-colors hover:bg-[#297885] active:bg-[#145965] cursor-pointer
-          "
-          disabled={isAssigning}
-        >
-          {isAssigning ? (
-            <div className="flex items-center justify-center">
-              <ClipLoader color="#ffffff" size={20} className="mr-2" />
-              Assigning...
-            </div>
-          ) : (
-            <>
-              <MdAdd />
-              <span>Assign</span>
-            </>
-          )}
-        </button>
+        <div className="flex-shrink-0 pt-0">
+          <button
+            onClick={handleAssign}
+            className={`
+              flex w-full justify-center items-center h-10 text-white
+              ${isAssigning ? "bg-[#1B626E]/60 cursor-not-allowed" : "bg-[#1B626E] hover:bg-[#297885] active:bg-[#145965] cursor-pointer"} rounded-md transition-colors
+              `}
+            disabled={isAssigning}
+          >
+            {isAssigning ? (
+              <div className="flex items-center justify-center">
+                <ClipLoader color="#ffffff" size={20} className="mr-2" />
+                Assigning...
+              </div>
+            ) : (
+              <>
+                <MdAdd className="mr-1" />
+                <span>Assign</span>
+              </>
+            )}
+          </button>
+        </div>
       </article>
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
@@ -256,6 +265,7 @@ const OutItemModal = ({
           setBoat("");
           setQuantity("");
           setIsOpen(false);
+          setErrors({})
         }}
       />
     </section>
