@@ -40,12 +40,14 @@ export const useOrder = () => {
       try {
         const response = await fetchAssignedItems();
         if (response && Array.isArray(response)) {
-          setOrders(response);
-          setFilteredOrders(response);
+          const unarchivedItems = response.filter(item => !item.archived);
+          
+          setOrders(unarchivedItems);
+          setFilteredOrders(unarchivedItems);
           showSuccessToast(
             toastId,
-            `Loaded ${response.length} ${
-              response.length > 1 ? "items" : "item"
+            `Loaded ${unarchivedItems.length} ${
+              unarchivedItems.length > 1 ? "items" : "item"
             } successfully`
           );
         } else {
