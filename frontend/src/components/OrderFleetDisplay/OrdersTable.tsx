@@ -8,6 +8,7 @@ import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
 import { ClipLoader } from "react-spinners";
+import { highlightText } from "@/utils/HighlightText";
 
 interface OrdersTableProps {
   orders: OrderItem[];
@@ -27,6 +28,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   isLoading,
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(0);
@@ -46,6 +48,12 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (onSearch) onSearch(query);
+  };
+  
 
   const getFilterOptions = () => {
     switch (activeFleet) {
@@ -88,6 +96,9 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
 
   const filterOptions = getFilterOptions();
 
+  
+
+
   const handleModifyItemClick = (item: OrderItem) => {
     setIsModifyOpen(true, item);
   };
@@ -95,7 +106,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   return (
     <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm ">
       <div className="flex gap-5 p-2 sm:p-[24px]">
-        <SearchBar placeholder="Search Items..." onSearch={onSearch} />
+        <SearchBar placeholder="Search Items..." onSearch={handleSearch} />
         <FilterDropdown
           label="All Boats"
           options={filterOptions}
@@ -140,31 +151,32 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   text-[16px] font-bold text-gray-800 px-3
                   shrink-0 break-all overflow-hidden hyphens-auto flex-1
                 ">
-                  {order.name}
+                  {highlightText(order.name, searchQuery)}
                 </div>
                 <div className="
                   text-[16px] text-gray-600 px-3
                   shrink-0 break-all overflow-hidden hyphens-auto flex-1
                 ">
-                  {order.note}
+                  {highlightText(order.note, searchQuery)}
                 </div>
                 <div className="
                   text-[16px] text-gray-800 px-3
                   shrink-0 break-all overflow-hidden hyphens-auto flex-1
                 ">
-                  {roundTo(Number(order.quantity), 2)} {pluralize(order.selectUnit, Number(order.quantity))}
+                  {highlightText(`${roundTo(Number(order.quantity), 2)} ${pluralize(order.selectUnit, Number(order.quantity))}`, searchQuery)}
                 </div>
                 <div className="
                   text-[16px] text-gray-800 px-3
                   shrink-0 break-all overflow-hidden hyphens-auto flex-1
                 ">
-                  ₱{Number(order.unitPrice).toFixed(2)} / {order.unitSize} {pluralize(order.selectUnit, Number(order.unitSize))}
+                  {highlightText(`₱${Number(order.unitPrice).toFixed(2)} / ${order.unitSize} ${pluralize(order.selectUnit, Number(order.unitSize))}`, searchQuery)}
+                  {pluralize(order.selectUnit, Number(order.unitSize))}
                 </div>
                 <div className="
                   text-[16px] text-gray-600 px-3
                   shrink-0 break-all overflow-hidden hyphens-auto flex-1
                 ">
-                  {order.boat.boat_name}
+                  {highlightText(order.boat.boat_name, searchQuery)}
                 </div>
                 <div className="
                   flex items-center gap-2
