@@ -8,18 +8,22 @@ import { fetchInventoryItems } from "@/api/inventoryAPI";
 import { PageTitle } from "@/components/PageTitle";
 import { ModifyOrderItem } from "@/types/modify-order-item";
 import { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useOrder } from "@/hooks/useOrder";
+import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
+
 import { Fleet } from "@/types";
 
 const Orders: React.FC = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isModifying, setIsModifying] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] =
     useState<ModifyOrderItem | null>(null);
   const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
+
+  const { updateAssignedItem, isLoading: isModifying } = useUpdateAssignedItem();
+
   const {
     orders,
     filteredOrders,
@@ -87,32 +91,65 @@ const Orders: React.FC = () => {
     }
   }, [isModifyOpen, selectedOrder, inventoryItems]);
 
-  const handleModifyItem = (quantity: number, fleet: string, boat: string) => {
-    if (selectedOrder) {
-      console.log("Changes confirmed:", {
-        selectedOrder,
-        quantity,
-        fleet,
-        boat,
-      });
-      setIsModifyOpen(false);
-    }
-  };
+  const handleModifyItem = async (quantity: number, fleetName: string, boatName: string) => {
+    if (!modifyOrderItem) return;
 
-  const handleRemoveItem = () => {
-    if (selectedOrder) {
-      console.log("Item removed:", selectedOrder);
-      setIsModifyOpen(false);
-    }
-  };
+    try {
+        const result = await updateAssignedItem({
+            id: modifyOrderItem.id,
+            quantity,
+            fleet_id: modifyOrderItem.fleet.id,
+            boat_id: modifyOrderItem.boat.id,
+            fleet_name: fleetName,
+            boat_name: boatName
+        });
 
-  const allFleetCount = orders.length;
-  const donyaDonyaCount = orders.filter(
-    (order) => order.fleet.fleet_name === "F/B DONYA DONYA 2x"
-  ).length;
-  const donaLibradaCount = orders.filter(
-    (order) => order.fleet.fleet_name === "F/B Doña Librada"
-  ).length;
+        if (result.success) {
+            if (result.deleted) {
+                setOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
+                setFilteredOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
+
+                setIsModifyOpen(false);
+                setSelectedOrder(null);
+                toast.success("Item removed and quantity restored to inventory");
+
+            } else if (result.data) {
+                const updatedOrder = {
+                    ...result.data,
+                    fleet: {
+                        ...modifyOrderItem.fleet,
+                        fleet_name: fleetName
+                    },
+                    boat: {
+                        ...modifyOrderItem.boat,
+                        boat_name: boatName
+                    }
+                };
+                
+                setOrders(prev => prev.map(order => 
+                    order.id === modifyOrderItem.id ? updatedOrder : order
+                ));
+                setFilteredOrders(prev => prev.map(order => 
+                    order.id === modifyOrderItem.id ? updatedOrder : order
+                ));
+                toast.success("Item updated successfully");
+            }
+        }
+    } catch (error) {
+        console.error("Error modifying item:", error);
+        toast.error("Failed to update item. Please try again.");
+    }
+};
+  
+
+  const handleRemoveItem = (id: number) => {
+    setFilteredOrders((prev) => prev.filter((order) => order.id !== id));
+    setOrders((prev) => prev.filter((order) => order.id !== id));
+    setSelectedOrder(null);
+    setIsModifyOpen(false);
+  };
+  
+  
 
   return (
     <div>
@@ -174,8 +211,8 @@ const Orders: React.FC = () => {
           onModify={handleModifyItem}
           onRemove={handleRemoveItem}
           selectedOrder={modifyOrderItem}
-          isModifying={isModifying}
           isDeleting={isDeleting}
+          isModifying={isModifying}
         />
       </main>
     </div>

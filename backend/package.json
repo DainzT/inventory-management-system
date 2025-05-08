@@ -7,9 +7,11 @@
     "build": "tsc",
     "dev": "cross-env NODE_ENV=development nodemon --exec tsx src/index.ts",
     "test": "cross-env NODE_ENV=test dotenv -e .env.test -- jest",
-    "test:watch": "cross-env NODE_ENV=test dotenv -e .env.test  -- jest --watch",
+    "test:watch": "cross-env NODE_ENV=test dotenv -e .env.test  -- jest --watch --detectOpenHandles",
     "test:setup": "cross-env NODE_ENV=test dotenv -e .env.test -- prisma db push --force-reset",
-    "test:reset": "npm run test:setup"
+    "test:reset": "npm run test:setup",
+    "build:test": "cross-env NODE_ENV=test dotenv -e .env.test -- tsc",
+    "start:test": "cross-env NODE_ENV=test dotenv -e .env.test -- node dist/index.js"
   },
   "keywords": [],
   "author": "",

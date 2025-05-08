@@ -8,6 +8,7 @@ import {
 } from "@/api/inventoryAPI";
 import { InventoryItem, ItemFormData, OutItemData } from "@/types";
 import { useToast } from "./useToast";
+import { HighlightedItem, HighlightType } from "@/types";
 
 export const useInventory = () => {
     const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
@@ -26,6 +27,18 @@ export const useInventory = () => {
         showErrorToast,
     } = useToast();
 
+    const [highlightedItem, setHighlightedItem] = useState<HighlightedItem>(null);
+
+    // Function to highlight and handle item focus
+    const focusItem = (itemId: number, type: HighlightType) => {
+
+        setHighlightedItem({ id: itemId, type });
+        
+        setTimeout(() => {
+            setHighlightedItem(null);
+        }, 3000);
+    };
+
     const loadInventoryItems = async () => {
         showLoadingToast("loading-inventory", "Loading inventory...");
         try {
@@ -40,8 +53,17 @@ export const useInventory = () => {
             setInventoryItems(items);
         } catch (error) {
             console.error("Failed to fetch inventory items:", error);
-            
-            const message = error instanceof Error ? error.message : "Failed to load inventory";
+            let message = "Failed to load inventory";
+            if (error instanceof Error) {
+                if (error.message === "No response received from server" ||
+                    error.message === "Failed to fetch items from inventory" ||
+                    error.message.includes("Network Error")) {
+                    message = "Network error. Please check your internet connection.";
+                } else {
+                    message = error.message;
+                }
+            }
+
             showErrorToast("loading-inventory", message);
         } finally {
             setIsLoading(false);
@@ -49,21 +71,37 @@ export const useInventory = () => {
     };
 
     const handleAddProduct = async (newProduct: ItemFormData) => {
-        console.log(newProduct)
+
         showLoadingToast("adding-product", "Adding product...");
         try {
             setIsAdding(true);
-            await addInventoryItem(newProduct);
+            const res = await addInventoryItem(newProduct);
 
-            showSuccessToast("adding-product", "Product added successfully!");
-
+            showSuccessToast("adding-product", res.message);
+            
             const items = await fetchInventoryItems();
             setInventoryItems(items);
             setIsAddOpen(false);
+
+            const newItem = res.data
+
+            if (newItem) {
+                focusItem(newItem.id, 'added');
+            }
+
         } catch (error) {
             console.error("Failed to add product:", error);
 
-            const message = error instanceof Error ? error.message : "Failed to add product.";
+            let message = "Failed to add product.";
+            if (error instanceof Error) {
+                if (error.message === "No response received from server" ||
+                    error.message === "Failed to add item to inventory" ||
+                    error.message.includes("Network Error")) {
+                    message = "Network error - unable to connect to server. Please check your connection.";
+                } else {
+                    message = error.message;
+                }
+            }
             showErrorToast("adding-product", message);
         } finally {
             setIsAdding(false);
@@ -81,10 +119,24 @@ export const useInventory = () => {
             const items = await fetchInventoryItems();
             setInventoryItems(items);
             setIsOutOpen(false);
+
+            if (res.data) {
+                focusItem(outItem.item_id.id, 'assigned');
+            }
+
         } catch (error) {
             console.error("Failed to assign product:", error);
-            
-            const message = error instanceof Error ? error.message : "Failed to assign product. Please try again."
+
+            let message = "Failed to assign product. Please try again.";
+            if (error instanceof Error) {
+                if (error.message === "No response received from server" ||
+                    error.message === "Failed to assign item" ||
+                    error.message.includes("Network Error")) {
+                    message = "Network error - unable to connect to server. Please check your connection.";
+                } else {
+                    message = error.message;
+                }
+            }
             showErrorToast("assigning-product", message);
 
         } finally {
@@ -103,10 +155,27 @@ export const useInventory = () => {
             const items = await fetchInventoryItems();
             setInventoryItems(items);
             setIsEditOpen(false);
+
+            const newItem = res.data
+
+            if (newItem) {
+                focusItem(newItem.id, 'edited');
+            }
+
         } catch (error) {
             console.error("Failed to Edit product:", error);
 
-            const message = error instanceof Error ? error.message : "Failed to Edit product. Please try again."
+            let message = "Failed to Edit product. Please try again.";
+            if (error instanceof Error) {
+                if (error.message === "No response received from server" ||
+                    error.message === "Failed to edit item" ||
+                    error.message.includes("Network Error")) {
+                    message = "Network error - unable to connect to server. Please check your connection.";
+                } else {
+                    message = error.message;
+                }
+            }
+
             showErrorToast("editing-product", message);
 
         } finally {
@@ -119,7 +188,7 @@ export const useInventory = () => {
 
         try {
             setIsDeleting(true);
-            console.log(id)
+
             const res = await deleteInventoryitem(id);
 
             showSuccessToast("deleting-product", res.message);
@@ -130,7 +199,17 @@ export const useInventory = () => {
         } catch (error) {
             console.error("Failed to Delete product:", error);
 
-            const message = error instanceof Error ? error.message : "Failed to delete product. Please try again."
+            let message = "Failed to delete product. Please try again.";
+            if (error instanceof Error) {
+                if (error.message === "No response received from server" ||
+                    error.message === "Failed to delete item" ||
+                    error.message.includes("Network Error")) {
+                    message = "Network error - unable to connect to server. Please check your connection.";
+                } else {
+                    message = error.message;
+                }
+            }
+
             showErrorToast("deleting-product", message);
 
         } finally {
@@ -157,5 +236,6 @@ export const useInventory = () => {
         handleOutItem,
         handleEditItem,
         handleDeleteItem,
+        highlightedItem,
     };
 };

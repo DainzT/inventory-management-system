@@ -1,5 +1,6 @@
 import { InventoryItem } from "@/types";
 import { pluralize } from "@/utils/Pluralize";
+import { roundTo } from "@/utils/RoundTo";
 
 interface ItemDetailsProps {
   item: InventoryItem
@@ -20,7 +21,7 @@ const ItemDetails = ({
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500 inter-font">Stock Available:</p>
         <p className="text-sm font-semibold text-black">
-          {item.quantity} {pluralize(item.selectUnit, Number(item.quantity))}
+          {roundTo(Number(item.quantity), 2)} {pluralize(item.selectUnit, Number(item.quantity))}
         </p>
       </div>
     </section>

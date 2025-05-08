@@ -6,6 +6,7 @@ import { FilterDropdown } from "./FilterDropdown";
 // import { ExpandedOrderDetails } from "./ExpandedOrderDetails"; // Removed as it is unused
 import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 import { pluralize } from "@/utils/Pluralize";
+import { roundTo } from "@/utils/RoundTo";
 import { ClipLoader } from "react-spinners";
 
 interface OrdersTableProps {
@@ -126,50 +127,70 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
             const isSameDateAsPrevious =
               index > 0 && currentItems[index - 1].outDate === order.outDate;
 
-            return (
-              <React.Fragment key={order.id}>
-                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
-                  <div className="text-[16px] text-gray-600 px-3">
-                    {!isSameDateAsPrevious &&
-                      new Date(order.outDate).toLocaleDateString()}
-                  </div>
-                  <div className="text-[16px] font-bold text-gray-800 px-3">
-                    {order.name}
-                  </div>
-                  <div className="text-[16px] text-gray-600 px-3">
-                    {order.note}
-                  </div>
-                  <div className="text-[16px] text-gray-800 px-3">
-                    {order.quantity}{" "}
-                    {pluralize(order.selectUnit, Number(order.quantity))}
-                  </div>
-                  <div className="text-[16px] text-gray-800 px-3">
-                    ₱{order.unitPrice} / {order.unitSize}{" "}
-                    {pluralize(order.selectUnit, Number(order.unitSize))}
-                  </div>
-                  <div className="text-[16px] text-gray-600 px-3">
-                    {order.boat.boat_name}
-                  </div>
-                  <div className="flex items-center gap-2 justify-center">
-                    <button
-                      className="h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px] hover:bg-emerald-600 transition-colors duration-200"
-                      onClick={() => handleModifyItemClick(order)}
-                    >
-                      Modify
-                    </button>
-                  </div>
-                  <div
-                    className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
-                    onClick={() => toggleExpand(order.id)}
+          return (
+            <React.Fragment key={order.id}>
+              <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
+                <div className="
+                  text-[16px] text-gray-600 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
+                </div>
+                <div className="
+                  text-[16px] font-bold text-gray-800 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  {order.name}
+                </div>
+                <div className="
+                  text-[16px] text-gray-600 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  {order.note}
+                </div>
+                <div className="
+                  text-[16px] text-gray-800 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  {roundTo(Number(order.quantity), 2)} {pluralize(order.selectUnit, Number(order.quantity))}
+                </div>
+                <div className="
+                  text-[16px] text-gray-800 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  ₱{Number(order.unitPrice).toFixed(2)} / {order.unitSize} {pluralize(order.selectUnit, Number(order.unitSize))}
+                </div>
+                <div className="
+                  text-[16px] text-gray-600 px-3
+                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                ">
+                  {order.boat.boat_name}
+                </div>
+                <div className="
+                  flex items-center gap-2
+                  shrink-0 break-all overflow-hidden hyphens-auto justify-center
+                ">
+                  <button
+                    className="
+                        h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
+                        cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                    "
+                    onClick={() => handleModifyItemClick(order)}
                   >
-                    <ChevronIcon isExpanded={expandedOrderId === order.id} />
-                  </div>
+                    Modify
+                  </button>
                 </div>
                 <div
-                  className={`transition-all duration-300 ease-in-out ${
-                    expandedOrderId === order.id
-                      ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                      : "scale-100 opacity-0 max-h-0 overflow-auto"
+                  className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+                  onClick={() => toggleExpand(order.id)}
+                >
+                  <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                </div>
+              </div>
+              <div
+                className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
+                  ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                  : "scale-100 opacity-0 max-h-0 overflow-auto"
                   }`}
                 ></div>
               </React.Fragment>

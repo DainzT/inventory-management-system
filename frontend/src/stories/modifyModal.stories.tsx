@@ -23,7 +23,10 @@ const sampleOrder: ModifyOrderItem = {
   quantity: 3,
   fleet: sampleFleet,
   boat: sampleBoat,
-  currentQuantity: 10,
+  inventory: null,
+  selectUnit: "",
+  unitSize: 0,
+  total: 0
 };
 
 const meta: Meta<typeof ModifyModal> = {
@@ -32,10 +35,7 @@ const meta: Meta<typeof ModifyModal> = {
   tags: ["autodocs"],
   args: {
     isOpen: true,
-    onClose: fn(),
-    onConfirm: fn(),
     onRemove: fn(),
-    order: sampleOrder,
   },
   argTypes: {
     isOpen: { control: "boolean" },
@@ -50,7 +50,7 @@ export const Default: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getByText("Modify Item")).toBeInTheDocument();
     await expect(canvas.getByText(sampleOrder.name)).toBeInTheDocument();
-    await expect(canvas.getByText(`₱${sampleOrder.unitPrice.toFixed(2)}`)).toBeInTheDocument();
+    await expect(canvas.getByText(`₱${Number(sampleOrder.unitPrice).toFixed(2)}`)).toBeInTheDocument();
   },
 };
 
@@ -117,7 +117,7 @@ export const ConfirmationFlow: Story = {
     await userEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(args.onConfirm).toHaveBeenCalledWith(
+      expect(args).toHaveBeenCalledWith(
         sampleOrder.quantity,
         sampleFleet.fleet_name,
         sampleBoat.boat_name

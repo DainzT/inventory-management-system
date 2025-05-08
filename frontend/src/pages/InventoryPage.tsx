@@ -8,8 +8,10 @@ import AddProductModal from "@/components/AddProductModal/AddProductModal";
 import OutItemModal from "@/components/OutItemModal/OutItemModal";
 import { PageTitle } from "@/components/PageTitle";
 
-import { InventoryItem} from "@/types";
+import { InventoryItem } from "@/types";
 import { useInventory } from "@/hooks/useInventory";
+import { roundTo } from "@/utils/RoundTo";
+import { pluralize } from "@/utils/Pluralize";
 
 const Inventory: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
@@ -33,6 +35,7 @@ const Inventory: React.FC = () => {
     handleOutItem,
     handleEditItem,
     handleDeleteItem,
+    highlightedItem,
   } = useInventory();
 
   useEffect(() => {
@@ -45,22 +48,41 @@ const Inventory: React.FC = () => {
   };
 
   const filteredItems = inventoryItems.filter((item) => {
-    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+    if (!searchQuery.trim()) return true;
 
-    const matchesSearch = [
+    const lowerQuery = searchQuery.toLowerCase().trim();
+
+    const quantityDisplay = `${roundTo(Number(item.quantity), 2)} ${pluralize(item.selectUnit, Number(item.quantity))}`;
+    const priceDisplay = `₱${typeof item.unitPrice === "number" ? item.unitPrice.toFixed(2) : "0.00"}`;
+    const unitDisplay = `${item.unitSize} ${pluralize(item.selectUnit, Number(item.unitSize))}`;
+    const pricePerUnitDisplay = `${priceDisplay} / ${unitDisplay}`;
+
+    const searchableFields = [
       item.name?.toLowerCase(),
       item.note?.toLowerCase(),
-      item.quantity?.toString(),
-      item.unitPrice?.toString(),
-      item.selectUnit?.toLowerCase(),
-      item.unitSize?.toString(),
-      item.total?.toString(),
-      item.dateCreated?.toISOString().toLowerCase(),
-    ].some((field) => field?.includes(lowerCaseSearchQuery));
 
-    return matchesSearch;
+      item.quantity?.toString(),
+      roundTo(Number(item.quantity), 2).toString(),
+      quantityDisplay,
+      pluralize(item.selectUnit, Number(item.quantity)),
+      item.selectUnit,
+
+      item.unitPrice?.toString(),
+      priceDisplay.replace('₱', ''),
+      priceDisplay,
+
+      item.unitSize?.toString(),
+      unitDisplay,
+      pricePerUnitDisplay,
+
+      `${item.quantity} ${item.selectUnit}`.toLowerCase(),
+      `${roundTo(Number(item.quantity), 2)} ${item.selectUnit}`.toLowerCase()
+    ].filter(Boolean).map(f => f.toString().toLowerCase());
+
+
+    return searchableFields.some(field => field.includes(lowerQuery));
   });
-  
+
   return (
     <div className="flex-1 p-0 overflow-auto">
       <ToastContainer
@@ -74,7 +96,7 @@ const Inventory: React.FC = () => {
         draggable
         theme="light"
       />
-  
+
       <PageTitle title="Main Inventory" />
       <InventoryManagementTable
         setIsAddOpen={setIsAddOpen}
@@ -89,6 +111,8 @@ const Inventory: React.FC = () => {
         inventoryItems={filteredItems}
         onSearch={handleSearch}
         isLoading={isLoading}
+        searchQuery={searchQuery}
+        highlightedItem={highlightedItem}
       />
       <AddProductModal
         isOpen={isAddOpen}
