@@ -117,6 +117,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           <div className="flex justify-center items-center h-[200px]">
             <ClipLoader color="#0e7490" size={50} />
           </div>
+        ) : currentItems.length === 0 ? (
+          <div className="text-center text-gray-500 py-4">
+            There is no assigned item.
+          </div>
         ) : (
           currentItems.map((order, index) => {
             const isSameDateAsPrevious =
