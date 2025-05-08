@@ -29,6 +29,7 @@ const Orders: React.FC = () => {
     handleFleetSelect,
     setFilteredOrders,
     setOrders,
+    isLoading,
   } = useOrder();
 
   function toModifyOrderItem(
@@ -107,7 +108,7 @@ const Orders: React.FC = () => {
 
   const allFleetCount = orders.length;
   const donyaDonyaCount = orders.filter(
-    (order) => order.fleet.fleet_name === "F/B DONYA DONYA 2X"
+    (order) => order.fleet.fleet_name === "F/B DONYA DONYA 2x"
   ).length;
   const donaLibradaCount = orders.filter(
     (order) => order.fleet.fleet_name === "F/B Doña Librada"
@@ -159,6 +160,7 @@ const Orders: React.FC = () => {
             onSearch={handleSearch}
             onFilter={handleFilter}
             activeFleet={activeFleet}
+            isLoading={isLoading}
             setIsModifyOpen={(isOpen, item) => {
               setSelectedOrder(item || null);
               setIsModifyOpen(isOpen);

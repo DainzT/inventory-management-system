@@ -3,9 +3,10 @@ import ReactPaginate from "react-paginate";
 import { OrderItem } from "@/types/order-item";
 import { SearchBar } from "../InventoryManagementTable/SearchBar";
 import { FilterDropdown } from "./FilterDropdown";
-import { ExpandedOrderDetails } from "./ExpandedOrderDetails";
+// import { ExpandedOrderDetails } from "./ExpandedOrderDetails"; // Removed as it is unused
 import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 import { pluralize } from "@/utils/Pluralize";
+import { ClipLoader } from "react-spinners";
 
 interface OrdersTableProps {
   orders: OrderItem[];
@@ -13,6 +14,7 @@ interface OrdersTableProps {
   onFilter?: (filter: string) => void;
   setIsModifyOpen: (isOpen: boolean, item?: OrderItem) => void;
   activeFleet: string;
+  isLoading: boolean;
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -21,9 +23,9 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   onFilter,
   setIsModifyOpen,
   activeFleet,
+  isLoading,
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-
 
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(0);
@@ -111,61 +113,65 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       </div>
 
       <div className="flex-1">
-        {currentItems.map((order, index) => {
-          const isSameDateAsPrevious =
-            index > 0 && currentItems[index - 1].outDate === order.outDate;
+        {isLoading ? (
+          <div className="flex justify-center items-center h-[200px]">
+            <ClipLoader color="#0e7490" size={50} />
+          </div>
+        ) : (
+          currentItems.map((order, index) => {
+            const isSameDateAsPrevious =
+              index > 0 && currentItems[index - 1].outDate === order.outDate;
 
-          return (
-            <React.Fragment key={order.id}>
-              <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
-                <div className="text-[16px] text-gray-600 px-3">
-                  {!isSameDateAsPrevious &&
-                    new Date(order.outDate).toLocaleDateString()}
-                </div>
-                <div className="text-[16px] font-bold text-gray-800 px-3">
-                  {order.name}
-                </div>
-                <div className="text-[16px] text-gray-600 px-3">{order.note}</div>
-                <div className="text-[16px] text-gray-800 px-3">
-                  {order.quantity}{" "}
-                  {pluralize(order.selectUnit, Number(order.quantity))}
-                </div>
-                <div className="text-[16px] text-gray-800 px-3">
-                  ₱{order.unitPrice} / {order.unitSize}{" "}
-                  {pluralize(order.selectUnit, Number(order.unitSize))}
-                </div>
-                <div className="text-[16px] text-gray-600 px-3">
-                  {order.boat.boat_name}
-                </div>
-                <div className="flex items-center gap-2 justify-center">
-                  <button
-                    className="h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px] hover:bg-emerald-600 transition-colors duration-200"
-                    onClick={() => handleModifyItemClick(order)}
+            return (
+              <React.Fragment key={order.id}>
+                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
+                  <div className="text-[16px] text-gray-600 px-3">
+                    {!isSameDateAsPrevious &&
+                      new Date(order.outDate).toLocaleDateString()}
+                  </div>
+                  <div className="text-[16px] font-bold text-gray-800 px-3">
+                    {order.name}
+                  </div>
+                  <div className="text-[16px] text-gray-600 px-3">
+                    {order.note}
+                  </div>
+                  <div className="text-[16px] text-gray-800 px-3">
+                    {order.quantity}{" "}
+                    {pluralize(order.selectUnit, Number(order.quantity))}
+                  </div>
+                  <div className="text-[16px] text-gray-800 px-3">
+                    ₱{order.unitPrice} / {order.unitSize}{" "}
+                    {pluralize(order.selectUnit, Number(order.unitSize))}
+                  </div>
+                  <div className="text-[16px] text-gray-600 px-3">
+                    {order.boat.boat_name}
+                  </div>
+                  <div className="flex items-center gap-2 justify-center">
+                    <button
+                      className="h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px] hover:bg-emerald-600 transition-colors duration-200"
+                      onClick={() => handleModifyItemClick(order)}
+                    >
+                      Modify
+                    </button>
+                  </div>
+                  <div
+                    className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+                    onClick={() => toggleExpand(order.id)}
                   >
-                    Modify
-                  </button>
+                    <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                  </div>
                 </div>
                 <div
-                  className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
-                  onClick={() => toggleExpand(order.id)}
-                >
-                  <ChevronIcon isExpanded={expandedOrderId === order.id} />
-                </div>
-              </div>
-              <div
-                className={`transition-all duration-300 ease-in-out ${
-                  expandedOrderId === order.id
-                    ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                    : "scale-100 opacity-0 max-h-0 overflow-auto"
-                }`}
-              >
-                {expandedOrderId === order.id && (
-                  <ExpandedOrderDetails order={order} />
-                )}
-              </div>
-            </React.Fragment>
-          );
-        })}
+                  className={`transition-all duration-300 ease-in-out ${
+                    expandedOrderId === order.id
+                      ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                      : "scale-100 opacity-0 max-h-0 overflow-auto"
+                  }`}
+                ></div>
+              </React.Fragment>
+            );
+          })
+        )}
       </div>
       <div className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px]">
         <div
@@ -185,7 +191,6 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           </span>
 
           <div className="flex items-center gap-4">
-
             <ReactPaginate
               previousLabel={"Previous"}
               nextLabel={"Next"}
