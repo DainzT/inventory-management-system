@@ -30,8 +30,6 @@ router.post("/update-archive", async (req: Request, res: Response) => {
   try {
     const { orders } = req.body;
 
-    console.log("Incoming orders:", orders); // Log the incoming data
-
     if (!Array.isArray(orders)) {
       res.status(400).json({ message: "Invalid data format" });
       return;
