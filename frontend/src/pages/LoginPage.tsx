@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
   return (
     <main className="flex flex-col items-center justify-start h-screen w-screen bg-white">
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop
