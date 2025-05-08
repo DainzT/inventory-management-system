@@ -183,7 +183,6 @@ const OutItemModal = ({
 
         {selectedItem && <ItemDetails item={selectedItem} />}
         <div className="flex-grow overflow-y-auto">
-
           <div className="mb-1">
             <SelectField
               label="Choose a fleet"
