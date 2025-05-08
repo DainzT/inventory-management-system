@@ -7,6 +7,7 @@ const defaultArgs = {
   backgroundColor: "bg-cyan-800",
   isActive: false,
   onClick: () => {},
+  orderCount: 0,
 };
 
 const CenterDecorator: Decorator = (Story) => (
@@ -30,8 +31,7 @@ const meta: Meta<typeof FleetCard> = {
   argTypes: {
     backgroundColor: {
       control: "select",
-      options: ["bg-cyan-800", "bg-emerald-800", "bg-red-800", "bg-gray-500"],
-      description: "Tailwind background color class",
+      options: ["bg-cyan-800", "bg-emerald-800", "bg-yred-800", "bg-gray-500"],
     },
     isActive: {
       control: "boolean",
@@ -40,6 +40,10 @@ const meta: Meta<typeof FleetCard> = {
     onClick: {
       action: "clicked",
       description: "Callback when card is clicked",
+    },
+    orderCount: {
+      control: "number",
+      description: "Number of orders associated with the fleet",
     },
   },
   decorators: [CenterDecorator],
@@ -55,6 +59,7 @@ export const AllFleets: Story = {
     title: "All Fleets",
     backgroundColor: "bg-emerald-800",
     isActive: true,
+    orderCount: 10,
   },
 };
 
@@ -64,6 +69,7 @@ export const DonyaDonya: Story = {
     title: "F/B DONYA DONYA 2X",
     backgroundColor: "bg-cyan-800",
     isActive: true,
+    orderCount: 5,
   },
 };
 
@@ -73,5 +79,6 @@ export const Inactive: Story = {
     title: "Inactive Fleet",
     backgroundColor: "bg-red-800",
     isActive: false,
+    orderCount: 0,
   },
 };

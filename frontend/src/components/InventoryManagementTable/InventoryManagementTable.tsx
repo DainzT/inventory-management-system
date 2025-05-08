@@ -106,7 +106,7 @@ const InventoryManagementTable = ({
         ">
           {isLoading && (
             <div className="relative flex justify-center items-center pt-10 pb-10">
-              <ClipLoader size={60} color="#36D7B7" loading={isLoading} />
+              <ClipLoader size={60} color="#0e7490" loading={isLoading} />
             </div>
           )}
           {inventoryItems.length === 0 && !isLoading && (
