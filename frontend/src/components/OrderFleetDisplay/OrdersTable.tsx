@@ -96,16 +96,16 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   };
 
   return (
-    <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm ">
-      <div className="flex gap-5 p-2 sm:p-[24px]">
+    <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm">
+      <div className="flex gap-5 p-2 sm:p-[24px] sticky top-0 bg-white z-10">
         <SearchBar placeholder="Search Items..." onSearch={onSearch} />
         <FilterDropdown
           label="All Boats"
           options={filterOptions}
-          onSelect={onFilter || (() => {})}
+          onSelect={onFilter || (() => { })}
         />
       </div>
-
+      
       <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-cyan-900 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
         <div className="px-3">Date Out</div>
         <div className="px-3">Product Name</div>
@@ -116,20 +116,19 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
         <div className="text-center">Actions</div>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 overflow-y-auto overflow-hidden">
         {isLoading ? (
-          <div className="flex justify-center items-center h-[200px]">
-            <ClipLoader color="#0e7490" size={50} />
+          <div className="relative flex justify-center items-center pt-10 pb-10">
+            <ClipLoader color="#0e7490" size={60} />
           </div>
         ) : currentItems.length === 0 ? (
-          <div className="text-center text-gray-500 py-4">
+          <div className="text-center text-gray-500 pt-10 pb-10 text-2xl">
             There is no assigned item.
           </div>
         ) : (
           currentItems.map((order, index) => {
             const isSameDateAsPrevious =
               index > 0 && currentItems[index - 1].outDate === order.outDate;
-
             return (
               <React.Fragment key={order.id}>
                 <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
@@ -191,11 +190,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   </div>
                 </div>
                 <div
-                  className={`transition-all duration-300 ease-in-out ${
-                    expandedOrderId === order.id
+                  className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
                       ? "scale-[100.5%] opacity-100 max-h-[500px]"
                       : "scale-100 opacity-0 max-h-0 overflow-hidden"
-                  }`}
+                    }`}
                 >
                   {expandedOrderId === order.id && (
                     <ExpandedOrderDetails order={order} />
@@ -206,17 +204,9 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           })
         )}
       </div>
-      <div className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px]">
-        <div
-          className="
-            p-4 px-6 
-            border-t border-[1px] border-[#E5E7EB] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] 
-            bg-gray-50 text-sm text-gray-500
-            rounded-br-[10px] rounded-bl-[10px]
-            w-[calc(100vw+180px)] sm:w-full md:w-[calc(100vw)] lg:w-full
-            flex justify-between items-center
-          "
-        >
+      <div className="sticky bottom-0 bg-[#fff] border-t border-b border-[#E5E7EB] shadow-[0px_-4px_6px_0px_rgba(0,0,0,0.05)]  rounded-br-[10px] rounded-bl-[10px]">
+        <div className="p-4 px-6 flex justify-between items-center ">
+
           <span className="text-sm text-gray-500">
             Showing {offset + 1} to{" "}
             {Math.min(offset + ITEMS_PER_PAGE, sortedOrders.length)} of{" "}
