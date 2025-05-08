@@ -12,8 +12,6 @@ import { toast, ToastContainer } from "react-toastify";
 import { useOrder } from "@/hooks/useOrder";
 import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
 
-import { Fleet } from "@/types";
-
 const Orders: React.FC = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -149,6 +147,14 @@ const Orders: React.FC = () => {
     setIsModifyOpen(false);
   };
   
+  const allFleetCount = orders.length;
+  const donyaDonyaCount = orders.filter(
+    (order) => order.fleet.fleet_name === "F/B DONYA DONYA 2x"
+  ).length;
+  const donaLibradaCount = orders.filter(
+    (order) => order.fleet.fleet_name === "F/B Doña Librada"
+  ).length;
+
   
 
   return (
