@@ -28,6 +28,8 @@ describe("POST /api/auth/login (Negative Cases)", () => {
   });
 
   afterAll(async () => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
     await prisma.otp.deleteMany();
     await prisma.user.deleteMany();
     await prisma.$disconnect();

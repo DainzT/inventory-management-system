@@ -34,7 +34,10 @@ describe("POST /api/auth/verify-pin", () => {
       .send({ pin: "123456" });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: "PIN verified successfully" });
+    expect(response.body).toEqual({
+      message: "PIN verified successfully",
+      success: true,
+    });
   });
 
   it("should return 401 for incorrect PIN", async () => {
@@ -43,17 +46,7 @@ describe("POST /api/auth/verify-pin", () => {
       .send({ pin: "654321" });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ message: "Invalid PIN" });
-  });
-
-  it("should return 404 when no user exists", async () => {
-    await prisma.user.deleteMany();
-    const response = await request(app)
-      .post("/api/auth/verify-pin")
-      .send({ pin: "123456" });
-
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ message: "User not found" });
+    expect(response.body).toEqual({ message: "Invalid PIN", success: false });
   });
 });
 
@@ -66,7 +59,10 @@ describe("POST /api/auth/verify-pin (Negative Cases)", () => {
       .send({ pin: "123456" });
 
     expect(response.status).toBe(404);
-    expect(response.body).toEqual({ message: "User not found" });
+    expect(response.body).toEqual({
+      message: "User not found",
+      success: false,
+    });
   });
 
   it("should return appropriate status when PIN is missing", async () => {

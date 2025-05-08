@@ -9,7 +9,6 @@ import {
   verifyOtpAPI,
   createAdminAPI,
   refreshTokenAPI,
-
   logoutAPI,
   changeEmailAPI,
   resetPinAPI,
@@ -157,12 +156,9 @@ export const useAuth = () => {
     const createAdminId = "create-admin-toast";
     try {
       setLoading(true);
-      showLoadingToast(createAdminId, "creating account for Admin");
+      showLoadingToast(createAdminId, "Creating account for Admin.");
       await createAdminAPI(payload);
-      showSuccessToast(
-        createAdminId,
-        "Admin account created successfully."
-      );
+      showSuccessToast(createAdminId, "Admin account created successfully.");
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to create admin");
@@ -172,14 +168,18 @@ export const useAuth = () => {
     }
   };
 
-  const handleSendOTP = async (email: string, pin: string, confirmPin: string,) => {
+  const handleSendOTP = async (
+    email: string,
+    pin: string,
+    confirmPin: string
+  ) => {
     const sendOtpId = "send-otp-toast";
     showLoadingToast(sendOtpId, "Sending OTP...");
     try {
       setLoading(true);
       await sendOtpEmailAPI(email, pin, confirmPin);
       showSuccessToast(sendOtpId, "OTP sent to email.");
-      setOtpSent(true)
+      setOtpSent(true);
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to send OTP");
@@ -251,12 +251,9 @@ export const useAuth = () => {
     }
   };
 
-  const ResetPin = async (
-    email: string,
-    newPin: string
-  ) => {
+  const ResetPin = async (email: string, newPin: string) => {
     const verifyResetId = "verify-reset-toast";
-    showLoadingToast(verifyResetId, "resetting PIN...");
+    showLoadingToast(verifyResetId, "Resetting PIN...");
     try {
       setLoading(true);
       await resetPinAPI(email, newPin);
@@ -273,7 +270,6 @@ export const useAuth = () => {
   };
 
   const changeEmail = async (oldEmail: string, newEmail: string) => {
-    
     const toastId = "change-email-toast";
     showLoadingToast(toastId, "Changing email...");
 
@@ -285,11 +281,7 @@ export const useAuth = () => {
 
     try {
       setLoading(true);
-      await changeEmailAPI(
-        oldEmail,
-        newEmail,
-        accessToken
-      );
+      await changeEmailAPI(oldEmail, newEmail, accessToken);
       showSuccessToast(toastId, "Email updated successfully.");
     } catch (err) {
       const error = err as ErrorWithMessage;

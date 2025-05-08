@@ -13,14 +13,22 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPin, setNewPin] = useState("");
-  const { loading, otpSent, setOtpSent, otpVerified, handleVerifyEmail, handleVerifyOTP, ResetPin } = useAuth();
+  const {
+    loading,
+    otpSent,
+    setOtpSent,
+    otpVerified,
+    handleVerifyEmail,
+    handleVerifyOTP,
+    ResetPin,
+  } = useAuth();
 
   const handleSendOTP = async () => {
     await handleVerifyEmail(email);
   };
 
   const handleOTPVerification = async () => {
-    await handleVerifyOTP(otp)
+    await handleVerifyOTP(otp);
   };
 
   const handleResetPin = async () => {
@@ -29,7 +37,7 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
       autoClose: 1500,
       onClose,
     });
-  }
+  };
 
   const handleBack = () => {
     setOtpSent(false);
@@ -96,14 +104,24 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
               </button>
             )}
             <button
-              onClick={otpSent ? (otpVerified ? handleResetPin : handleOTPVerification) : handleSendOTP}
+              onClick={
+                otpSent
+                  ? otpVerified
+                    ? handleResetPin
+                    : handleOTPVerification
+                  : handleSendOTP
+              }
               className="px-4 py-2 text-white bg-cyan-700 rounded-md hover:bg-cyan-800 transition cursor-pointer"
               disabled={loading}
             >
               {loading ? (
                 <ClipLoader size={20} color="#f4f4f4" />
               ) : otpSent ? (
-                otpVerified ? "Reset PIN" : "Verify OTP"
+                otpVerified ? (
+                  "Reset PIN"
+                ) : (
+                  "Verify OTP"
+                )
               ) : (
                 "Send OTP"
               )}

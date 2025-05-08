@@ -34,6 +34,8 @@ describe("PUT /api/auth/change-email", () => {
   });
 
   afterAll(async () => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
     await prisma.otp.deleteMany();
     await prisma.user.deleteMany();
     await prisma.$disconnect();
@@ -45,7 +47,10 @@ describe("PUT /api/auth/change-email", () => {
       .send({ oldEmail: "wrong@example.com", newEmail: "new@example.com" });
 
     expect(response.status).toBe(404);
-    expect(response.body).toEqual({ message: "Old email not found." });
+    expect(response.body).toEqual({
+      message: "Old email not found.",
+      success: false,
+    });
   });
 
   it("should successfully change email with valid credentials", async () => {
@@ -54,7 +59,10 @@ describe("PUT /api/auth/change-email", () => {
       .send({ oldEmail: "old@example.com", newEmail: "new@example.com" });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: "Email updated successfully." });
+    expect(response.body).toEqual({
+      message: "Email updated successfully.",
+      success: true,
+    });
 
     const updatedUser = await prisma.user.findUnique({
       where: { id: user.id },
@@ -77,7 +85,10 @@ describe("PUT /api/auth/change-email", () => {
       .send({ oldEmail: "old@example.com", newEmail: "new@example.com" });
 
     expect(response.status).toBe(409);
-    expect(response.body).toEqual({ message: "New email is already in use." });
+    expect(response.body).toEqual({
+      message: "New email is already in use.",
+      success: false,
+    });
   });
 });
 
@@ -114,7 +125,10 @@ describe("PUT /api/auth/change-email (Negative Cases)", () => {
       .send({ oldEmail: "old@example.com", newEmail: "taken@example.com" });
 
     expect(response.status).toBe(409);
-    expect(response.body).toEqual({ message: "New email is already in use." });
+    expect(response.body).toEqual({
+      message: "New email is already in use.",
+      success: false,
+    });
   });
 
   it("should handle database update failure", async () => {
@@ -126,7 +140,10 @@ describe("PUT /api/auth/change-email (Negative Cases)", () => {
     });
 
     expect(response.status).toBe(404);
-    expect(response.body).toEqual({ message: "Old email not found." });
+    expect(response.body).toEqual({
+      message: "Old email not found.",
+      success: false,
+    });
 
     jest.restoreAllMocks();
   });
@@ -157,7 +174,7 @@ describe("PUT /api/auth/change-email (Negative Cases)", () => {
       .put("/api/auth/change-email")
       .send({ oldEmail: "old@example.com", newEmail: "new@example.com" });
 
-    expect([200, 401, 404]).toContain(response.status);
+    expect(response.status).toBe(200);
     jest.restoreAllMocks();
   });
 
@@ -168,6 +185,9 @@ describe("PUT /api/auth/change-email (Negative Cases)", () => {
       .send({ oldEmail: "old@example.com", newEmail: "new@example.com" });
 
     expect(response.status).toBe(404);
-    expect(response.body).toEqual({ message: "Old email not found." });
+    expect(response.body).toEqual({
+      message: "Old email not found.",
+      success: false,
+    });
   });
 });
