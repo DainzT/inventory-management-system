@@ -32,6 +32,7 @@ const Orders: React.FC = () => {
     setFilteredOrders,
     setOrders,
     isLoading,
+    searchQuery,
   } = useOrder();
 
   function toModifyOrderItem(
@@ -201,6 +202,7 @@ const Orders: React.FC = () => {
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}
+            searchQuery={searchQuery}
             onFilter={handleFilter}
             activeFleet={activeFleet}
             isLoading={isLoading}

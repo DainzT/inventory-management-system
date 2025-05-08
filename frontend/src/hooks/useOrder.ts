@@ -105,17 +105,19 @@ export const useOrder = () => {
         orderDate.getMonth() === currentMonth &&
         orderDate.getFullYear() === currentYear;
 
-      const matchesSearch = [
-        order.name.toLowerCase(),
-        order.note.toLowerCase(),
-        order.quantity.toString(),
-        order.unitPrice.toString(),
-        order.selectUnit.toLowerCase(),
-        order.unitSize.toString(),
-        order.total?.toString() || "",
-        order.boat.boat_name.toLowerCase(),
-        order.outDate.toString(),
-      ].some((field) => field.includes(searchQuery.toLowerCase()));
+        const rowString = [
+          order.name,
+          order.note,
+          order.quantity,
+          typeof order.unitPrice === "number" ? order.unitPrice.toFixed(2) : order.unitPrice,
+          order.selectUnit,
+          order.unitSize,
+          order.boat.boat_name,
+          `${order.quantity} ${order.selectUnit}`,
+          `${order.unitPrice} ${order.selectUnit}`
+        ].join(" ").toLowerCase();
+        
+        const matchesSearch = rowString.includes(searchQuery.toLowerCase());
 
       const matchesFleet =
         activeFleet === "All Fleets" ||

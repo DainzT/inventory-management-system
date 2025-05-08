@@ -3,7 +3,7 @@ import ReactPaginate from "react-paginate";
 import { OrderItem } from "@/types/order-item";
 import { SearchBar } from "../InventoryManagementTable/SearchBar";
 import { FilterDropdown } from "./FilterDropdown";
-// import { ExpandedOrderDetails } from "./ExpandedOrderDetails"; // Removed as it is unused
+import { ExpandedOrderDetails } from "./ExpandedOrderDetails";
 import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
@@ -17,6 +17,7 @@ interface OrdersTableProps {
   setIsModifyOpen: (isOpen: boolean, item?: OrderItem) => void;
   activeFleet: string;
   isLoading: boolean;
+  searchQuery: string;
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -26,9 +27,9 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   setIsModifyOpen,
   activeFleet,
   isLoading,
+  searchQuery,
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(0);
@@ -48,12 +49,6 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (onSearch) onSearch(query);
-  };
-  
 
   const getFilterOptions = () => {
     switch (activeFleet) {
@@ -96,9 +91,6 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
 
   const filterOptions = getFilterOptions();
 
-  
-
-
   const handleModifyItemClick = (item: OrderItem) => {
     setIsModifyOpen(true, item);
   };
@@ -106,7 +98,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   return (
     <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm ">
       <div className="flex gap-5 p-2 sm:p-[24px]">
-        <SearchBar placeholder="Search Items..." onSearch={handleSearch} />
+        <SearchBar placeholder="Search Items..." onSearch={onSearch} />
         <FilterDropdown
           label="All Boats"
           options={filterOptions}
@@ -138,73 +130,69 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
             const isSameDateAsPrevious =
               index > 0 && currentItems[index - 1].outDate === order.outDate;
 
-          return (
-            <React.Fragment key={order.id}>
-              <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
-                </div>
-                <div className="
-                  text-[16px] font-bold text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {highlightText(order.name, searchQuery)}
-                </div>
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {highlightText(order.note, searchQuery)}
-                </div>
-                <div className="
-                  text-[16px] text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {highlightText(`${roundTo(Number(order.quantity), 2)} ${pluralize(order.selectUnit, Number(order.quantity))}`, searchQuery)}
-                </div>
-                <div className="
-                  text-[16px] text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {highlightText(`₱${Number(order.unitPrice).toFixed(2)} / ${order.unitSize} ${pluralize(order.selectUnit, Number(order.unitSize))}`, searchQuery)}
-                  {pluralize(order.selectUnit, Number(order.unitSize))}
-                </div>
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {highlightText(order.boat.boat_name, searchQuery)}
-                </div>
-                <div className="
-                  flex items-center gap-2
-                  shrink-0 break-all overflow-hidden hyphens-auto justify-center
-                ">
-                  <button
-                    className="
-                        h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
-                        cursor-pointer hover:bg-emerald-600 transition-colors duration-200
-                    "
-                    onClick={() => handleModifyItemClick(order)}
+            return (
+              <React.Fragment key={order.id}>
+                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50 bg-white border-[1px] border-[#E5E7EB]">
+                  <div className="
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
+                  </div>
+                  <div className="
+                    text-[16px] font-bold text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(order.name, searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(order.note, searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(`${roundTo(Number(order.quantity), 2)} ${pluralize(order.selectUnit, Number(order.quantity))}`, searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(`₱${Number(order.unitPrice).toFixed(2)} / ${order.unitSize} ${pluralize(order.selectUnit, Number(order.unitSize))}`, searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(order.boat.boat_name, searchQuery)}
+                  </div>
+                  <div className="
+                    flex items-center gap-2
+                    shrink-0 break-all overflow-hidden hyphens-auto justify-center
+                  ">
+                    <button
+                      className="
+                          h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
+                          cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                      "
+                      onClick={() => handleModifyItemClick(order)}
+                    >
+                      Modify
+                    </button>
+                  </div>
+                  <div
+                    className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+                    onClick={() => toggleExpand(order.id)}
                   >
-                    Modify
-                  </button>
+                    <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                  </div>
                 </div>
-                <div
-                  className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
-                  onClick={() => toggleExpand(order.id)}
-                >
-                  <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                <div className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id ? "scale-[100.5%] opacity-100 max-h-[500px]" : "scale-100 opacity-0 max-h-0 overflow-hidden"}`}>
+                  {expandedOrderId === order.id && <ExpandedOrderDetails order={order} />}
                 </div>
-              </div>
-              <div
-                className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
-                  ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                  : "scale-100 opacity-0 max-h-0 overflow-auto"
-                  }`}
-                ></div>
               </React.Fragment>
             );
           })

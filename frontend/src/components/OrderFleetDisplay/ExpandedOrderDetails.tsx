@@ -25,9 +25,21 @@ export const ExpandedOrderDetails: React.FC<ExpandedOrderDetailsProps> = ({
       <div>
         <div className="mb-1 text-sm text-gray-500">Last Updated</div>
         <div className="text-base text-gray-800">
-          {order.lastUpdated instanceof Date
-            ? order.lastUpdated.toLocaleString()
-            : order.lastUpdated}
+          {order.lastUpdated ? (
+            order.lastUpdated instanceof Date
+              ? order.lastUpdated.toLocaleDateString('en-US', {
+                  month: 'numeric',
+                  day: 'numeric',
+                  year: 'numeric'
+                })
+              : new Date(order.lastUpdated).toLocaleDateString('en-US', {
+                  month: 'numeric',
+                  day: 'numeric',
+                  year: 'numeric'
+                })
+          ) : (
+            'Not available'
+          )}
         </div>
       </div>
     </div>
