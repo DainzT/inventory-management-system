@@ -32,6 +32,7 @@ const Orders: React.FC = () => {
     setFilteredOrders,
     setOrders,
     isLoading,
+    searchQuery,
   } = useOrder();
 
   function toModifyOrderItem(
@@ -171,8 +172,8 @@ const Orders: React.FC = () => {
         theme="light" />
         <PageTitle title={activeFleet} />
 
-        <div className="flex justify-center items-center h-[230px]">
-          <div className="justify-start items-center flex gap-25">
+        <div className="flex justify-center items-center h-[200px]">
+          <div className="justify-start items-center flex gap-16">
             <FleetCard
               title="All Fleets"
               backgroundColor="bg-emerald-800"
@@ -201,6 +202,7 @@ const Orders: React.FC = () => {
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}
+            searchQuery={searchQuery}
             onFilter={handleFilter}
             activeFleet={activeFleet}
             isLoading={isLoading}

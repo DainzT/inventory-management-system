@@ -8,8 +8,8 @@ import { errorHandler } from "./middleware/errorMiddleware.js";
 // Routes
 import authRoutes from "./routes/authRouter.js";
 import inventoryItemRoutes from "./routes/inventoryItemRouter.js"
-import modifyItemRoutes from "./routes/modifyItemRouter"
-import assignedItemRoutes from "./routes/assignedItemRouter";
+import modifyItemRoutes from "./routes/modifyItemRouter.js"
+import assignedItemRoutes from "./routes/assignedItemRouter.js";
 
 
 dotenv.config();
