@@ -16,7 +16,7 @@ import ProtectedRoute from "./components/ProtectedRoutes";
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="flex flex-col h-screen overflow-hidden">
+      <div className="flex flex-col h-screen">
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginPage />} />
@@ -25,7 +25,7 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute>
                 <>
-                  <div className="flex flex-col h-screen overflow-hidden">
+                  <div className="flex flex-col h-screen">
                     <Header />
                     <div className="flex flex-1 overflow-hidden">
                       <Sidebar />
