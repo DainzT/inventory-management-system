@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import ReactPaginate from "react-paginate";
 import { OrderItem } from "@/types/order-item";
 import { SearchBar } from "../InventoryManagementTable/SearchBar";
 import { FilterDropdown } from "./FilterDropdown";
-import { ExpandedOrderDetails } from "./ExpandedOrderDetails";
+// import { ExpandedOrderDetails } from "./ExpandedOrderDetails"; // Removed as it is unused
 import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
+import { ClipLoader } from "react-spinners";
 
 interface OrdersTableProps {
   orders: OrderItem[];
@@ -13,6 +15,7 @@ interface OrdersTableProps {
   onFilter?: (filter: string) => void;
   setIsModifyOpen: (isOpen: boolean, item?: OrderItem) => void;
   activeFleet: string;
+  isLoading: boolean;
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -21,12 +24,24 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   onFilter,
   setIsModifyOpen,
   activeFleet,
+  isLoading,
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-  
+
+  const ITEMS_PER_PAGE = 10;
+  const [currentPage, setCurrentPage] = useState(0);
+  const offset = currentPage * ITEMS_PER_PAGE;
+
   const sortedOrders = [...orders].sort(
     (a, b) => new Date(a.outDate).getTime() - new Date(b.outDate).getTime()
   );
+
+  const pageCount = Math.ceil(sortedOrders.length / ITEMS_PER_PAGE);
+  const currentItems = sortedOrders.slice(offset, offset + ITEMS_PER_PAGE);
+
+  const handlePageClick = ({ selected }: { selected: number }) => {
+    setCurrentPage(selected);
+  };
 
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
@@ -84,7 +99,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
         <FilterDropdown
           label="All Boats"
           options={filterOptions}
-          onSelect={onFilter || (() => { })}
+          onSelect={onFilter || (() => {})}
         />
       </div>
 
@@ -99,9 +114,18 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       </div>
 
       <div className="flex-1">
-        {sortedOrders?.map((order, index) => {
-          const isSameDateAsPrevious =
-            index > 0 && order.outDate === sortedOrders[index - 1].outDate;
+        {isLoading ? (
+          <div className="flex justify-center items-center h-[200px]">
+            <ClipLoader color="#0e7490" size={50} />
+          </div>
+        ) : currentItems.length === 0 ? (
+          <div className="text-center text-gray-500 py-4">
+            There is no assigned item.
+          </div>
+        ) : (
+          currentItems.map((order, index) => {
+            const isSameDateAsPrevious =
+              index > 0 && currentItems[index - 1].outDate === order.outDate;
 
           return (
             <React.Fragment key={order.id}>
@@ -168,14 +192,76 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   ? "scale-[100.5%] opacity-100 max-h-[500px]"
                   : "scale-100 opacity-0 max-h-0 overflow-auto"
                   }`}
-              >
-                {expandedOrderId === order.id && (
-                  <ExpandedOrderDetails order={order} />
-                )}
-              </div>
-            </React.Fragment>
-          );
-        })}
+                ></div>
+              </React.Fragment>
+            );
+          })
+        )}
+      </div>
+      <div className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px]">
+        <div
+          className="
+            p-4 px-6 
+            border-t border-[1px] border-[#E5E7EB] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] 
+            bg-gray-50 text-sm text-gray-500
+            rounded-br-[10px] rounded-bl-[10px]
+            w-[calc(100vw+180px)] sm:w-full md:w-[calc(100vw)] lg:w-full
+            flex justify-between items-center
+          "
+        >
+          <span className="text-sm text-gray-500">
+            Showing {offset + 1} to{" "}
+            {Math.min(offset + ITEMS_PER_PAGE, sortedOrders.length)} of{" "}
+            {sortedOrders.length} items
+          </span>
+
+          <div className="flex items-center gap-4">
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              breakLabel={"..."}
+              pageCount={pageCount}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={5}
+              onPageChange={handlePageClick}
+              containerClassName={"flex items-center gap-1 select-none"}
+              pageClassName={
+                "relative px-3 py-3 border border-gray-400 rounded text-sm " +
+                "hover:bg-[#295C65]/10 hover:border-[#295C65]/30 transition-colors duration-200"
+              }
+              pageLinkClassName={
+                "absolute inset-0 w-full h-full flex items-center justify-center " +
+                "text-gray-700 hover:text-[#295C65] select-none"
+              }
+              activeClassName={
+                "bg-[#295C65] border-[#295C65] text-white font-bold"
+              }
+              activeLinkClassName={"text-white select-none"}
+              previousClassName={
+                "font-medium relative py-3 px-8 flex items-center justify-center px-3 border border-gray-400 rounded text-sm cursor-pointer " +
+                "hover:bg-[#295C65]/10 hover:border-[#295C65]/30 hover:text-[#295C65] " +
+                "transition-colors duration-200 select-none"
+              }
+              previousLinkClassName={
+                "absolute inset-0 w-full h-full flex items-center justify-center focus:outline-none"
+              }
+              nextClassName={
+                "font-medium relative py-3 px-6 flex items-center justify-center px-3 border border-gray-400 rounded text-sm cursor-pointer " +
+                "hover:bg-[#295C65]/10 hover:border-[#295C65]/30 hover:text-[#295C65] " +
+                "transition-colors duration-200 select-none"
+              }
+              nextLinkClassName={
+                "absolute inset-0 w-full h-full flex items-center justify-center  focus:outline-none"
+              }
+              disabledClassName={"opacity-50 cursor-not-allowed select-none"}
+              disabledLinkClassName={
+                "hover:bg-transparent hover:text-gray-700 select-none"
+              }
+              breakClassName={"px-2 text-gray-500 select-none"}
+              forcePage={currentPage}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

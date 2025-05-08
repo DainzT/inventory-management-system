@@ -1,4 +1,4 @@
-interface InvoiceHeaderProps {
+export interface InvoiceHeaderProps {
     selectedMonth: string;
     selectedYear: number;
     fleetName: string;

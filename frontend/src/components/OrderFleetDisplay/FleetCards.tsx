@@ -7,17 +7,22 @@ export const FleetCard: React.FC<FleetCardProps> = ({
   backgroundColor,
   isActive,
   onClick,
+  orderCount,
 }) => {
   return (
     <article
-      className={`relative p-4 ${backgroundColor} rounded-xl outline-1 ${
-        isActive ? "h-[170px] w-[320px]" : "h-[150px] w-[280px]"
+      className={`relative p-4 rounded-xl ${
+        isActive ? "h-[170px] w-[320px]" : "h-[120px] w-[250px]"
       } cursor-pointer transition-all duration-300 ease-in-out shadow-lg ${
         isActive ? "shadow-2xl" : "shadow-md"
-      }`}
+      } ${backgroundColor} ${isActive ? "" : "opacity-70"}`}
       onClick={onClick}
     >
-      <h2 className="text-2xl font-bold text-white">{title}</h2>
+      <h2 className="text-2xl font-bold text-white text-left">{title}</h2>
+
+      <h3 className="text-white text-sm mt-1">
+        {orderCount} {orderCount === 1 ? "item" : "items"}
+      </h3>
 
       <div className="absolute bottom-[10px] right-[14px] opacity-[0.3]">
         <svg

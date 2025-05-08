@@ -28,24 +28,38 @@ export const useOrder = () => {
   const [activeFleet, setActiveFleet] = useState("All Fleets");
   const [selectedBoat, setSelectedBoat] = useState("All Boats");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { showLoadingToast, showSuccessToast, showErrorToast } = useToast();
 
-  const loadOrderItems = async () => {
-    const toastId = "loadOrders";
-    showLoadingToast(toastId, "Loading orders...");
-    try {
-      const response = await fetchAssignedItems();
-      setOrders(response);
-      setFilteredOrders(response);
-      showSuccessToast(toastId, "Orders loaded successfully!");
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-      showErrorToast(toastId, "Failed to load orders.");
-    }
-  };
-
   useEffect(() => {
+    const loadOrderItems = async () => {
+      const toastId = "loadOrders";
+      showLoadingToast(toastId, "Loading orders...");
+      setIsLoading(true);
+      try {
+        const response = await fetchAssignedItems();
+        if (response && Array.isArray(response)) {
+          setOrders(response);
+          setFilteredOrders(response);
+          showSuccessToast(
+            toastId,
+            `Loaded ${response.length} ${
+              response.length > 1 ? "items" : "item"
+            } successfully`
+          );
+        } else {
+          console.error("Unexpected response format:", response);
+          showErrorToast(toastId, "Unexpected response format.");
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        showErrorToast(toastId, "Failed to load orders.");
+      } finally {
+        setIsLoading(false); // Ensure loading state is updated in both success and error cases
+      }
+    };
+
     loadOrderItems();
   }, []);
 
@@ -119,7 +133,6 @@ export const useOrder = () => {
     setFilteredOrders(filtered);
   }, [archivedOrders, searchQuery, activeFleet, selectedBoat]);
 
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
@@ -131,7 +144,6 @@ export const useOrder = () => {
   const handleFleetSelect = (fleet: string) => {
     setActiveFleet(fleet);
   };
-
 
   return {
     orders,
@@ -145,5 +157,6 @@ export const useOrder = () => {
     handleFleetSelect,
     setFilteredOrders,
     setOrders,
+    isLoading,
   };
 };
