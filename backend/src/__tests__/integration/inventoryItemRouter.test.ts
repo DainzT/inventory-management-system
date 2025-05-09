@@ -188,7 +188,7 @@ describe("Inventory Items API", () => {
         // Verify if response is correct
         expect(response.body).toEqual({
           success: true,
-          message: `Item '${addItem.name}' added successfully`,
+          message: `Item added successfully`,
           data: expect.objectContaining({
             name: addItem.name,
             note: addItem.note,
@@ -261,7 +261,7 @@ describe("Inventory Items API", () => {
 
         expect(response.body).toEqual({
           success: false,
-          message: `Item '${existingItem.name}' already exists in inventory`,
+          message: `Item already exists in inventory`,
           error: "ITEM_EXISTS",
           existingItem: expect.objectContaining({
             name: existingItem.name,
@@ -385,7 +385,7 @@ describe("Inventory Items API", () => {
 
         expect(response.body).toEqual({
           success: true,
-          message: `Item '${baseItem.name}' assigned successfully to fleet '${testFleet}' & boat '${testBoat}'`,
+          message: `Item assigned to fleet & boat successfully`,
           data: expect.objectContaining({
             id: assignedItem?.id,
             name: baseItem.name,
@@ -463,7 +463,7 @@ describe("Inventory Items API", () => {
 
         expect(response.body).toEqual({
           success: true,
-          message: `Existing assignment to fleet '${testFleet}' & boat '${testBoat}' updated successfully`,
+          message: `Existing assignment to fleet & boat updated successfully`,
           data: expect.objectContaining({
             id: assignedItem?.id,
             name: baseItem.name,
@@ -653,7 +653,7 @@ describe("Inventory Items API", () => {
 
         expect(response.body).toEqual(expect.objectContaining({
           success: true,
-          message: `Inventory item '${updatedItem.name}' updated successfully.`,
+          message: `Inventory item updated successfully.`,
           data: expect.objectContaining({
             id: createdItem.id,
             name: updatedItem.name,
@@ -825,7 +825,7 @@ describe("DELETE /remove-item/:id - Deletion of Inventory Item", () => {
 
       expect(response.body).toEqual({
         success: true,
-        message: `Item '${createdItem.name}' deleted successfully`,
+        message: `Item deleted successfully`,
         data: expect.objectContaining({
           id: createdItem.id,
           name: createdItem.name,

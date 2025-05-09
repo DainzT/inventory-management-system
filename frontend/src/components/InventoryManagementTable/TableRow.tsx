@@ -93,7 +93,7 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
           scale-70 sm:scale-70 md:scale-80 lg:scale-70 xl:scale-90
           text-center flex-1 shrink-0
         ">
-          <InventoryButton variant="actions" onOut={onOut} onEdit={onEdit} />
+          <InventoryButton variant="actions" onOut={onOut} onEdit={onEdit} disabled={Number(item.quantity) <= 0}/>
         </div>
         <div
           className="

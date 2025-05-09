@@ -60,7 +60,7 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
         if (existingItem) {
             res.status(409).json({
                 success: false,
-                message: `Item '${name}' already exists in inventory`,
+                message: `Item already exists in inventory`,
                 error: 'ITEM_EXISTS',
                 existingItem: {
                     id: existingItem.id,
@@ -90,7 +90,7 @@ router.post("/add-item", validateAddInventoryItem, async (req: Request, res: Res
 
         res.status(201).json({
             success: true,
-            message: `Item '${name}' added successfully`,
+            message: `Item added successfully`,
             data: newItem
         });
         return;
@@ -175,7 +175,7 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
 
             res.status(200).json({
                 success: true,
-                message: `Existing assignment to fleet '${fleet_name}' & boat '${boat_name}' updated successfully`,
+                message: `Existing assignment to fleet & boat updated successfully`,
                 data: updatedAssignment
             });
             return;
@@ -218,7 +218,7 @@ router.post("/assign-item", validateAssignInventoryItem, async (req: Request, re
 
         res.status(201).json({
             success: true,
-            message: `Item '${name}' assigned successfully to fleet '${fleet_name}' & boat '${boat_name}'`,
+            message: `Item assigned to fleet & boat successfully`,
             data: newAssignment
         });
         return;
@@ -246,7 +246,7 @@ router.delete("/remove-item/:id", validateDeleteInventoryItem, async (req: Reque
 
         res.status(200).json({
             success: true,
-            message: `Item '${deletedItem.name}' deleted successfully`,
+            message: `Item deleted successfully`,
             data: deletedItem,
         });
         return;
@@ -283,7 +283,7 @@ router.put("/update-item/:id", validateEditInventoryItem, async (req: Request, r
 
         res.status(200).json({
             success: true,
-            message: `Inventory item '${updatedItem.name}' updated successfully.`,
+            message: `Inventory item updated successfully.`,
             data: item,
         });
         return;

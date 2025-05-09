@@ -4,6 +4,7 @@ interface InventoryButtonProps {
   onOut?: () => void;
   onEdit?: () => void;
   type?: "button"
+  disabled?: boolean;
 }
 
 export const InventoryButton = ({
@@ -12,6 +13,7 @@ export const InventoryButton = ({
   onOut,
   onEdit,
   type = "button",
+  disabled = false,
 }: InventoryButtonProps) => {
 
   if (variant === "add") {
@@ -46,24 +48,28 @@ export const InventoryButton = ({
       <div className="item-center flex flex-1 justify-center gap-[10px]">
         <button
           onClick={onOut}
-          className="
-            flex items-center gap-[8px] h-[48px] px-[12px] 
-            rounded-[8px] bg-[#047857]
-            transition-all duration-150 
-            hover:bg-[#065F46] active:scale-95
-            cursor-pointer
-          "
+          className={`
+            flex items-center justify-center gap-2 h-12 px-3 
+            rounded-lg transition-all duration-150
+            ${disabled
+              ? "bg-emerald-700/30 cursor-not-allowed"
+              : "bg-emerald-700 hover:bg-emerald-800 active:scale-95 cursor-pointer shadow-sm"
+            }
+            focus:outline-none
+          `}
+          disabled={disabled}
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path
               d="M12.5 5L16.25 8.75M16.25 8.75L12.5 12.5M16.25 8.75H7.5M8.75 12.5H7.5C5.42894 12.5 3.75 10.8211 3.75 8.75C3.75 6.67894 5.42894 5 7.5 5H8.75"
               stroke="white"
+              strokeOpacity={disabled ? 0.5 : 1}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-[16px] text-white flex-1">Assign</span>
+          <span className={`text-[16px] flex-1 ${disabled ? "text-white/60" : "text-white"} `}>Assign</span>
         </button>
         <button
           onClick={onEdit}

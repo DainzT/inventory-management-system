@@ -78,6 +78,8 @@ const AddProductForm = ({
         if (productData.unitPrice === "" || Number(productData.unitPrice) <= 0) newErrors.unitPrice = "Enter a valid price.";
         if (productData.unitSize === "" || Number(productData.unitSize) <= 0) newErrors.unitSize = "Enter a valid unit size.";
         if (!productData.selectUnit.trim() || productData.selectUnit.trim() === "Unit") newErrors.selectUnit = "Please select a unit.";
+        if (productData.name.trim().length > 40) newErrors.name = "Product name must be 40 characters or less."
+        if (productData.note.trim().length > 120) newErrors.note = "Note must be 120 characters or less."
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;

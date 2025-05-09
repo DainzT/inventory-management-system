@@ -14,13 +14,12 @@ import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
 
 const Orders: React.FC = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] =
     useState<ModifyOrderItem | null>(null);
   const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
 
-  const { updateAssignedItem, isLoading: isModifying } = useUpdateAssignedItem();
+  const { updateAssignedItem, isLoading: isModifying, deleteOrderItem, isDeleting } = useUpdateAssignedItem();
 
   const {
     orders,
@@ -94,56 +93,59 @@ const Orders: React.FC = () => {
     if (!modifyOrderItem) return;
 
     try {
-        const result = await updateAssignedItem({
-            id: modifyOrderItem.id,
-            quantity,
-            fleet_id: modifyOrderItem.fleet.id,
-            boat_id: modifyOrderItem.boat.id,
-            fleet_name: fleetName,
-            boat_name: boatName
-        });
+      const result = await updateAssignedItem({
+        id: modifyOrderItem.id,
+        quantity,
+        fleet_id: modifyOrderItem.fleet.id,
+        boat_id: modifyOrderItem.boat.id,
+        fleet_name: fleetName,
+        boat_name: boatName
+      });
 
-        if (result.success) {
-            if (result.deleted) {
-                setOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
-                setFilteredOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
+      if (result.success) {
+        if (result.deleted) {
+          setOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
+          setFilteredOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
 
-                setIsModifyOpen(false);
-                setSelectedOrder(null);
-                toast.success("Item removed and quantity restored to inventory");
+          setIsModifyOpen(false);
+          setSelectedOrder(null);
+          toast.success("Item removed and quantity restored to inventory");
 
-            } else if (result.data) {
-                const updatedOrder = {
-                    ...result.data,
-                    fleet: {
-                        ...modifyOrderItem.fleet,
-                        fleet_name: fleetName
-                    },
-                    boat: {
-                        ...modifyOrderItem.boat,
-                        boat_name: boatName
-                    }
-                };
-                
-                setOrders(prev => prev.map(order => 
-                    order.id === modifyOrderItem.id ? updatedOrder : order
-                ));
-                setFilteredOrders(prev => prev.map(order => 
-                    order.id === modifyOrderItem.id ? updatedOrder : order
-                ));
-                toast.success("Item updated successfully");
+        } else if (result.data) {
+          const updatedOrder = {
+            ...result.data,
+            fleet: {
+              ...modifyOrderItem.fleet,
+              fleet_name: fleetName
+            },
+            boat: {
+              ...modifyOrderItem.boat,
+              boat_name: boatName
             }
-        }
-    } catch (error) {
-        console.error("Error modifying item:", error);
-        toast.error("Failed to update item. Please try again.");
-    }
-};
-  
+          };
 
-  const handleRemoveItem = (id: number) => {
-    setFilteredOrders((prev) => prev.filter((order) => order.id !== id));
-    setOrders((prev) => prev.filter((order) => order.id !== id));
+          setOrders(prev => prev.map(order =>
+            order.id === modifyOrderItem.id ? updatedOrder : order
+          ));
+          setFilteredOrders(prev => prev.map(order =>
+            order.id === modifyOrderItem.id ? updatedOrder : order
+          ));
+          toast.success("Item updated successfully");
+        }
+      }
+    } catch (error) {
+      console.error("Error modifying item:", error);
+      toast.error("Failed to update item. Please try again.");
+    }
+  };
+
+
+  const handleRemoveItem = async (id: number) => {
+    await deleteOrderItem(id);
+
+    const Orders = await fetchAssignedItems();
+
+    setOrders(Orders)
     setSelectedOrder(null);
     setIsModifyOpen(false);
   };
@@ -156,7 +158,6 @@ const Orders: React.FC = () => {
     (order) => order.fleet.fleet_name === "F/B Doña Librada"
   ).length;
 
-  
 
   return (
     <div>
