@@ -564,7 +564,8 @@ router.post(
           success: false,
         });
         return;
-      }
+      };
+      
       if (newPin.length !== MAX_PIN_LENGTH || !/^\d+$/.test(newPin)) {
         res.status(400).json({
           message:
@@ -573,10 +574,19 @@ router.post(
         });
         return;
       }
-
+      
       const user = await prisma.user.findFirst({ where: { email } });
       if (!user) {
         res.status(404).json({ message: "User not found", success: false });
+        return;
+      }
+
+      const isSamePin = await bcrypt.compare(newPin, user.pin);
+      if (isSamePin) {
+        res.status(400).json({
+          message: "New PIN must be different from current PIN",
+          success: false
+        });
         return;
       }
 
