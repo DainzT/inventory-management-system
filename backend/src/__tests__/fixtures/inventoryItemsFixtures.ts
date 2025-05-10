@@ -548,7 +548,7 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                 testCase: "updatedItem.note is greater than 120",
                 value: "This word is 120 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150This word is 150",
                 expected: {
-                    message: "Product note must be 150 characters or less.",
+                    message: "Product note must be 120 characters or less.",
                     error: "Name.length <= 120 is required",
                 },
             },

@@ -19,6 +19,9 @@ interface EditProductFormProps {
     isDeleting: boolean;
 }
 
+const MAX_NAME_LENGTH = 40;
+const MAX_NOTE_LENGTH = 120;
+
 const EditProductForm = ({
     initialData,
     onSubmit,
@@ -41,6 +44,16 @@ const EditProductForm = ({
     });
     const [errors, setErrors] = useState<{ [key in keyof InventoryItem]?: string }>({});
 
+    const validateField = (field: 'name' | 'note', value: string) => {
+        if (field === 'name') {
+            if (value.length > 40) return "Maximum 40 characters reached.";
+        }
+        if (field === 'note') {
+            if (value.length > 120) return "Maximum 120 characters reached.";
+        }
+        return "";
+    };
+
     useEffect(() => {
         setProductData((current) => ({
             ...current,
@@ -62,6 +75,13 @@ const EditProductForm = ({
     const handleInputChange = (field: keyof InventoryItem, value: string | number) => {
         let processedValue = value;
         
+        if (field === 'name' && typeof value === 'string' && value.length > MAX_NAME_LENGTH) {
+            processedValue = value.substring(0, MAX_NAME_LENGTH);
+        }
+        if (field === 'note' && typeof value === 'string' && value.length > MAX_NOTE_LENGTH) {
+            processedValue = value.substring(0, MAX_NOTE_LENGTH);
+        }
+
         if (field === 'quantity' || field === 'unitPrice' || field === 'unitSize') {
             processedValue = roundTo(Number(value), 2) || "";
         }
@@ -71,10 +91,18 @@ const EditProductForm = ({
             [field]: processedValue,
         }));
 
-        setErrors((prevErrors) => ({
-            ...prevErrors,
-            [field]: "",
-        }));
+        if (field === 'name' || field === 'note') {
+            const error = validateField(field, String(value));
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [field]: error,
+            }));
+        } else {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [field]: "",
+            }));
+        }
     };
 
     const validateForm = () => {

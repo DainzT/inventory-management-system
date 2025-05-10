@@ -103,11 +103,12 @@ describe("Inventory Items API", () => {
           }
         });
 
-        // Verify item is sorted in ascending order by names
-        const returnedNames = response.body.data.map((item: InventoryItem) => item.name);
-        const expectedOrder = testFetchInventoryItems.map(item => item.name).sort((a, b) => a.localeCompare(b));
-        expect(returnedNames).toEqual(expectedOrder);
-
+        // Verify item is sorted in ascending order by dateCreated
+        const dateCreatedValues = response.body.data.map((item: InventoryItem) => item.dateCreated);
+        const expectedDates = testFetchInventoryItems
+          .map(item => item.dateCreated.toISOString())
+          .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        expect(dateCreatedValues).toEqual(expectedDates);
       })
     })
 

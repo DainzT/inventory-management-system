@@ -5,7 +5,7 @@ import { ChevronIcon } from "./ChevronIcon";
 import { roundTo } from "@/utils/RoundTo";
 import { highlightText } from "@/utils/HighlightText";
 import { pluralize } from "@/utils/Pluralize";
-import { forwardRef } from 'react'; 
+import { forwardRef } from 'react';
 
 interface TableRowProps {
   item: InventoryItem;
@@ -34,27 +34,27 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
     currentPage
   },
   ref
-) =>  {
+) => {
   const globalIndex = currentPage * itemsPerPage + index + 1;
 
   return (
     <article>
       <div className={`
-          flex items-center px-3 sm:px-0 md:px-6 lg:px-3 xl:px-5 p-2 sm:p-2 shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] hover:bg-gray-50 
-          transition-colors duration-150 ease-in-out
-          ${highlightedItem?.id === item.id ? '' : 'border border-[#E5E7EB] bg-white'}
+          flex items-center px-3 sm:px-0 md:px-6 lg:px-3 xl:px-5 p-2 sm:p-2 shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] hover:bg-gray-50
+          transition-[border-left-color,border-left-width] duration-150 ease-in-out
+          ${highlightedItem?.id === item.id ? 'border-l-4' : 'border-[#E5E7EB] bg-white border'}
             ${highlightedItem?.id === item.id
-            ? highlightedItem.type === 'added'
-              ? 'bg-emerald-50/70 border-l-4 border-emerald-400'
-              : highlightedItem.type === 'assigned'
-                ? 'bg-sky-50/70 border-l-4 border-sky-400'
-                : highlightedItem.type === 'edited'
-                  ? 'bg-amber-50/70 border-l-4 border-amber-400'
-                  : 'border border-[#E5E7EB] bg-white'
+          ? highlightedItem.type === 'added'
+            ? 'bg-emerald-50/30 border-l-6 border-emerald-400'
+            : highlightedItem.type === 'assigned'
+              ? 'bg-sky-50/30 border-l-6 border-sky-400'
+              : highlightedItem.type === 'edited'
+                ? 'bg-amber-50/30 border-l-6 border-amber-400'
+                : 'border-[#E5E7EB] bg-white border'
           : ''
         } `}
         ref={ref}
-        >
+      >
         <div className="
           min-w-[30px] xs:min-w-[40px] sm:min-w-[50px] lg:min-w-[50px] xl:min-w-[60px]
           text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#1F2937] text-left l-
@@ -93,7 +93,7 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
           scale-70 sm:scale-70 md:scale-80 lg:scale-70 xl:scale-90
           text-center flex-1 shrink-0
         ">
-          <InventoryButton variant="actions" onOut={onOut} onEdit={onEdit} disabled={Number(item.quantity) <= 0}/>
+          <InventoryButton variant="actions" onOut={onOut} onEdit={onEdit} disabled={Number(item.quantity) <= 0} />
         </div>
         <div
           className="

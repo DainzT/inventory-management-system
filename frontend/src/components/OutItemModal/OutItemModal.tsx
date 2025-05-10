@@ -63,6 +63,7 @@ const OutItemModal = ({
     switch (fleet) {
       case "F/B DONYA DONYA 2x":
         return [
+          "F/B DONYA DONYA 2x",
           "F/B Lady Rachelle",
           "F/B Mariella",
           "F/B My Shield",
@@ -71,6 +72,7 @@ const OutItemModal = ({
         ];
       case "F/B Doña Librada":
         return [
+          "F/B Doña Librada",
           "F/B Adomar",
           "F/B Prince of Peace",
           "F/B Ruth Gaily",
