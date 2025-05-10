@@ -19,7 +19,7 @@ router.get("/get-items", validateFetchInventoryItems, async (req: Request, res: 
     try {
         const items = await prisma.inventoryItem.findMany({
             orderBy: {
-                name: 'asc',
+                dateCreated: 'asc',
             },
         });
 

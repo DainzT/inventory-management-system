@@ -16,6 +16,7 @@ interface InventoryManagementTableProps {
   isLoading: boolean;
   searchQuery: string;
   highlightedItem?: HighlightedItem;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -29,28 +30,35 @@ const InventoryManagementTable = ({
   isLoading = false,
   searchQuery,
   highlightedItem,
+  containerRef,
 }: InventoryManagementTableProps) => {
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemRef = useRef<HTMLDivElement | null>(null); 
-  
+  const itemRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    if (highlightedItem) {
-        const itemIndex = inventoryItems.findIndex(item => item.id === highlightedItem.id);
-        if (itemIndex >= 0) {
-            const page = Math.floor(itemIndex / ITEMS_PER_PAGE);
-            setCurrentPage(page);
-            setTimeout(() => {
-              if (itemRef.current) {
-                itemRef.current.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'center'
-                });
-              }
-            }, 100);
-        }
+    if (highlightedItem && containerRef?.current) {
+      const itemIndex = inventoryItems.findIndex(item => item.id === highlightedItem.id);
+      if (itemIndex >= 0) {
+        const page = Math.floor(itemIndex / ITEMS_PER_PAGE);
+        setCurrentPage(page);
+        setTimeout(() => {
+          if (itemRef.current && containerRef.current) {
+            const containerRect = containerRef.current.getBoundingClientRect();
+            const itemRect = itemRef.current.getBoundingClientRect();
+            const scrollPosition = containerRef.current.scrollTop +
+              (itemRect.top - containerRect.top) -
+              (containerRect.height / 2);
+            
+            containerRef.current.scrollTo({
+              top: scrollPosition,
+              behavior: 'smooth'
+            });
+          }
+        }, 100);
+      }
     }
-}, [highlightedItem, inventoryItems]);
+  }, [highlightedItem, inventoryItems, currentPage, containerRef]);
 
   const handleToggleExpand = (itemId: number) => {
     setExpandedItem(expandedItem === itemId ? null : itemId);

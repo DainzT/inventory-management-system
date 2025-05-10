@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -16,6 +16,7 @@ import { pluralize } from "@/utils/Pluralize";
 const Inventory: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const inventoryContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     inventoryItems,
@@ -84,7 +85,10 @@ const Inventory: React.FC = () => {
   });
 
   return (
-    <div className="flex-1 p-0 overflow-auto">
+    <div
+      ref={inventoryContainerRef}
+      className="flex-1 p-0 overflow-auto"
+    >
       <ToastContainer
         position="top-center"
         autoClose={3000}
@@ -113,6 +117,7 @@ const Inventory: React.FC = () => {
         isLoading={isLoading}
         searchQuery={searchQuery}
         highlightedItem={highlightedItem}
+        containerRef={inventoryContainerRef}
       />
       <AddProductModal
         isOpen={isAddOpen}
