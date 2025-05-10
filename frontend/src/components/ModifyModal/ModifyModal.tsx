@@ -59,9 +59,9 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const getBoatOptions = (fleet: string) => {
     switch (fleet) {
       case "F/B DONYA DONYA 2x":
-        return ["F/B Lady Rachelle", "F/B Mariella", "F/B My Shield", "F/B Abigail", "F/B DC-9"];
+        return ["F/B DONYA DONYA 2x", "F/B Lady Rachelle", "F/B Mariella", "F/B My Shield", "F/B Abigail", "F/B DC-9"];
       case "F/B Doña Librada":
-        return ["F/B Adomar", "F/B Prince of Peace", "F/B Ruth Gaily", "F/V Vadeo Scout", "F/B Mariene"];
+        return ["F/B Doña Librada", "F/B Adomar", "F/B Prince of Peace", "F/B Ruth Gaily", "F/V Vadeo Scout", "F/B Mariene"];
       default:
         return [];
     }
@@ -157,7 +157,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
       <div className="relative z-50 px-6 py-4 w-96 bg-white rounded-[19px] border-[1px] border-[#E0D8D8] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] animate-[fadeIn_0.2s_ease-out] h-[36rem]">
         <header className="flex justify-between items-center mb-4">
-          <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Modify Product</h1>
+          <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Edit Order</h1>
           <button
             onClick={handleCloseAttempt}
             className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"

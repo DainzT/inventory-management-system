@@ -148,12 +148,12 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 ">
                   <button
                     className="
-                        h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
+                        h-9 text-sm text-white bg-emerald-700 rounded-lg w-[70px]
                         cursor-pointer hover:bg-emerald-600 transition-colors duration-200
                     "
                     onClick={() => handleModifyItemClick(order)}
                   >
-                    Modify
+                    Edit
                   </button>
                 </div>
                 <div
