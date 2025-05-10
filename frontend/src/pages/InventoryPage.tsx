@@ -68,7 +68,7 @@ const Inventory: React.FC = () => {
       item.selectUnit,
 
       item.unitPrice?.toString(),
-      priceDisplay.replace('₱', ''), 
+      priceDisplay.replace('₱', ''),
       priceDisplay,
 
       item.unitSize?.toString(),

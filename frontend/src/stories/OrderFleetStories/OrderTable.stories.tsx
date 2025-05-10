@@ -79,7 +79,6 @@ const Template: Story["render"] = (args) => {
       orders={filteredOrders}
       onSearch={(query) => setSearchQuery(query)}
       onFilter={(filter) => setFilterValue(filter)}
-      onModify={(id) => console.log(`Modify order ${id}`)}
     />
   );
 };
