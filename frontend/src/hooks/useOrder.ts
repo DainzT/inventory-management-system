@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/useToast";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [
+    "F/B DONYA DONYA 2X",
     "F/B Lady Rachelle",
     "F/B Mariella",
     "F/B My Shield",
@@ -13,6 +14,7 @@ const fleetBoats = {
     "F/B DC-9",
   ],
   "F/B Doña Librada": [
+    "F/B Doña Librada",
     "F/B Adomar",
     "F/B Prince of Peace",
     "F/B Ruth Gaily",
