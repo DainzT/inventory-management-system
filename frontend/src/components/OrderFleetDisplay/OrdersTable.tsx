@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactPaginate from "react-paginate";
 import { OrderItem } from "@/types/order-item";
 import { SearchBar } from "../InventoryManagementTable/SearchBar";
 import { FilterDropdown } from "./FilterDropdown";
@@ -6,6 +7,8 @@ import { ExpandedOrderDetails } from "./ExpandedOrderDetails";
 import { ChevronIcon } from "../InventoryManagementTable/ChevronIcon";
 import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
+import { ClipLoader } from "react-spinners";
+import { highlightText } from "@/utils/HighlightText";
 
 interface OrdersTableProps {
   orders: OrderItem[];
@@ -13,6 +16,8 @@ interface OrdersTableProps {
   onFilter?: (filter: string) => void;
   setIsModifyOpen: (isOpen: boolean, item?: OrderItem) => void;
   activeFleet: string;
+  isLoading: boolean;
+  searchQuery: string;
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -21,12 +26,25 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   onFilter,
   setIsModifyOpen,
   activeFleet,
+  isLoading,
+  searchQuery,
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-  
+
+  const ITEMS_PER_PAGE = 10;
+  const [currentPage, setCurrentPage] = useState(0);
+  const offset = currentPage * ITEMS_PER_PAGE;
+
   const sortedOrders = [...orders].sort(
     (a, b) => new Date(a.outDate).getTime() - new Date(b.outDate).getTime()
   );
+
+  const pageCount = Math.ceil(sortedOrders.length / ITEMS_PER_PAGE);
+  const currentItems = sortedOrders.slice(offset, offset + ITEMS_PER_PAGE);
+
+  const handlePageClick = ({ selected }: { selected: number }) => {
+    setCurrentPage(selected);
+  };
 
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
@@ -78,8 +96,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   };
 
   return (
-    <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm ">
-      <div className="flex gap-5 p-2 sm:p-[24px]">
+    <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm">
+      <div className="flex gap-5 p-2 sm:p-[24px] sticky top-0 bg-white z-10">
         <SearchBar placeholder="Search Items..." onSearch={onSearch} />
         <FilterDropdown
           label="All Boats"
@@ -87,7 +105,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           onSelect={onFilter || (() => { })}
         />
       </div>
-
+      
       <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-cyan-900 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
         <div className="px-3">Date Out</div>
         <div className="px-3">Product Name</div>
@@ -98,84 +116,150 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
         <div className="text-center">Actions</div>
       </div>
 
-      <div className="flex-1">
-        {sortedOrders?.map((order, index) => {
-          const isSameDateAsPrevious =
-            index > 0 && order.outDate === sortedOrders[index - 1].outDate;
-
-          return (
-            <React.Fragment key={order.id}>
-              <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {!isSameDateAsPrevious && new Date(order.outDate).toLocaleDateString()}
-                </div>
-                <div className="
-                  text-[16px] font-bold text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {order.name}
-                </div>
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {order.note}
-                </div>
-                <div className="
-                  text-[16px] text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {roundTo(Number(order.quantity), 2)} {pluralize(order.selectUnit, Number(order.quantity))}
-                </div>
-                <div className="
-                  text-[16px] text-gray-800 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  ₱{Number(order.unitPrice).toFixed(2)} / {order.unitSize} {pluralize(order.selectUnit, Number(order.unitSize))}
-                </div>
-                <div className="
-                  text-[16px] text-gray-600 px-3
-                  shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                ">
-                  {order.boat.boat_name}
-                </div>
-                <div className="
-                  flex items-center gap-2
-                  shrink-0 break-all overflow-hidden hyphens-auto justify-center
-                ">
-                  <button
-                    className="
-                        h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
-                        cursor-pointer hover:bg-emerald-600 transition-colors duration-200
-                    "
-                    onClick={() => handleModifyItemClick(order)}
+      <div className="flex-1 overflow-y-auto overflow-hidden">
+        {isLoading ? (
+          <div className="relative flex justify-center items-center pt-10 pb-10">
+            <ClipLoader color="#0e7490" size={60} />
+          </div>
+        ) : currentItems.length === 0 ? (
+          <div className="text-center text-gray-500 pt-10 pb-10 text-2xl">
+            There is no assigned item.
+          </div>
+        ) : (
+          currentItems.map((order, index) => {
+            const isSameDateAsPrevious =
+              index > 0 && currentItems[index - 1].outDate === order.outDate;
+            return (
+              <React.Fragment key={order.id}>
+                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
+                  <div className="
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {!isSameDateAsPrevious && highlightText(new Date(order.outDate).toLocaleDateString(), searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] font-bold text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(order.name, searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(order.note, searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(`${roundTo(Number(order.quantity), 2)} ${pluralize(order.selectUnit, Number(order.quantity))}`, searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] text-gray-800 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(`₱${Number(order.unitPrice).toFixed(2)} / ${order.unitSize} ${pluralize(order.selectUnit, Number(order.unitSize))}`, searchQuery)}
+                  </div>
+                  <div className="
+                    text-[16px] text-gray-600 px-3
+                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                  ">
+                    {highlightText(order.boat.boat_name, searchQuery)}
+                  </div>
+                  <div className="
+                    flex items-center gap-2
+                    shrink-0 break-all overflow-hidden hyphens-auto justify-center
+                  ">
+                    <button
+                      className="
+                          h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
+                          cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                      "
+                      onClick={() => handleModifyItemClick(order)}
+                    >
+                      Modify
+                    </button>
+                  </div>
+                  <div
+                    className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+                    onClick={() => toggleExpand(order.id)}
                   >
-                    Modify
-                  </button>
+                    <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                  </div>
                 </div>
                 <div
-                  className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
-                  onClick={() => toggleExpand(order.id)}
+                  className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
+                      ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                      : "scale-100 opacity-0 max-h-0 overflow-hidden"
+                    }`}
                 >
-                  <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                  {expandedOrderId === order.id && (
+                    <ExpandedOrderDetails order={order} />
+                  )}
                 </div>
-              </div>
-              <div
-                className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
-                  ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                  : "scale-100 opacity-0 max-h-0 overflow-auto"
-                  }`}
-              >
-                {expandedOrderId === order.id && (
-                  <ExpandedOrderDetails order={order} />
-                )}
-              </div>
-            </React.Fragment>
-          );
-        })}
+              </React.Fragment>
+            );
+          })
+        )}
+      </div>
+      <div className="sticky bottom-0 bg-[#fff] border-t border-b border-[#E5E7EB] shadow-[0px_-4px_6px_0px_rgba(0,0,0,0.05)]  rounded-br-[10px] rounded-bl-[10px]">
+        <div className="p-4 px-6 flex justify-between items-center ">
+
+          <span className="text-sm text-gray-500">
+            Showing {offset + 1} to{" "}
+            {Math.min(offset + ITEMS_PER_PAGE, sortedOrders.length)} of{" "}
+            {sortedOrders.length} items
+          </span>
+
+          <div className="flex items-center gap-4">
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              breakLabel={"..."}
+              pageCount={pageCount}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={5}
+              onPageChange={handlePageClick}
+              containerClassName={"flex items-center gap-1 select-none"}
+              pageClassName={
+                "relative px-3 py-3 border border-gray-400 rounded text-sm " +
+                "hover:bg-[#295C65]/10 hover:border-[#295C65]/30 transition-colors duration-200"
+              }
+              pageLinkClassName={
+                "absolute inset-0 w-full h-full flex items-center justify-center " +
+                "text-gray-700 hover:text-[#295C65] select-none"
+              }
+              activeClassName={
+                "bg-[#295C65] border-[#295C65] text-white font-bold"
+              }
+              activeLinkClassName={"text-white select-none"}
+              previousClassName={
+                "font-medium relative py-3 px-8 flex items-center justify-center px-3 border border-gray-400 rounded text-sm cursor-pointer " +
+                "hover:bg-[#295C65]/10 hover:border-[#295C65]/30 hover:text-[#295C65] " +
+                "transition-colors duration-200 select-none"
+              }
+              previousLinkClassName={
+                "absolute inset-0 w-full h-full flex items-center justify-center focus:outline-none"
+              }
+              nextClassName={
+                "font-medium relative py-3 px-6 flex items-center justify-center px-3 border border-gray-400 rounded text-sm cursor-pointer " +
+                "hover:bg-[#295C65]/10 hover:border-[#295C65]/30 hover:text-[#295C65] " +
+                "transition-colors duration-200 select-none"
+              }
+              nextLinkClassName={
+                "absolute inset-0 w-full h-full flex items-center justify-center  focus:outline-none"
+              }
+              disabledClassName={"opacity-50 cursor-not-allowed select-none"}
+              disabledLinkClassName={
+                "hover:bg-transparent hover:text-gray-700 select-none"
+              }
+              breakClassName={"px-2 text-gray-500 select-none"}
+              forcePage={currentPage}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

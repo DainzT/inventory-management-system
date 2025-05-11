@@ -1,4 +1,5 @@
-interface YearSelectorProps {
+
+export interface YearSelectorProps {
     availableYears: number[];
     selectedYear: number;
     onYearSelect: (year: number) => void;

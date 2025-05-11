@@ -1,4 +1,4 @@
-interface InvoiceSummaryProps {
+export interface InvoiceSummaryProps {
     total: number;
   }
   

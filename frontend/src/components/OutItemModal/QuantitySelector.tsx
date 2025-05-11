@@ -95,7 +95,13 @@ const QuantitySelector = ({
           <Plus size={20} />
         </button>
       </div>
-      {error && <p className="absolute text-red-600 text-sm">{error}</p>}
+      <div className={`transition-all duration-200 ${error ? "mt-1" : "h-0"}`}>
+          {error && (
+            <p className="text-red-600 text-sm">
+              {error}
+            </p>
+          )}
+        </div>
     </div>
   );
 };

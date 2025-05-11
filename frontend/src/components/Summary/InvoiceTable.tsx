@@ -4,6 +4,7 @@ import { roundTo } from "@/utils/RoundTo";
 
 export interface InvoiceTableProps {
   itemSummary: GroupedOrders[];
+  
 }
 
 export const InvoiceTable = ({ itemSummary }: InvoiceTableProps) => {

@@ -35,11 +35,11 @@ export const DeleteButton = ({
         type="button"
         onClick={() => setShowConfirm(true)}
         className={`
-            flex items-center gap-[2px] px-[10px]   
-            text-red-500 rounded-[4px] font-medium transition-transform
+            ${disabled ? "text-red-500/60 cursor-not-allowed" : "text-red-500 cursor-pointer hover:outline-[#CE303F]"}
+            flex items-center gap-[2px] px-[10px]
+            rounded-[4px] font-medium transition-transform
             hover:translate-y-[-1px] text-sm
-            hover:outline-1 cursor-pointer
-            hover:outline-[#CE303F] 
+            hover:outline-1
             ${className}
         `}
         disabled={disabled}
@@ -67,7 +67,6 @@ export const DeleteButton = ({
         onClose={() => setShowConfirm(false)}
         onConfirm={handleConfirm}
         isDeleting={isDeleting}
-        disabled={isDeleting}
         title={title}
         message={message}
         confirmButtonText={confirmButtonText}

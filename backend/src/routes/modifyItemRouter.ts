@@ -11,7 +11,7 @@ router.use(authenticateToken);
 router.put("/update/:id", async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
-        const { quantity, fleet_id, boat_id, fleet_name, boat_name, note, archived } = req.body;
+        const { quantity, fleet_id, boat_id, note, archived } = req.body;
 
         if (typeof quantity !== 'number' || quantity < 0) {
             res.status(400).json({ error: "Valid quantity (number >= 0) is required" });

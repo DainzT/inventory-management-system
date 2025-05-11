@@ -75,6 +75,14 @@ export const invalidAddInventoryItemFieldCases: InvalidAddFieldCase[] = [
                     error: "Valid name (string) is required",
                 },
             },
+            {
+                testCase: "name is greater than 40",
+                value: "This word is 40 This word is 40 This word is 40 ",
+                expected: {
+                    message: "Product name name must be 40 characters or less.",
+                    error: "Name.length <= 40 is required",
+                },
+            },
         ],
     },
     {
@@ -102,6 +110,14 @@ export const invalidAddInventoryItemFieldCases: InvalidAddFieldCase[] = [
                 expected: {
                     message: "Note is required.",
                     error: "Valid note (string) is required",
+                },
+            },
+            {
+                testCase: "note is greater than 120",
+                value: "This word is 120 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150This word is 150",
+                expected: {
+                    message: "Product note must be 120 characters or less.",
+                    error: "Name.length <= 120 is required",
                 },
             },
         ],
@@ -490,6 +506,14 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                     error: "Valid name (string) is required.",
                 }
             },
+            {
+                testCase: "updatedItem.name is greater than 40",
+                value: "This word is 40 This word is 40 This word is 40 ",
+                expected: {
+                    message: "Product name name must be 40 characters or less.",
+                    error: "Name.length <= 40 is required",
+                },
+            },
         ]
     },
     {
@@ -519,6 +543,14 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                     message: "Enter a valid note.",
                     error: "Valid note (string) is required.",
                 }
+            },
+            {
+                testCase: "updatedItem.note is greater than 120",
+                value: "This word is 120 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150This word is 150",
+                expected: {
+                    message: "Product note must be 150 characters or less.",
+                    error: "Name.length <= 120 is required",
+                },
             },
         ]
     },

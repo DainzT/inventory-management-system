@@ -12,17 +12,17 @@ import { toast, ToastContainer } from "react-toastify";
 import { useOrder } from "@/hooks/useOrder";
 import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
 
-
 const Orders: React.FC = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
-  const [modifyOrderItem, setModifyOrderItem] = useState<ModifyOrderItem | null>(null);
+  const [modifyOrderItem, setModifyOrderItem] =
+    useState<ModifyOrderItem | null>(null);
   const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
 
-  const { updateAssignedItem, isLoading: isModifying } = useUpdateAssignedItem();
+  const { updateAssignedItem, isLoading: isModifying, deleteOrderItem, isDeleting } = useUpdateAssignedItem();
 
   const {
+    orders,
     filteredOrders,
     activeFleet,
     handleSearch,
@@ -30,8 +30,9 @@ const Orders: React.FC = () => {
     handleFleetSelect,
     setFilteredOrders,
     setOrders,
+    isLoading,
+    searchQuery,
   } = useOrder();
-
 
   function toModifyOrderItem(
     order: OrderItem,
@@ -42,14 +43,17 @@ const Orders: React.FC = () => {
       id: order.id,
       name: order.name,
       note: order.note || "",
-      quantity: typeof order.quantity === 'number' ? order.quantity : Number(order.quantity) || 0,
+      quantity:
+        typeof order.quantity === "number"
+          ? order.quantity
+          : Number(order.quantity) || 0,
       unitPrice: Number(order.unitPrice) || 0,
       selectUnit: order.selectUnit || "",
       unitSize: Number(order.unitSize) || 0,
       total: order.total ? Number(order.total) : 0,
       fleet: order.fleet,
       boat: order.boat,
-      lastUpdated: order.lastUpdated ? new Date(order.lastUpdated) : new Date()
+      lastUpdated: order.lastUpdated ? new Date(order.lastUpdated) : new Date(),
     };
   }
 
@@ -58,7 +62,7 @@ const Orders: React.FC = () => {
       try {
         const [ordersResponse, inventoryResponse] = await Promise.all([
           fetchAssignedItems(),
-          fetchInventoryItems()
+          fetchInventoryItems(),
         ]);
 
         setOrders(ordersResponse);
@@ -75,9 +79,11 @@ const Orders: React.FC = () => {
   useEffect(() => {
     if (isModifyOpen && selectedOrder) {
       const inventoryMatch = inventoryItems.find(
-        (item) => item.name === selectedOrder.name && item.unitPrice === selectedOrder.unitPrice
+        (item) =>
+          item.name === selectedOrder.name &&
+          item.unitPrice === selectedOrder.unitPrice
       );
-      
+
       const transformed = toModifyOrderItem(selectedOrder, inventoryMatch);
       setModifyOrderItem(transformed);
     }
@@ -87,87 +93,108 @@ const Orders: React.FC = () => {
     if (!modifyOrderItem) return;
 
     try {
-        const result = await updateAssignedItem({
-            id: modifyOrderItem.id,
-            quantity,
-            fleet_id: modifyOrderItem.fleet.id,
-            boat_id: modifyOrderItem.boat.id,
-            fleet_name: fleetName,
-            boat_name: boatName
-        });
+      const result = await updateAssignedItem({
+        id: modifyOrderItem.id,
+        quantity,
+        fleet_id: modifyOrderItem.fleet.id,
+        boat_id: modifyOrderItem.boat.id,
+        fleet_name: fleetName,
+        boat_name: boatName
+      });
 
-        if (result.success) {
-            if (result.deleted) {
-                setOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
-                setFilteredOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
+      if (result.success) {
+        if (result.deleted) {
+          setOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
+          setFilteredOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
 
-                setIsModifyOpen(false);
-                setSelectedOrder(null);
-                toast.success("Item removed and quantity restored to inventory");
+          setIsModifyOpen(false);
+          setSelectedOrder(null);
+          toast.success("Item removed and quantity restored to inventory");
 
-            } else if (result.data) {
-                const updatedOrder = {
-                    ...result.data,
-                    fleet: {
-                        ...modifyOrderItem.fleet,
-                        fleet_name: fleetName
-                    },
-                    boat: {
-                        ...modifyOrderItem.boat,
-                        boat_name: boatName
-                    }
-                };
-                
-                setOrders(prev => prev.map(order => 
-                    order.id === modifyOrderItem.id ? updatedOrder : order
-                ));
-                setFilteredOrders(prev => prev.map(order => 
-                    order.id === modifyOrderItem.id ? updatedOrder : order
-                ));
-                toast.success("Item updated successfully");
+        } else if (result.data) {
+          const updatedOrder = {
+            ...result.data,
+            fleet: {
+              ...modifyOrderItem.fleet,
+              fleet_name: fleetName
+            },
+            boat: {
+              ...modifyOrderItem.boat,
+              boat_name: boatName
             }
-        }
-    } catch (error) {
-        console.error("Error modifying item:", error);
-        toast.error("Failed to update item. Please try again.");
-    }
-};
-  
+          };
 
-  const handleRemoveItem = (id: number) => {
-    setFilteredOrders((prev) => prev.filter((order) => order.id !== id));
-    setOrders((prev) => prev.filter((order) => order.id !== id));
+          setOrders(prev => prev.map(order =>
+            order.id === modifyOrderItem.id ? updatedOrder : order
+          ));
+          setFilteredOrders(prev => prev.map(order =>
+            order.id === modifyOrderItem.id ? updatedOrder : order
+          ));
+          toast.success("Item updated successfully");
+        }
+      }
+    } catch (error) {
+      console.error("Error modifying item:", error);
+      toast.error("Failed to update item. Please try again.");
+    }
+  };
+
+
+  const handleRemoveItem = async (id: number) => {
+    await deleteOrderItem(id);
+
+    const Orders = await fetchAssignedItems();
+
+    setOrders(Orders)
     setSelectedOrder(null);
     setIsModifyOpen(false);
   };
   
-  
+  const allFleetCount = orders.length;
+  const donyaDonyaCount = orders.filter(
+    (order) => order.fleet.fleet_name === "F/B DONYA DONYA 2x"
+  ).length;
+  const donaLibradaCount = orders.filter(
+    (order) => order.fleet.fleet_name === "F/B Doña Librada"
+  ).length;
+
 
   return (
     <div>
       <main className="flex-1 p-0">
-        <ToastContainer position="top-right" autoClose={3000} theme="light" />
+        <ToastContainer position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        theme="light" />
         <PageTitle title={activeFleet} />
 
-        <div className="flex justify-center items-center h-[230px]">
-          <div className="justify-start items-center flex gap-35">
+        <div className="flex justify-center items-center h-[200px]">
+          <div className="justify-start items-center flex gap-16">
             <FleetCard
               title="All Fleets"
               backgroundColor="bg-emerald-800"
               isActive={activeFleet === "All Fleets"}
               onClick={() => handleFleetSelect("All Fleets")}
+              orderCount={allFleetCount}
             />
             <FleetCard
               title="F/B DONYA DONYA 2X"
               backgroundColor="bg-cyan-800"
               isActive={activeFleet === "F/B DONYA DONYA 2X"}
               onClick={() => handleFleetSelect("F/B DONYA DONYA 2X")}
+              orderCount={donyaDonyaCount}
             />
             <FleetCard
               title="F/B Doña Librada"
               backgroundColor="bg-red-800"
               isActive={activeFleet === "F/B Doña Librada"}
               onClick={() => handleFleetSelect("F/B Doña Librada")}
+              orderCount={donaLibradaCount}
             />
           </div>
         </div>
@@ -176,11 +203,13 @@ const Orders: React.FC = () => {
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}
+            searchQuery={searchQuery}
             onFilter={handleFilter}
             activeFleet={activeFleet}
+            isLoading={isLoading}
             setIsModifyOpen={(isOpen, item) => {
-              setSelectedOrder(item || null)
-              setIsModifyOpen(isOpen)
+              setSelectedOrder(item || null);
+              setIsModifyOpen(isOpen);
             }}
           />
         </div>
