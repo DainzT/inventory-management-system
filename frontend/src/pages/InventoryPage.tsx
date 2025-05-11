@@ -87,13 +87,12 @@ const Inventory: React.FC = () => {
   return (
     <div
       ref={inventoryContainerRef}
-      className="flex-1 p-0 overflow-auto"
+      className="flex-1 p-0 overflow-auto "
     >
       <ToastContainer
         position="top-center"
         autoClose={3000}
         hideProgressBar={false}
-        newestOnTop
         closeOnClick
         rtl={false}
         pauseOnFocusLoss

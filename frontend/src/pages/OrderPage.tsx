@@ -165,7 +165,6 @@ const Orders: React.FC = () => {
         <ToastContainer position="top-center"
         autoClose={3000}
         hideProgressBar={false}
-        newestOnTop
         closeOnClick
         rtl={false}
         pauseOnFocusLoss

@@ -75,7 +75,7 @@ const EditProductModal = ({
             </article>
             <div
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity "
-                onClick={handleCloseAttempt}
+                onClick={!isEditing ? handleCloseAttempt : undefined}
                 aria-hidden="true"
             />
             <UnsavedChangesModal

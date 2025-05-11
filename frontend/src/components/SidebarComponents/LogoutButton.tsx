@@ -27,8 +27,8 @@ const LogoutButton: React.FC = () => {
         className="
           flex items-center gap-[0.6875rem] w-[6.875rem] h-[2.5rem] rounded-[0.5rem] scale-80
           bg-[#fc2424] cursor-pointer px-[0.4375rem] transition-all duration-200 
-          ease-in-out hover:scale-90 focus:outline-none
-          shadow-[inset_0_0.125rem_0.25rem_0_rgba(0,0,0,0.2)] hover:shadow-[inset_0_0.125rem_0.5rem_0_rgba(0,0,0,0.4)]
+          ease-in-out hover:scale-85 focus:outline-none
+          shadow-[inset_0_0.125rem_0.25rem_0_rgba(0,0,0,0.2)] hover:shadow-[inset_0_0.125rem_0.5rem_0_rgba(0,0,0,0.4)] 
         "
         onClick={() => setIsOpen(true)}
       >
@@ -54,7 +54,7 @@ const LogoutButton: React.FC = () => {
           <section className="flex fixed inset-0 z-50 justify-center items-center select-none">
             <article className="relative px-6 py-4 w-[24rem] bg-white rounded-2xl border-2 shadow-sm border-zinc-300 z-50 animate-[fadeIn_0.2s_ease-out]">
               <header className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-semibold inter-font text-accent">
+                <h1 className="text-2xl font-semibold inter-font text-accent ">
                   Confirm Logout
                 </h1>
               </header>
@@ -67,13 +67,13 @@ const LogoutButton: React.FC = () => {
                 <button
                   role="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transitionl w-30"
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-all w-30 active:scale-[0.98]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition-all w-35 h-11 flex items-center justify-center"
+                  className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition-all w-35 h-11 flex items-center justify-center active:scale-[0.98]"
                   disabled={loading}
                 >
                   {loading ? (

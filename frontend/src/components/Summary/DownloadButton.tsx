@@ -12,7 +12,7 @@ export const DownloadButton = ({
 
     return (
         <button
-            className="
+            className="active:scale-[0.98]
             inline-flex font-medium items-center justify-center gap-2 px-4 py-3 text-base text-white
             rounded-md cursor-pointer transition-colors duration-200 group
             bg-green-500 hover:bg-green-600

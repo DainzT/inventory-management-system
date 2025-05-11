@@ -1,35 +1,100 @@
 import { useState } from "react";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { AlertCircle, EyeIcon, EyeOffIcon } from "lucide-react";
 
 interface LoginInputProps {
   pin: string;
   setPin: (pin: string) => void;
+  disabled?: boolean
+  error: string;
+  setError: (error: string) => void;
 }
 
-function LoginInput({ pin, setPin }: LoginInputProps) {
+function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps) {
   const [showPin, setShowPin] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const shouldFloat = isFocused || pin.length > 0;
+
+  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setPin(value);
+      setError("");
+    } else {
+      setPin(value.replace(/\D/g, ''));
+      setError("Only numbers are allowed");
+    }
+  };
 
   return (
-    <div className="w-96 h-12 bg-background rounded-xl flex items-center px-[19px] mb-1">
-      <label htmlFor="pin-input" className="text-2xl font-bold text-black">
-        PIN
-      </label>
-      <input
-        id="pin-input"
-        type={showPin ? "text" : "password"}
-        value={pin}
-        onChange={(e) => setPin(e.target.value)}
-        maxLength={6}
-        className="flex-grow ml-4 text-xl font-semibold inter-font tracking-[0.5em] text-black bg-transparent outline-none"
-      />
-      <button
-        onClick={() => setShowPin(!showPin)}
-        aria-label={showPin ? "Show PIN" : "Hide PIN"}
-        className="ml-3 text-black cursor-pointer"
-      >
-        {showPin ? <EyeIcon /> : <EyeOffIcon />}
-      </button>
-    </div>
+    <>
+      <div
+        className={`w-full relative max-w-md h-12 bg-white rounded-lg flex items-center px-4 border transition-all duration-200 
+        ${isFocused
+            ? 'border-blue-500 shadow-md'
+            : error
+              ? 'border-red-500'
+              : 'border-gray-300'
+          }`}>
+        <label
+          htmlFor="pin-input"
+          className={` absolute left-3 transition-all duration-200 pointer-events-none ${shouldFloat
+            ? '-top-2.5 px-1 bg-white text-xs text-blue-500'
+            : 'top-1/2 -translate-y-1/2 text-gray-500 text-lg tracking-wider'
+            } ${error ? 'text-red-500' : ''
+            }`}
+        >
+          PIN
+        </label>
+
+        <div className="flex-grow flex items-center h-full pl-2">
+          <input
+            id="pin-input"
+            type={showPin ? "text" : "password"}
+            value={pin}
+            onChange={handlePinChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            maxLength={6}
+            className="w-full text-lg font-mono font-medium tracking-[1.7em] text-gray-800 bg-transparent outline-none placeholder:tracking-[1.7em] placeholder:font-mono"
+            placeholder={shouldFloat ? "••••••" : ""}
+            inputMode="numeric"
+            autoComplete="off"
+            disabled={disabled}
+            data-edge-suppress-password-reveal="true"
+          />
+        </div>
+        <div className="w-8 flex justify-end">
+          <button
+            onClick={() => setShowPin(!showPin)}
+            aria-label={showPin ? "Hide PIN" : "Show PIN"}
+            className={`text-gray-500transition-colors duration-200 p-1 rounded-full ${disabled
+                ? 'text-gray-300 cursor-not-allowed'
+                : error
+                  ? 'text-red-400 hover:text-red-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }
+            `}
+            disabled={disabled}
+            type="button"
+          >
+            {showPin ? (
+              <EyeIcon className="w-5 h-5" />
+            ) : (
+              <EyeOffIcon className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+      </div>
+      <div className={` transition-all duration-200 ease-in-out ${error ? 'max-h-10 opacity-100 mt-1' : 'max-h-0 opacity-0'
+        }`}>
+        {error && (
+          <p className="text-xs text-red-500 flex items-center">
+            <AlertCircle className="w-3 h-3 mr-1" />
+            {error}
+          </p>
+        )}
+      </div>
+    </>
   );
 }
 

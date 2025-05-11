@@ -233,8 +233,8 @@ const OutItemModal = ({
           <button
             onClick={handleAssign}
             className={`
-              flex w-full justify-center items-center h-10 text-white
-              ${isAssigning ? "bg-[#1B626E]/60 cursor-not-allowed" : "bg-[#1B626E] hover:bg-[#297885] active:bg-[#145965] cursor-pointer"} rounded-md transition-colors
+              flex w-full justify-center items-center h-10 text-white active:scale-[0.98]
+              ${isAssigning ? "bg-[#1B626E]/60 cursor-not-allowed" : "bg-[#1B626E] hover:bg-[#297885] active:bg-[#145965] cursor-pointer"} rounded-md transition-all
               `}
             disabled={isAssigning}
           >

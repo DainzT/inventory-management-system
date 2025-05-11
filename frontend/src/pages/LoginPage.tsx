@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
@@ -6,19 +6,25 @@ import { Logo } from "@/components/SidebarComponents/Logo";
 import LoginInput from "@/components/AuthComponents/LoginInput";
 import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
 const LoginPage: React.FC = () => {
   const [pin, setPin] = useState("");
   const [showForgotPin, setShowForgotPin] = useState(false);
-  const { login, showCreateAdmin, setShowCreateAdmin } = useAuth();
+  const [isSuccess, setIsSuccess] = useState(false);
+  const { login, showCreateAdmin, setShowCreateAdmin, loading, error, setError } = useAuth();
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     const success = await login(pin);
     if (success) {
-      navigate("/inventory");
+      setIsSuccess(true);
+      toast.success("Redirecting to page....", {
+        autoClose: 1500,
+        onClose: () => navigate("/inventory")
+      })
     }
   };
 
@@ -27,12 +33,11 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <main className="flex flex-col items-center justify-start h-screen w-screen bg-white">
+    <main className="flex flex-col items-center justify-start h-screen outline-1 w-screen">
       <ToastContainer
         position="top-center"
         autoClose={3000}
         hideProgressBar={false}
-        newestOnTop
         closeOnClick
         rtl={false}
         pauseOnFocusLoss
@@ -40,33 +45,60 @@ const LoginPage: React.FC = () => {
         pauseOnHover
         theme="light"
       />
+
       <Header />
-
-      <section className="relative flex flex-col items-center justify-center flex-grow w-full">
-        <Logo width={20} height={20} />
-        <h1 className="text-4xl font-bold text-black mb-9">Welcome, Admin!</h1>
-
-        <LoginInput pin={pin} setPin={setPin} />
-
-        <div className="mb-3">
-          <button
-            type="button"
-            onClick={() => setShowForgotPin(true)}
-            className="mb-4 text-sm text-cyan-700 underline hover:text-accent-light cursor-pointer flex justify-end w-96 px-2"
-          >
-            Forgot PIN?
-          </button>
-        </div>
-
-        {showForgotPin && <ForgotPin onClose={() => setShowForgotPin(false)} />}
-
-        <button
-          onClick={handleLogin}
-          className="w-40 h-12 bg-accent rounded-[11px] hover:bg-accent-dark cursor-pointer active:scale-95 text-xl font-semibold text-white hover:text-white transition-all duration-200"
-        >
-          Login
-        </button>
-      </section>
+      <div className="flex-grow flex flex-col items-center justify-center px-4 mb-8">
+        <section className="w-full max-w-md">
+          <div className="flex flex-col items-center mb-4">
+            <Logo width={20} height={20} />
+            <h1 className="text-3xl font-semibold text-gray-800 mb-2">Welcome Back</h1>
+            <p className="text-gray-500">Admin Portal</p>
+          </div>
+          <div className="space-y-2">
+            <LoginInput 
+              pin={pin} 
+              setPin={setPin} 
+              disabled={loading || isSuccess}
+              error={error!}
+              setError={setError}
+            />
+            <div className="w-full flex justify-end -mt-1 mb-2">
+              <button
+                onClick={() => !isSuccess && setShowForgotPin(true)}
+                disabled={isSuccess}
+                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${
+                  isSuccess 
+                    ? 'text-gray-400 cursor-not-allowed' 
+                    : 'text-blue-600 hover:text-blue-500'
+                }`}
+              >
+                Forgot PIN?
+              </button>
+            </div>
+            {showForgotPin && <ForgotPin onClose={() => setShowForgotPin(false)} />}
+            <button
+              onClick={handleLogin}
+              disabled={loading || !pin || isSuccess}
+              className={`w-full h-10 rounded-xl text-lg font-semibold text-white transition-all duration-200 flex items-center justify-center
+                ${loading || !pin || isSuccess? 'bg-accent/60 cursor-not-allowed' : 'bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg'}`}
+            >
+              {loading ? (
+                <>
+                  <ClipLoader color="#ffffff" size={20} className="mr-2" />
+                  Logging in...
+                </>
+              ) : isSuccess ? (
+                "Success!"
+              ) : (
+                "Login"
+              )}
+            </button>
+          </div>
+        </section>
+      </div>
+      <footer className="py-4 text-sm text-gray-500">
+        © {new Date().getFullYear()} Vicmar Fishing Portal. All rights reserved.
+      </footer>
     </main>
   );
 };

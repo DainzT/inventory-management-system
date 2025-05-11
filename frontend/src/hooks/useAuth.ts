@@ -72,7 +72,7 @@ export const useAuth = () => {
 
   const login = async (pin: string) => {
     const loginId = "login-toast";
-    showLoadingToast(loginId, "Logging in...");
+    showLoadingToast(loginId, "Attempting to login...");
     if (!pin || pin.trim() === "") {
       showErrorToast(loginId, "PIN input cannot be empty.");
       setLoading(false);
@@ -359,5 +359,6 @@ export const useAuth = () => {
     ResetPin,
     changeEmail,
     refreshToken,
+    setError,
   };
 };

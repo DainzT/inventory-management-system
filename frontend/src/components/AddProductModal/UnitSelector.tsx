@@ -131,7 +131,7 @@ export const UnitSelector = ({
               <div
                 key={unit}
                 onClick={() => selectUnit(unit)}
-                className="px-4 py-2 hover:bg-[#F4F1F1] cursor-pointer inter-font"
+                className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
               >
                 {unit}
               </div>
