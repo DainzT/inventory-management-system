@@ -20,8 +20,14 @@ export const InputField = ({
   disabled = false,
 }: InputFieldProps) => {
   const inputStyles =
-    `w-full mt-1 px-4 rounded-[8px] border-[1px] border-[#0FE3FF] bg-[#F4F1F1] inter-font  
-    ${error ? "border-red-500" : "border-[#0FE3FF]"}`;
+    `w-full mt-1 px-4 rounded-[8px] border-[1px] inter-font bg-[#F4F1F1]
+    transition-all duration-200
+    ${disabled
+      ? 'cursor-not-allowed opacity-70'
+      : error
+        ? 'border-red-500 hover:border-red-600'
+        : 'border-[#0FE3FF]'
+    }`
 
   return (
     <div>

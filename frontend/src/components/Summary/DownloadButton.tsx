@@ -12,13 +12,12 @@ export const DownloadButton = ({
 
     return (
         <button
-            className="active:scale-[0.98]
+            className={`active:scale-[0.98]
             inline-flex font-medium items-center justify-center gap-2 px-4 py-3 text-base text-white
             rounded-md cursor-pointer transition-colors duration-200 group
-            bg-green-500 hover:bg-green-600
             w-[200px]
-            overflow-hidden 
-        "
+            overflow-hidden ${!isLoading ? "cursor-wait bg-green-500/60" : " bg-green-500 hover:bg-green-600"}
+            `}
 
             data-print-invoice="true"
             aria-label="Download invoice"

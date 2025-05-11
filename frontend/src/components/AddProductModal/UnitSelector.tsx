@@ -74,7 +74,13 @@ export const UnitSelector = ({
       </label>
       <div
         onClick={!disabled ? () => setIsOpen(!isOpen) : undefined}
-        className={`mt-2 w-[140px] h-[32px] px-4 flex items-center justify-between rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1] cursor-pointer`}
+        className={`mt-2 w-[140px] h-[32px] px-4 flex items-center justify-between rounded-[8px] border-[1px] bg-[#F4F1F1] transition-all duration-200
+        ${disabled
+            ? 'cursor-not-allowed opacity-70'
+            : error
+              ? 'border-red-500 hover:border-red-600'
+              : 'border-[#0FE3FF] cursor-pointer'
+          }`}
       >
         <span className={value ? "inter-font" : "text-[#999] inter-font"}>{value || "Unit"}</span>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">

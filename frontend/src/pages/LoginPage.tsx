@@ -79,8 +79,8 @@ const LoginPage: React.FC = () => {
             <button
               onClick={handleLogin}
               disabled={loading || !pin || isSuccess}
-              className={`w-full h-10 rounded-xl text-lg font-semibold text-white transition-all duration-200 flex items-center justify-center
-                ${loading || !pin || isSuccess? 'bg-accent/60 cursor-not-allowed' : 'bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg'}`}
+              className={`w-full h-10 rounded-xl text-lg font-semibold text-white transition-all duration-200 flex items-center justify-center ${loading ? 'cursor-wait' : ""}
+                ${!pin || isSuccess? 'bg-accent/60 cursor-not-allowed' : 'bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg'}`}
             >
               {loading ? (
                 <>

@@ -184,6 +184,7 @@ export const useAuth = () => {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to send OTP");
       showErrorToast(sendOtpId, error.message || "Failed to send OTP");
+      throw err;
     } finally {
       setLoading(false);
     }
