@@ -73,7 +73,7 @@ const AuthInput: React.FC<AuthInputProps> = ({
           htmlFor="pin-input"
           className={`absolute left-3 transition-all duration-200 pointer-events-none ${shouldFloat
             ? '-top-2.5 px-1 bg-white text-xs text-blue-500'
-            : 'top-1/2 -translate-y-1/2 text-gray-500 text-lg tracking-wider'
+            : 'top-1/2 -translate-y-1/2 text-gray-400 text-lg tracking-wider font-mono font-medium'
             } ${finalError ? 'text-red-500' : ''}`}
         >
           {(type === "pin" || type === "confirmPin" || type === "otp") ? placeholder : ""}
@@ -141,7 +141,7 @@ const AuthInput: React.FC<AuthInputProps> = ({
             type="button"
             onClick={() => setShowPin(!showPin)}
             aria-label={showPin ? "Hide password" : "Show password"}
-            className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500  ${disabled ? "text-gray-300 cursor-not-allowed" : "hover:text-gray-700"}`}
+            className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500  ${disabled ? "text-gray-300 cursor-not-allowed" : "hover:text-gray-700 cursor-pointer"}`}
             disabled={disabled}
           >
             {(showPin) ? (

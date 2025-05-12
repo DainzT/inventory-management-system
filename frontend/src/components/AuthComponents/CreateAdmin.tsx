@@ -3,7 +3,7 @@ import Portal from "@/utils/Portal";
 import { ClipLoader } from "react-spinners";
 import AuthInput from "@/components/AuthComponents/AuthInput";
 import { useAuth } from "@/hooks/useAuth";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { ArrowLeft, Check } from "lucide-react";
 
 interface CreateAdminModalProps {
@@ -81,17 +81,6 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
 
   return (
     <Portal>
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        theme="light"
-      />
-
       <div className="fixed inset-0 flex justify-center items-center select-none">
         <div className="relative w-[24rem] h-[35em] px-6 py-6 bg-white border-2 z-50 border-zinc-300 rounded-2xl shadow-md animate-[fadeIn_0.2s_ease-out]">
           <div className="flex items-center justify-center gap-8 mb-8">
@@ -183,13 +172,13 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
               />
             )}
           </div>
-          <div className="pt-4 border-t border-gray-100 mt-auto">
+          <div className="pt-10 border-t border-gray-100 mt-auto">
             <div className={`${otpSent ? "flex justify-between gap-3" : " flex justify-end gap-3"}`}>
               {(otpSent || otpVerified) && (
                 <button
                   onClick={handleBack}
                   className={`px-4 py-2.5 text-gray-600 bg-gray-100 rounded-lg transition flex items-center gap-2 active:scale-98
-                  ${(loading || otpVerified) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 '}`}
+                  ${(loading || otpVerified) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 cursor-pointer'}`}
                   disabled={loading || otpVerified}
                 >
                   <ArrowLeft size={18} />
@@ -200,7 +189,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
                 onClick={handleNextStep}
                 className={`px-6 py-2.5 text-white rounded-lg transition-all w-45 flex items-center justify-center active:scale-98
                 ${otpVerified ? 'bg-green-500 hover:bg-green-600' : ''}
-                ${loading ? 'bg-accent/60 cursor-wait' : 'shadow-md hover:shadow-lg bg-accent hover:bg-[#297885]'}
+                ${loading ? 'bg-accent/60 cursor-wait' : 'shadow-md hover:shadow-lg bg-accent hover:bg-[#297885] cursor-pointer'}
                 ${otpVerified ? 'cursor-default' : ''}`}
                 disabled={loading || otpVerified}
               >

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertCircle, EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 interface LoginInputProps {
   pin: string;
@@ -71,7 +71,7 @@ function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps)
                 ? 'text-gray-300 cursor-not-allowed'
                 : error
                   ? 'text-red-400 hover:text-red-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-500 hover:text-gray-700 cursor-pointer'
               }
             `}
             disabled={disabled}
@@ -85,15 +85,7 @@ function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps)
           </button>
         </div>
       </div>
-      <div className={` transition-all duration-200 ease-in-out ${error ? 'max-h-10 opacity-100 mt-1' : 'max-h-0 opacity-0'
-        }`}>
-        {error && (
-          <p className="text-xs text-red-500 flex items-center">
-            <AlertCircle className="w-3 h-3 mr-1" />
-            {error}
-          </p>
-        )}
-      </div>
+      
     </>
   );
 }

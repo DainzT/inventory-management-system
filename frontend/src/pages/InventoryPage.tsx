@@ -1,7 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
 import InventoryManagementTable from "@/components/InventoryManagementTable/InventoryManagementTable";
 import EditProductModal from "@/components/EditProductModal/EditProductModal";
 import AddProductModal from "@/components/AddProductModal/AddProductModal";
@@ -89,17 +86,6 @@ const Inventory: React.FC = () => {
       ref={inventoryContainerRef}
       className="flex-1 p-0 overflow-auto "
     >
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        theme="light"
-      />
-
       <PageTitle title="Main Inventory" />
       <InventoryManagementTable
         setIsAddOpen={setIsAddOpen}

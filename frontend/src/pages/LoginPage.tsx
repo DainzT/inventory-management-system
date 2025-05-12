@@ -6,7 +6,7 @@ import { Logo } from "@/components/SidebarComponents/Logo";
 import LoginInput from "@/components/AuthComponents/LoginInput";
 import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 
 const LoginPage: React.FC = () => {
@@ -34,18 +34,6 @@ const LoginPage: React.FC = () => {
 
   return (
     <main className="flex flex-col items-center justify-start h-screen outline-1 w-screen">
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-
       <Header />
       <div className="flex-grow flex flex-col items-center justify-center px-4 mb-8">
         <section className="w-full max-w-md">

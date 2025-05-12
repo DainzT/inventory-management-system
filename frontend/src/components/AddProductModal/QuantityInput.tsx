@@ -83,7 +83,7 @@ export const QuantityInput = ({
         <button
           type="button"
           onClick={handleIncrement}
-          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px] cursor-pointerbg-[#F4F1F1] transition-all duration-200 ${disabled
+          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px] cursor-pointer bg-[#F4F1F1] transition-all duration-200 ${disabled
             ? 'cursor-not-allowed opacity-70'
             : error
               ? 'border-red-500 hover:border-red-600'

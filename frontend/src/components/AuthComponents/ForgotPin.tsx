@@ -144,7 +144,7 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
                 <button
                   onClick={handleBack}
                   className={`px-4 py-2.5 text-gray-600 rounded-lg bg-gray-200 transition flex items-center gap-2 active:scale-[0.98] border border-gray-200
-                    ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
+                    ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300 cursor-pointer'}`}
                   disabled={loading || success}
                 >
                   <ArrowLeft size={18} />
@@ -153,7 +153,7 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
               ) : (
                 <button
                   onClick={onClose}
-                  className={` ${loading ? "opacity-50 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300 "} px-4 py-2 text-gray-700 active:scale-[0.98] rounded-md transition cursor-pointer`}
+                  className={` ${loading ? "opacity-50 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300 cursor-pointer"} px-4 py-2 text-gray-700 active:scale-[0.98] rounded-md transition `}
                   disabled={loading}
                 >
                   Cancel
@@ -161,8 +161,8 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
               )}
               <button
                 onClick={otpSent ? (otpVerified ? handleResetPin : handleOTPVerification) : handleSendOTP}
-                className={`px-6 py-2.5 text-white rounded-lg transition-all flex-1 max-w-[11rem] flex items-center justify-center gap-2
-                  ${loading ? 'bg-accent/60 cursor-wait' : 'bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg'}
+                className={`px-6 py-2.5 text-white rounded-lg transition-all flex-1 max-w-[11.58rem] flex items-center justify-center gap-2
+                  ${loading ? 'bg-accent/60 cursor-wait' : 'bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer'}
                   active:scale-[0.98]`}
                 disabled={loading || success}
               >
@@ -171,7 +171,7 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
                     <ClipLoader size={20} color="#fff" className="mr-2" />
                     {getButtonText()}
                   </>
-                ) : !success ? (
+                ) : success ? (
                   <>
                     <Check size={18} className="mr-1" />
                     {getButtonText()}

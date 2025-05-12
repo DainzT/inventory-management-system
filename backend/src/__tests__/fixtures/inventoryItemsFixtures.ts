@@ -157,6 +157,14 @@ export const invalidAddInventoryItemFieldCases: InvalidAddFieldCase[] = [
                     error: "Valid quantity (number > 0) is required",
                 },
             },
+            {
+                testCase: "quantity is > 10,000",
+                value: 10001,
+                expected: {
+                    message: "Quantity cannot exceed 10,000.",
+                    error: "Valid quantity (number <= 10,000) is required",
+                },
+            },
         ],
     },
     {
@@ -192,6 +200,14 @@ export const invalidAddInventoryItemFieldCases: InvalidAddFieldCase[] = [
                 expected: {
                     message: "Enter a valid price.",
                     error: "Valid unitPrice (number > 0) is required",
+                },
+            },
+            {
+                testCase: "unitPrice is > 1,000,000",
+                value: 1000001,
+                expected: {
+                    message: "Price cannot exceed 1,000,000",
+                    error: "Valid unitPrice (number <= 1,000,000) is required",
                 },
             },
         ],
@@ -590,6 +606,14 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                     error: "Valid quantity (number > 0) is required.",
                 }
             },
+            {
+                testCase: "updatedItem.quantity is > 10,000",
+                value: 10001,
+                expected: {
+                    message: "Quantity cannot exceed 10,000.",
+                    error: "Valid quantity (number <= 10,000) is required",
+                },
+            },
         ]
     },
     {
@@ -627,6 +651,14 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                     message: "Enter a valid price.",
                     error: "Valid unitPrice (number > 0) is required",
                 }
+            },
+            {
+                testCase: "updatedItem.unitPrice is > 1,000,000",
+                value: 10000001,
+                expected: {
+                    message: "Price cannot exceed 1,000,000",
+                    error: "Valid unitPrice (number <= 1,000,000) is required",
+                },
             },
         ]
     },

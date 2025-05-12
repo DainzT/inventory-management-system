@@ -5,6 +5,8 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
 import Sidebar from "@/components/Sidebar";
 import Inventory from "./pages/InventoryPage";
@@ -16,6 +18,18 @@ import ProtectedRoute from "./components/ProtectedRoutes";
 const App: React.FC = () => {
   return (
     <Router>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        theme="light"
+      />
       <div className="flex flex-col h-screen">
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
