@@ -8,6 +8,7 @@ import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
+import { AlertCircle } from "lucide-react";
 
 const LoginPage: React.FC = () => {
   const [pin, setPin] = useState("");
@@ -43,22 +44,32 @@ const LoginPage: React.FC = () => {
             <p className="text-gray-500">Admin Portal</p>
           </div>
           <div className="space-y-2">
-            <LoginInput 
-              pin={pin} 
-              setPin={setPin} 
+            <LoginInput
+              pin={pin}
+              setPin={setPin}
               disabled={loading || isSuccess}
               error={error!}
               setError={setError}
             />
-            <div className="w-full flex justify-end -mt-1 mb-2">
+            <div className="w-full flex justify-between -mt-1 mb-2">
+              <div
+                className={`transition-all duration-200 ease-in-out ${error ? 'max-h-10 opacity-100 mt-1' : 'max-h-0 opacity-0'
+                  }`}
+              >
+                {error && (
+                  <p className="text-xs text-red-500 flex items-center -mt-1">
+                    <AlertCircle className="w-3 h-3 mr-1" />
+                    {error}
+                  </p>
+                )}
+              </div>
               <button
                 onClick={() => !isSuccess && setShowForgotPin(true)}
                 disabled={isSuccess}
-                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${
-                  isSuccess 
-                    ? 'text-gray-400 cursor-not-allowed' 
+                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${isSuccess
+                    ? 'text-gray-400 cursor-not-allowed'
                     : 'text-blue-600 hover:text-blue-500'
-                }`}
+                  }`}
               >
                 Forgot PIN?
               </button>
@@ -68,7 +79,7 @@ const LoginPage: React.FC = () => {
               onClick={handleLogin}
               disabled={loading || !pin || isSuccess}
               className={`w-full h-10 rounded-xl text-lg font-semibold text-white transition-all duration-200 flex items-center justify-center ${loading ? 'cursor-wait' : ""}
-                ${!pin || isSuccess? 'bg-accent/60 cursor-not-allowed' : 'bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg'}`}
+                ${!pin || isSuccess ? 'bg-accent/60 cursor-not-allowed' : 'bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg'}`}
             >
               {loading ? (
                 <>

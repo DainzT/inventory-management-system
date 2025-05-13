@@ -35,8 +35,6 @@ const SummaryDesign = ({
   );
   const [selectedMonth, setSelectedMonth] = useState("January");
 
-  console.log("isLoading in SummaryDesign:", isLoading);
-
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
       try {

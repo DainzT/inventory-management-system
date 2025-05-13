@@ -184,8 +184,8 @@ const OutItemModal = ({
         </header>
 
         {selectedItem && <ItemDetails item={selectedItem} />}
-        <div className="flex-grow overflow-y-auto">
-          <div className="mb-1">
+        <div className="flex-grow overflow-y-hidden">
+          <div className={`${errors.fleet ? "" : "mb-1" }`}>
             <SelectField
               label="Choose a fleet"
               placeholder="Select a fleet"
@@ -199,7 +199,7 @@ const OutItemModal = ({
           </div>
 
           {fleet && (
-            <div className="mb-1">
+            <div className={`${errors.boat ? "" : "mb-1" }`}>
               <SelectField
                 label="Choose a boat"
                 placeholder="Select a boat"
@@ -212,7 +212,7 @@ const OutItemModal = ({
             </div>
           )}
 
-          <div className="mb-3">
+          <div className={`${errors.quantity ? "" : "mb-3"}`}>
             <QuantitySelector
               value={quantity}
               onChange={handleQuantityChange}

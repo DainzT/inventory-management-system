@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { AlertCircle, EyeIcon, EyeOffIcon } from "lucide-react";
 
 interface LoginInputProps {
   pin: string;
@@ -84,8 +84,8 @@ function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps)
             )}
           </button>
         </div>
+        
       </div>
-      
     </>
   );
 }

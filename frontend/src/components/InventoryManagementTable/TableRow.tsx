@@ -6,6 +6,7 @@ import { roundTo } from "@/utils/RoundTo";
 import { highlightText } from "@/utils/HighlightText";
 import { pluralize } from "@/utils/Pluralize";
 import { forwardRef } from 'react';
+import { Tooltip } from "../ToolTips";
 
 interface TableRowProps {
   item: InventoryItem;
@@ -18,6 +19,7 @@ interface TableRowProps {
   highlightedItem?: HighlightedItem;
   currentPage: number;
   itemsPerPage: number;
+  maxNoteLength?: number;
 }
 
 export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
@@ -31,11 +33,16 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
     searchQuery,
     highlightedItem,
     itemsPerPage,
-    currentPage
+    currentPage,
+    maxNoteLength = 48
   },
   ref
 ) => {
   const globalIndex = currentPage * itemsPerPage + index + 1;
+  const shouldTruncate = item.note && item.note.length > maxNoteLength;
+  const truncatedNote = shouldTruncate
+    ? `${item.note.slice(0, maxNoteLength)}...`
+    : item.note;
 
   return (
     <article>
@@ -64,15 +71,28 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
         <div className="
           w-[98px] xs:min-w-[80px] sm:min-w-[100px] md:min-w-[140px] lg:min-w-[130px] xl:min-w-[160px]
           text-[12px] xs:text-xs sm:text-sm md:text-[16px] font-bold text-[#1F2937] text-left 
-          shrink-0 break-all overflow-hidden hyphens-auto  px-3 flex-1 ">
+          shrink-0 break-all overflow-hidden hyphens-auto  px-3 flex-1">
           {highlightText(item.name, searchQuery)}
         </div>
         <div className="
           w-[90px] xs:min-w-[80px] sm:min-w-[100px] md:w-[100px] lg:w-[120px] xl:w-[150px]
           text-[12px] xs:text-xs sm:text-sm md:text-[16px] text-[#4B5563] text-left 
-          shrink-0 break-all overflow-hidden hyphens-auto px-3 flex-1
+          shrink-0 break-all hyphens-auto px-3 flex-1
         ">
-          {highlightText(item.note, searchQuery)}
+          {item.note && (
+            <div>
+              {shouldTruncate ? (
+                <Tooltip content={item.note.slice(maxNoteLength, item.note.length)} position="bottom">
+                  <p className="text-sm text-gray-600 break-words cursor-pointer">
+                    {highlightText(truncatedNote, searchQuery)}
+                    <span className="inline-block ml-1 text-cyan-600">↗</span>
+                  </p>
+                </Tooltip>
+              ) : (
+                <p className="text-sm text-gray-600 break-words">{highlightText(item.note, searchQuery)}</p>
+              )}
+            </div>
+          )}
         </div>
         <div className="
           w-[80px] xs:min-w-[60px] sm:min-w-[80px] md:min-w-[100px] lg:min-w-[110px] xl:min-w-[120px]

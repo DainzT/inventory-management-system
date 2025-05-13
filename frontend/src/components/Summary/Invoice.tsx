@@ -28,7 +28,6 @@ export const Invoice = ({
   const sortedOrders = [...orders].sort(
     (a, b) => new Date(a.outDate).getTime() - new Date(b.outDate).getTime()
   );
-
   const groupedByBoat = sortedOrders.reduce(
     (acc: Record<number, GroupedOrders>, order) => {
       if (!acc[order.boat.id]) {
@@ -72,7 +71,7 @@ export const Invoice = ({
       return acc;
     }, {});
   };
-
+  
   const handleScroll = (event: SyntheticEvent<HTMLDivElement>) => {
     if (isManualScroll) {
       return;
@@ -213,8 +212,8 @@ export const Invoice = ({
                   }
                 }}
                 className="
-                                    mt-3 flex flex-col p-6 mx-auto bg-[#fff] rounded border border-stone-400 w-[794px] h-[1123px] 
-                                    margin-0  invoice-page"
+                  mt-3 flex flex-col p-6 mx-auto bg-[#fff] rounded border border-stone-400 w-[794px] h-[1123px] 
+                  margin-0  invoice-page"
               >
                 <div className="flex-1 flex flex-col gap-6">
                   <InvoiceHeader
@@ -240,9 +239,9 @@ export const Invoice = ({
         ) : (
           <div
             className="
-                                mt-3 flex flex-col p-6 mx-auto bg-[#fff] rounded border border-stone-400 w-[794px] h-[1123px] 
-                                margin-0 invoice-page
-                            "
+              mt-3 flex flex-col p-6 mx-auto bg-[#fff] rounded border border-stone-400 w-[794px] h-[1123px] 
+              margin-0 invoice-page
+            "
             ref={(el) => {
               if (el) {
                 pageRefs.current[0] = el;

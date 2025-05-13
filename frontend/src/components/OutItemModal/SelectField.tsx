@@ -62,7 +62,7 @@ const SelectField = ({
           </ul>
         </div>
       )}
-      <div className={`transition-all duration-200 ${error ? "mt-1 max-h-10" : "h-0"}`}>
+      <div className={`transition-all duration-200 ${error ? "mt-[0.2rem] max-h-10" : "h-0"}`}>
         {error && (
           <p className="text-red-600 text-sm">
             {error}
