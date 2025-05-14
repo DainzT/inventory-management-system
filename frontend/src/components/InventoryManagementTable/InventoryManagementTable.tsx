@@ -35,7 +35,7 @@ const InventoryManagementTable = ({
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const itemRef = useRef<HTMLDivElement | null>(null);
-
+  
   useEffect(() => {
     if (highlightedItem && containerRef?.current) {
       const itemIndex = inventoryItems.findIndex(item => item.id === highlightedItem.id);
@@ -58,7 +58,7 @@ const InventoryManagementTable = ({
         }, 100);
       }
     }
-  }, [highlightedItem, inventoryItems, currentPage, containerRef]);
+  }, [highlightedItem, inventoryItems, containerRef]);
 
   const handleToggleExpand = (itemId: number) => {
     setExpandedItem(expandedItem === itemId ? null : itemId);

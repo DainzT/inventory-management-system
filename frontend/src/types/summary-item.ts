@@ -35,4 +35,5 @@ export interface GroupedOrders {
   boatId: number;
   boatName: string;
   orders: OrderItem[];
+  isContinued?: boolean;
 }
