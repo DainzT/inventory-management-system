@@ -71,7 +71,7 @@ export const useAuth = () => {
 
   const login = async (pin: string) => {
     const loginId = "login-toast";
-    showLoadingToast(loginId, "Logging in...");
+    showLoadingToast(loginId, "Attempting to login...");
     if (!pin || pin.trim() === "") {
       showErrorToast(loginId, "PIN input cannot be empty.");
       setLoading(false);
@@ -184,6 +184,7 @@ export const useAuth = () => {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to send OTP");
       showErrorToast(sendOtpId, error.message || "Failed to send OTP");
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -351,5 +352,6 @@ export const useAuth = () => {
     ResetPin,
     changeEmail,
     refreshToken,
+    setError,
   };
 };

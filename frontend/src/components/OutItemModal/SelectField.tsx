@@ -32,7 +32,12 @@ const SelectField = ({
         onClick={() => setIsOpen(!isOpen)}
         className={`
           flex justify-between items-center px-4 w-full h-12 rounded-lg border-[1px] 
-          bg-[#F4F1F1] inter-font ${error ? "border-red-500" : "border-[#0FE3FF] cursor-pointer"}
+          bg-[#F4F1F1] inter-font transition-all duration-200 ${disabled
+            ? 'cursor-not-allowed opacity-70'
+            : error
+              ? 'border-red-500 hover:border-red-600'
+              : 'border-[#0FE3FF] cursor-pointer'
+          }
         `}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -49,7 +54,7 @@ const SelectField = ({
               <li
                 key={option}
                 onClick={() => handleOptionClick(option)}
-                className="px-4 py-2 hover:bg-zinc-100 cursor-pointer inter-font"
+                className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
               >
                 {option}
               </li>
@@ -57,13 +62,13 @@ const SelectField = ({
           </ul>
         </div>
       )}
-      <div className={`transition-all duration-200 ${error ? "mt-1" : "h-0"}`}>
-          {error && (
-            <p className="text-red-600 text-sm">
-              {error}
-            </p>
-          )}
-        </div>
+      <div className={`transition-all duration-200 ${error ? "mt-[0.2rem] max-h-10" : "h-0"}`}>
+        {error && (
+          <p className="text-red-600 text-sm">
+            {error}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

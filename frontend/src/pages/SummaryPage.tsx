@@ -5,8 +5,6 @@ import { OrderItem } from "@/types";
 import { useParams } from "react-router-dom";
 import { fetchAssignedItems } from "@/api/orderAPI";
 import { useToast } from "@/hooks/useToast";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const Summary: React.FC = () => {
   const { fleetName } = useParams<{ fleetName: string }>();
@@ -35,7 +33,7 @@ const Summary: React.FC = () => {
         setOrders(fetchedOrders);
         memoizedShowSuccessToast(
           toastId,
-          "All invoice items loaded successfully"
+          "Invoices loaded successfully"
         );
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -46,7 +44,7 @@ const Summary: React.FC = () => {
     };
 
     const initializeFetch = () => {
-      memoizedShowLoadingToast(toastId, "Fetching orders...");
+      memoizedShowLoadingToast(toastId, "Loading invoices");
       fetchOrders();
     };
 
@@ -66,15 +64,6 @@ const Summary: React.FC = () => {
 
   return (
     <div className="flex-1 p-0">
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="light"
-      />
       <PageTitle title={String(modifiedName)} />
       <SummaryDesign
         fleetName={String(fleetName)}

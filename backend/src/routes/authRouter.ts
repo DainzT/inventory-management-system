@@ -83,11 +83,13 @@ router.post(
         message: "Admin account created successfully",
         success: true,
       });
+      return;
     } catch (error) {
       res.status(500).json({
         message: "Internal server error",
         success: false,
       });
+      return;
     }
   }
 );
@@ -143,8 +145,10 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
     });
 
     res.json({ accessToken });
+    return;
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
+    return;
   }
 });
 
@@ -192,10 +196,12 @@ router.put(
       });
 
       res.json({ message: "PIN updated successfully", success: true });
+      return;
     } catch (error) {
       res
         .status(500)
         .json({ message: "Internal server error", success: false });
+      return;
     }
   }
 );
@@ -272,10 +278,12 @@ router.put(
       });
 
       res.json({ message: "Email updated successfully.", success: true });
+      return;
     } catch (error) {
       res
         .status(500)
         .json({ message: "Internal server error", success: false });
+      return;
     }
   }
 );
@@ -293,8 +301,10 @@ router.get(
       }
 
       res.json({ isPinSet: true, isAuthenticated: hasRefreshToken });
+      return;
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
+      return;
     }
   }
 );
@@ -318,8 +328,10 @@ router.post(
       });
 
       res.json({ accessToken });
+      return;
     } catch (err) {
       res.sendStatus(403);
+      return;
     }
   }
 );
@@ -328,8 +340,10 @@ router.post("/logout", async (req: Request, res: Response): Promise<void> => {
   try {
     res.clearCookie("refresh_token");
     res.json({ message: "Logged out successfully" });
+    return;
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
+    return;
   }
 });
 
@@ -406,8 +420,10 @@ router.post(
       });
 
       res.status(200).json({ message: "OTP sent successfully", success: true });
+      return;
     } catch (error) {
       res.status(500).json({ message: "Failed to send OTP", success: false });
+      return;
     }
   }
 );
@@ -433,8 +449,10 @@ router.post(
       res
         .status(200)
         .json({ message: "PIN verified successfully", success: true });
+      return;
     } catch (error) {
       res.status(500).json({ message: "Failed to verify PIN", success: false });
+      return;
     }
   }
 );
@@ -496,10 +514,12 @@ router.post(
       });
 
       res.status(200).json({ message: "OTP sent successfully", success: true });
+      return;
     } catch (error) {
       res
         .status(500)
-        .json({ message: "Failed to verify email", success: false });
+        .json({ message: "Failed to verify email", success: true });
+      return;
     }
   }
 );
@@ -546,8 +566,10 @@ router.post(
         message: "OTP verified successfully",
         success: true,
       });
+      return;
     } catch (error) {
       res.status(500).json({ message: "Failed to verify OTP", success: false });
+      return;
     }
   }
 );
@@ -564,8 +586,8 @@ router.post(
           success: false,
         });
         return;
-      };
-      
+      }
+
       if (newPin.length !== MAX_PIN_LENGTH || !/^\d+$/.test(newPin)) {
         res.status(400).json({
           message:
@@ -574,7 +596,7 @@ router.post(
         });
         return;
       }
-      
+
       const user = await prisma.user.findFirst({ where: { email } });
       if (!user) {
         res.status(404).json({ message: "User not found", success: false });
@@ -585,7 +607,7 @@ router.post(
       if (isSamePin) {
         res.status(400).json({
           message: "New PIN must be different from current PIN",
-          success: false
+          success: false,
         });
         return;
       }
@@ -597,10 +619,12 @@ router.post(
         data: { pin: hashedNewPin },
       });
       res.json({ message: "PIN reset successfully", success: true });
+      return;
     } catch (error) {
       res
         .status(500)
         .json({ message: "Internal server error", success: false });
+      return;
     }
   }
 );

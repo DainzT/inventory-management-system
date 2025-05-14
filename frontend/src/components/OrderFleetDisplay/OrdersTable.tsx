@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { OrderItem } from "@/types/order-item";
 import { SearchBar } from "../InventoryManagementTable/SearchBar";
@@ -46,6 +46,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
     setCurrentPage(selected);
   };
 
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [activeFleet, searchQuery]);
+
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
@@ -55,6 +59,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       case "All Fleets":
         return [
           "All Boats",
+          "F/B DONYA DONYA 2X",
+          "F/B Doña Librada",
           "F/B Lady Rachelle",
           "F/B Mariella",
           "F/B My Shield",
@@ -69,6 +75,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       case "F/B DONYA DONYA 2X":
         return [
           "All Boats",
+          "F/B DONYA DONYA 2X",
           "F/B Lady Rachelle",
           "F/B Mariella",
           "F/B My Shield",
@@ -78,6 +85,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       case "F/B Doña Librada":
         return [
           "All Boats",
+          "F/B Doña Librada",
           "F/B Adomar",
           "F/B Prince of Peace",
           "F/B Ruth Gaily",
