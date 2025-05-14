@@ -65,16 +65,21 @@ export const PriceInput = ({
         <span className="absolute left-4 top-[8px] text-[#666] inter-font">₱</span>
         <input
           type="number"
-          value={value !== "" ? roundTo(value,2) : ""}
+          value={value !== "" ? roundTo(value, 2) : ""}
           onChange={handleChange}
           placeholder="0.00"
           min="0"
           step="0.01"
           readOnly={readonly}
-          className={`w-[140px] h-[40px] pl-8 rounded-[8px] border-[1px] inter-font
-              ${error?.unitPrice ? "border-red-500" : readonly
-              ? "border-[#F8F8F8] bg-[rgba(244,241,241,0.77)] text-[#666] cursor-default pointer-events-none"
-              : "border-[#0FE3FF] bg-[#F4F1F1]"
+          className={`${readonly ? "w-[145px]": "w-[140px]"} h-[40px] pl-8 rounded-[8px] border-[1px] inter-font bg-[#F4F1F1]
+            transition-all duration-200
+            ${disabled
+              ? 'cursor-not-allowed opacity-70'
+              : error?.unitPrice
+                ? 'border-red-500 hover:border-red-600'
+                : readonly
+                  ? "border-[#F8F8F8] bg-[rgba(244,241,241,0.77)] text-[#666] cursor-default pointer-events-none"
+                  : "border-[#0FE3FF]"
             }`}
           disabled={disabled}
         />
@@ -90,11 +95,16 @@ export const PriceInput = ({
               min="0"
               step="0.01"
               readOnly={readonly}
-              className={`w-[70px] h-[40px] pl-3 rounded-[8px] border-[1px] inter-font ${error?.unitSize ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
+              className={`w-[70px] h-[40px] pl-3 rounded-[8px] border-[1px] inter-font  bg-[#F4F1F1] transition-all duration-200 ${disabled
+                ? 'cursor-not-allowed opacity-70'
+                : error?.unitSize
+                  ? 'border-red-500 hover:border-red-600'
+                  : 'border-[#0FE3FF]'
+                }`}
               required={(typeof unitSize === "number" && typeof quantity === "number" && unitSize > quantity)}
               disabled={disabled}
             />
-            {error && <span className="absolute text-red-600 text-sm -translate-17 translate-y-10">{error.unitSize}</span>}
+            {error && <span className="absolute text-red-600 text-sm -translate-19 translate-y-10 w-35">{error.unitSize}</span>}
             <span className="ml-2 inter-font">{unit?.trim() || "unit"}</span>
           </>
         )}

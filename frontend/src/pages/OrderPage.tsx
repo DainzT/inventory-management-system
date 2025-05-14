@@ -8,7 +8,7 @@ import { fetchInventoryItems } from "@/api/inventoryAPI";
 import { PageTitle } from "@/components/PageTitle";
 import { ModifyOrderItem } from "@/types/modify-order-item";
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useOrder } from "@/hooks/useOrder";
 import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
 
@@ -162,15 +162,6 @@ const Orders: React.FC = () => {
   return (
     <div>
       <main className="flex-1 p-0">
-        <ToastContainer position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        theme="light" />
         <PageTitle title={activeFleet} />
 
         <div className="flex justify-center items-center h-[200px]">

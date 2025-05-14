@@ -28,7 +28,6 @@ export const Invoice = ({
   const sortedOrders = [...orders].sort(
     (a, b) => new Date(a.outDate).getTime() - new Date(b.outDate).getTime()
   );
-
   const groupedByBoat = sortedOrders.reduce(
     (acc: Record<number, GroupedOrders>, order) => {
       if (!acc[order.boat.id]) {
@@ -49,28 +48,104 @@ export const Invoice = ({
   );
 
   const allOrders = boatGroups.flatMap((group) => group.orders);
+  console.log(allOrders)
+  const getItemsPerPage = (orders: OrderItem[], pageIndex: number, totalPages: number) => {
+    const isLastPage = pageIndex === totalPages - 1;
 
-  const ordersPerPage = 6;
-  const totalPages = Math.ceil(allOrders.length / ordersPerPage);
+    const PAGE_HEIGHT = 1000;
+    const HEADER_HEIGHT = 170;
+    const FOOTER_HEIGHT = 200;
+    const PAGE_NUMBER_HEIGHT = 50;
+    const BOAT_HEADER_HEIGHT = 80;
+    const ITEM_HEIGHTS = {
+      SHORT: 70,
+      MEDIUM: 100,
+      LONG: 160,
+      VERY_LONG: 200
+    };
+
+    const availableSpace = isLastPage
+      ? PAGE_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT - PAGE_NUMBER_HEIGHT
+      : PAGE_HEIGHT - HEADER_HEIGHT - PAGE_NUMBER_HEIGHT;
+
+    let currentHeight = 0;
+    let itemsIncluded = 0;
+    let lastBoatId: number | null = null;
+
+    let startIndex = 0;
+    for (let i = 0; i < pageIndex; i++) {
+      startIndex += getItemsPerPage(orders.slice(startIndex), i, totalPages);
+    }
+
+    for (let i = startIndex; i < orders.length; i++) {
+      const order = orders[i];
+
+      if (order.boat.id !== lastBoatId) {
+        if (currentHeight + BOAT_HEADER_HEIGHT > availableSpace) break;
+        currentHeight += BOAT_HEADER_HEIGHT;
+        lastBoatId = order.boat.id;
+      }
+
+      let itemHeight = ITEM_HEIGHTS.SHORT;
+      if ((order.note?.length ?? 0) > 120) itemHeight = ITEM_HEIGHTS.VERY_LONG;
+      else if ((order.note?.length ?? 0) > 90) itemHeight = ITEM_HEIGHTS.LONG;
+      else if (order.name.length > 25 || (order.note?.length ?? 0) > 30) itemHeight = ITEM_HEIGHTS.MEDIUM;
+
+      if (currentHeight + itemHeight > availableSpace) break;
+
+      currentHeight += itemHeight;
+      itemsIncluded++;
+    }
+
+    return Math.max(1, itemsIncluded);
+  };
+
+  const calculateTotalPages = (orders: OrderItem[]) => {
+    if (orders.length === 0) return 1;
+    let count = 0;
+    let pages = 0;
+    const estimatedTotalPages = Math.ceil(orders.length / 9);
+    while (count < orders.length) {
+      const itemsThisPage = getItemsPerPage(orders, pages, estimatedTotalPages);
+      count += itemsThisPage;
+      pages++;
+
+      if (pages > 100) break;
+    }
+
+    return pages;
+  };
+
+  const totalPages = calculateTotalPages(allOrders);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isManualScroll, setIsManualScroll] = useState(false);
 
   const getPageOrders = (pageIndex: number) => {
-    const startIndex = pageIndex * ordersPerPage;
-    const pageOrders = allOrders.slice(startIndex, startIndex + ordersPerPage);
+    let startIndex = 0;
+    for (let i = 0; i < pageIndex; i++) {
+      startIndex += getItemsPerPage(allOrders, i, totalPages);
+    }
 
-    return pageOrders.reduce((acc: Record<number, GroupedOrders>, order) => {
-      if (!acc[order.boat.id]) {
-        acc[order.boat.id] = {
-          boatId: order.boat.id,
-          boatName: order.boat.boat_name,
-          orders: [],
-        };
-      }
-      acc[order.boat.id].orders.push(order);
-      return acc;
-    }, {});
+    const itemsPerPage = getItemsPerPage(allOrders, pageIndex, totalPages);
+    const endIndex = startIndex + itemsPerPage;
+    const pageOrders = allOrders.slice(startIndex, endIndex);
+    const groups: GroupedOrders[] = [];
+  let currentBoatId: number | null = null;
+
+  for (const order of pageOrders) {
+    if (order.boat.id !== currentBoatId) {
+      groups.push({
+        boatId: order.boat.id,
+        boatName: order.boat.boat_name,
+        orders: [],
+      });
+      currentBoatId = order.boat.id;
+    }
+    groups[groups.length - 1].orders.push(order);
+  }
+
+  return groups;
   };
 
   const handleScroll = (event: SyntheticEvent<HTMLDivElement>) => {
@@ -213,8 +288,8 @@ export const Invoice = ({
                   }
                 }}
                 className="
-                                    mt-3 flex flex-col p-6 mx-auto bg-[#fff] rounded border border-stone-400 w-[794px] h-[1123px] 
-                                    margin-0  invoice-page"
+                  mt-3 flex flex-col p-6 mx-auto bg-[#fff] rounded border border-stone-400 w-[794px] h-[1123px] 
+                  margin-0  invoice-page"
               >
                 <div className="flex-1 flex flex-col gap-6">
                   <InvoiceHeader
@@ -223,7 +298,10 @@ export const Invoice = ({
                     selectedYear={selectedYear}
                   />
                   <div className="flex-grow">
-                    <InvoiceTable itemSummary={pageGroups} />
+                    <InvoiceTable
+                      itemSummary={pageGroups}
+                      totalPages={totalPages}
+                    />
                   </div>
                   {pageIndex === totalPages - 1 && (
                     <div className="mt-auto">
@@ -240,9 +318,9 @@ export const Invoice = ({
         ) : (
           <div
             className="
-                                mt-3 flex flex-col p-6 mx-auto bg-[#fff] rounded border border-stone-400 w-[794px] h-[1123px] 
-                                margin-0 invoice-page
-                            "
+              mt-3 flex flex-col p-6 mx-auto bg-[#fff] rounded border border-stone-400 w-[794px] h-[1123px] 
+              margin-0 invoice-page
+            "
             ref={(el) => {
               if (el) {
                 pageRefs.current[0] = el;
@@ -257,7 +335,7 @@ export const Invoice = ({
               />
 
               <div className="flex-grow">
-                <InvoiceTable itemSummary={boatGroups} />
+                <InvoiceTable itemSummary={boatGroups} totalPages={totalPages} />
               </div>
 
               <div className="mt-auto">

@@ -78,10 +78,26 @@ export const validateAddInventoryItem = (
         return;
     }
 
+    if (quantity > 10000) {
+        res.status(400).json({
+            message: "Quantity cannot exceed 10,000.",
+            error: "Valid quantity (number <= 10,000) is required",
+        });
+        return;
+    }
+
     if (!unitPrice || typeof unitPrice !== 'number' || unitPrice <= 0) {
         res.status(400).json({
             message: "Enter a valid price.",
             error: "Valid unitPrice (number > 0) is required",
+        });
+        return;
+    }
+
+    if (unitPrice > 1000000) {
+        res.status(400).json({
+            message: "Price cannot exceed 1,000,000",
+            error: "Valid unitPrice (number <= 1,000,000) is required",
         });
         return;
     }
@@ -98,6 +114,14 @@ export const validateAddInventoryItem = (
         res.status(400).json({
             message: "Enter a valid unit size.",
             error: "Valid unitSize (number > 0 and number <= quantity) is required",
+        });
+        return;
+    }
+
+    if (unitSize > 10000) {
+        res.status(400).json({
+            message: "unitSize cannot exceed 10,000.",
+            error: "Valid unitSize (number <= 10,000) is required",
         });
         return;
     }
@@ -244,7 +268,7 @@ export const validateEditInventoryItem = async (
         return;
     }
 
-    
+
     if (updatedItem.name.length > 40) {
         res.status(400).json({
             message: "Product name name must be 40 characters or less.",
@@ -269,10 +293,18 @@ export const validateEditInventoryItem = async (
         return;
     }
 
-    if (!updatedItem.quantity || typeof updatedItem.quantity !== 'number' || updatedItem.quantity <=0) {
+    if (!updatedItem.quantity || typeof updatedItem.quantity !== 'number' || updatedItem.quantity <= 0) {
         res.status(400).json({
             message: "Enter a valid quantity.",
             error: "Valid quantity (number > 0) is required.",
+        });
+        return;
+    }
+
+    if (updatedItem.quantity > 10000) {
+        res.status(400).json({
+            message: "Quantity cannot exceed 10,000.",
+            error: "Valid quantity (number <= 10,000) is required",
         });
         return;
     }
@@ -284,6 +316,15 @@ export const validateEditInventoryItem = async (
         });
         return;
     }
+
+    if (updatedItem.unitPrice > 1000000) {
+        res.status(400).json({
+            message: "Price cannot exceed 1,000,000",
+            error: "Valid unitPrice (number <= 1,000,000) is required",
+        });
+        return;
+    }
+
 
     if (!updatedItem.selectUnit || updatedItem.selectUnit == 'Unit' || typeof updatedItem.selectUnit !== 'string') {
         res.status(400).json({
@@ -301,6 +342,14 @@ export const validateEditInventoryItem = async (
         res.status(400).json({
             message: "Enter a valid unit size.",
             error: "Valid unitSize (number > 0 and number <= quantity) is required",
+        });
+        return;
+    }
+
+    if (updatedItem.unitSize > 10000) {
+        res.status(400).json({
+            message: "unitSize cannot exceed 10,000.",
+            error: "Valid unitSize (number <= 10,000) is required",
         });
         return;
     }

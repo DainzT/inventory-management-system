@@ -54,6 +54,17 @@ const EditProductForm = ({
         return "";
     };
 
+    const validateNumberField = (field: 'unitSize' | 'quantity' | 'unitPrice', value: number) => {
+        if (field === 'unitSize') {
+            if (value > 10000) return "Cannot exceed 10,000."
+        } if (field === 'quantity') {
+            if (value > 10000) return "Cannot exceed 10,000."
+        } if (field === 'unitPrice') {
+            if (value > 1000000) return "Cannot exceed 1,000,000."
+        }
+        return;
+    }
+
     useEffect(() => {
         setProductData((current) => ({
             ...current,
@@ -97,6 +108,12 @@ const EditProductForm = ({
                 ...prevErrors,
                 [field]: error,
             }));
+        } else if (field === 'unitPrice' || field === 'quantity' || field === 'unitSize') {
+            const error = validateNumberField(field, Number(value));
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [field]: error,
+            }));
         } else {
             setErrors((prevErrors) => ({
                 ...prevErrors,
@@ -110,8 +127,17 @@ const EditProductForm = ({
         if (!productData.name.trim()) newErrors.name = "Product name is required.";
         if (!productData.note.trim()) newErrors.note = "Note is required.";
         if (productData.quantity === "" || Number(productData.quantity) <= 0) newErrors.quantity = "Enter a valid quantity.";
+        else if (Number(productData.quantity) > 10000) {
+            newErrors.quantity = "Cannot exceed 10,000.";
+        }
         if (productData.unitPrice === "" || Number(productData.unitPrice) <= 0) newErrors.unitPrice = "Enter a valid price.";
+        else if (Number(productData.unitPrice) > 1000000) {
+            newErrors.unitPrice = "Cannot exceed 1,000,000.";
+        }
         if (productData.unitSize === "" || Number(productData.unitSize) <= 0) newErrors.unitSize = "Enter a valid unit size.";
+        else if (Number(productData.unitSize) > 10000) {
+            newErrors.unitSize = "Cannot exceed 10,000.";
+        }
         if (!productData.selectUnit.trim() || productData.selectUnit.trim() === "Unit") newErrors.selectUnit = "Please select a unit.";
         if (productData.name.trim().length > 40) newErrors.name = "Product name must be 40 characters or less."
         if (productData.note.trim().length > 120) newErrors.note = "Note must be 120 characters or less."

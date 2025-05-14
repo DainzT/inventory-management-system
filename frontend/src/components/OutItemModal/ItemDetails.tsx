@@ -1,17 +1,21 @@
 import { InventoryItem } from "@/types";
 import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
-import { useState } from "react";
+import { Tooltip } from "../ToolTips";
 
 interface ItemDetailsProps {
   item: InventoryItem
+  maxNoteLength?: number;
 }
 
 const ItemDetails = ({
-  item
+  item,
+  maxNoteLength = 39,
 }: ItemDetailsProps) => {
-  const [expanded, setExpanded] = useState(false);
-  const showToggle = item.note.length > 42;
+  const shouldTruncate = item.note.length > maxNoteLength;
+  const truncatedNote = shouldTruncate
+    ? `${item.note.slice(0, maxNoteLength)}...`
+    : item.note;
 
   return (
     <section className="p-2 mb-2 bg-gray-50 rounded-lg">
@@ -23,19 +27,15 @@ const ItemDetails = ({
       </div>
       {item.note && (
         <div className="mb-2">
-          <div
-            className={`text-sm text-gray-500 inter-font break-words  ${expanded ? "" : "line-clamp-1"
-              }`}
-          >
-            {item.note}
-          </div>
-          {showToggle && (
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="text-xs mt-1 text-cyan-600 hover:text-cyan-800 transition-colors cursor-pointer"
-            >
-              {expanded ? "Show less..." : "Show more..."}
-            </button>
+          {shouldTruncate ? (
+            <Tooltip content={item.note.slice(maxNoteLength, item.note.length)} position="bottom">
+              <p className="text-sm text-gray-600 break-words cursor-pointer">
+                {truncatedNote}
+                <span className="inline-block ml-1 text-cyan-600">↗</span>
+              </p>
+            </Tooltip>
+          ) : (
+            <p className="text-sm text-gray-600 break-words">{item.note}</p>
           )}
         </div>
       )}

@@ -184,8 +184,8 @@ const OutItemModal = ({
         </header>
 
         {selectedItem && <ItemDetails item={selectedItem} />}
-        <div className="flex-grow overflow-y-auto">
-          <div className="mb-1">
+        <div className="flex-grow overflow-y-hidden">
+          <div className={`${errors.fleet ? "" : "mb-1" }`}>
             <SelectField
               label="Choose a fleet"
               placeholder="Select a fleet"
@@ -199,7 +199,7 @@ const OutItemModal = ({
           </div>
 
           {fleet && (
-            <div className="mb-1">
+            <div className={`${errors.boat ? "" : "mb-1" }`}>
               <SelectField
                 label="Choose a boat"
                 placeholder="Select a boat"
@@ -212,7 +212,7 @@ const OutItemModal = ({
             </div>
           )}
 
-          <div className="mb-3">
+          <div className={`${errors.quantity ? "" : "mb-3"}`}>
             <QuantitySelector
               value={quantity}
               onChange={handleQuantityChange}
@@ -233,8 +233,8 @@ const OutItemModal = ({
           <button
             onClick={handleAssign}
             className={`
-              flex w-full justify-center items-center h-10 text-white
-              ${isAssigning ? "bg-[#1B626E]/60 cursor-not-allowed" : "bg-[#1B626E] hover:bg-[#297885] active:bg-[#145965] cursor-pointer"} rounded-md transition-colors
+              flex w-full justify-center items-center h-10 text-white active:scale-[0.98]
+              ${isAssigning ? "bg-[#1B626E]/60 cursor-wait" : "bg-[#1B626E] hover:bg-[#297885] active:bg-[#145965] cursor-pointer"} rounded-md transition-all
               `}
             disabled={isAssigning}
           >
