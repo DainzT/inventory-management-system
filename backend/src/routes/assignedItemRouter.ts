@@ -3,15 +3,19 @@ import type { Request, Response } from "express";
 import dotenv from "dotenv";
 import prisma from "../lib/prisma";
 import { authenticateToken } from "../middleware/authMiddleware";
+import { updateArchivedItems } from "../middleware/assignedMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
 
 router.use(authenticateToken);
 
-router.get("/assign-item", async (req: Request, res: Response) => {
+router.get("/assign-item", updateArchivedItems, async (req: Request, res: Response) => {
   try {
     const orders = await prisma.assignedItem.findMany({
+      where: {
+        archived: false, // now only return unarchived items
+      },
       include: {
         fleet: true,
         boat: true,

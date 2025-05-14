@@ -150,13 +150,13 @@ const Orders: React.FC = () => {
     setIsModifyOpen(false);
   };
   
-  const allFleetCount = orders.length;
-  const donyaDonyaCount = orders.filter(
-    (order) => order.fleet.fleet_name === "F/B DONYA DONYA 2x"
-  ).length;
-  const donaLibradaCount = orders.filter(
-    (order) => order.fleet.fleet_name === "F/B Doña Librada"
-  ).length;
+  const allFleetCount = orders.filter((order) => !order.archived).length;
+const donyaDonyaCount = orders.filter(
+  (order) => !order.archived && order.fleet.fleet_name === "F/B DONYA DONYA 2x"
+).length;
+const donaLibradaCount = orders.filter(
+  (order) => !order.archived && order.fleet.fleet_name === "F/B Doña Librada"
+).length;
 
 
   return (
