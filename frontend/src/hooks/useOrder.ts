@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/useToast";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [
+    "F/B DONYA DONYA 2x",
     "F/B Lady Rachelle",
     "F/B Mariella",
     "F/B My Shield",
@@ -13,6 +14,7 @@ const fleetBoats = {
     "F/B DC-9",
   ],
   "F/B Doña Librada": [
+    "F/B Doña Librada",
     "F/B Adomar",
     "F/B Prince of Peace",
     "F/B Ruth Gaily",
@@ -108,22 +110,28 @@ export const useOrder = () => {
         orderDate.getFullYear() === currentYear;
 
         const rowString = [
-          order.name,
-          order.note,
-          order.quantity,
-          typeof order.unitPrice === "number" ? order.unitPrice.toFixed(2) : order.unitPrice,
-          order.selectUnit,
-          order.unitSize,
-          order.boat.boat_name,
-          `${order.quantity} ${order.selectUnit}`,
-          `${order.unitPrice} ${order.selectUnit}`,
+          order.name || "",
+          order.note || "",
+          order.quantity || "",
+          typeof order.unitPrice === "number" ? order.unitPrice.toFixed(2) : order.unitPrice || "",
+          order.selectUnit || "",
+          order.unitSize || "",
+          order.boat.boat_name || "",
+          `${order.quantity || ""} ${order.selectUnit || ""}`,
+          `${order.unitPrice || ""} ${order.selectUnit || ""}`,
           typeof order.unitPrice === "number" 
-            ? `${order.unitPrice.toFixed(2)} / ${order.unitSize} ${order.selectUnit}`
-            : `${order.unitPrice} / ${order.unitSize} ${order.selectUnit}`,
-          new Date(order.outDate).toLocaleDateString()
+            ? `${order.unitPrice.toFixed(2)} / ${order.unitSize || ""} ${order.selectUnit || ""}`
+            : `${order.unitPrice || ""} / ${order.unitSize || ""} ${order.selectUnit || ""}`,
+          new Date(order.outDate).toLocaleDateString() || ""
         ].join(" ").toLowerCase();
+
+
+      console.log("Row String:", rowString);
+      console.log("Search Query:", searchQuery.toLowerCase());
         
-        const matchesSearch = rowString.includes(searchQuery.toLowerCase());
+      const matchesSearch = searchQuery
+        ? rowString.includes(searchQuery.toLowerCase())
+        : true;
 
       const matchesFleet =
         activeFleet === "All Fleets" ||
