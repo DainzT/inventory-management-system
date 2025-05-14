@@ -221,6 +221,7 @@ export const useAuth = () => {
         verifyEmailId,
         data.message || "Email verified successfully."
       );
+      showLoadingToast(verifyEmailId, "Sending OTP...");
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Email verification failed");
