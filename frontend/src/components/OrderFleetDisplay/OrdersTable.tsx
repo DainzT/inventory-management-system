@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { OrderItem } from "@/types/order-item";
 import { SearchBar } from "../InventoryManagementTable/SearchBar";
@@ -45,6 +45,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
   };
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [activeFleet, searchQuery]);
 
   const toggleExpand = (id: number) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
