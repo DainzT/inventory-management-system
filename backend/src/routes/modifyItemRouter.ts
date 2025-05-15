@@ -11,7 +11,7 @@ router.use(authenticateToken);
 router.put("/update/:id", async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
-        const { quantity, fleet_id, boat_id, note, archived } = req.body;
+        const { quantity, fleet_name, boat_name } = req.body;
 
         if (typeof quantity !== 'number' || quantity < 0) {
             res.status(400).json({ error: "Valid quantity (number >= 0) is required" });
@@ -106,9 +106,32 @@ router.put("/update/:id", async (req: Request, res: Response) => {
             }
         }
 
-        if (fleet_id && boat_id) {
+        const fleet = await prisma.fleet.findFirst({
+            where: {
+                fleet_name: fleet_name
+            }
+        });
+
+        if (!fleet) {
+            res.status(404).json({ error: "Fleet not found" });
+            return;
+        }
+
+        const boat = await prisma.boat.findFirst({
+            where: {
+                boat_name: boat_name,
+                fleet_id: fleet.id
+            }
+        });
+
+        if (!boat) {
+            res.status(404).json({ error: "Boat not found or doesn't belong to the specified fleet" });
+            return;
+        }
+
+        if (fleet.id && boat.id) {
             const boatBelongsToFleet = await prisma.boat.findFirst({
-                where: { id: boat_id, fleet_id }
+                where: { id: boat.id, fleet }
             });
 
             if (!boatBelongsToFleet) {
@@ -121,10 +144,8 @@ router.put("/update/:id", async (req: Request, res: Response) => {
             where: { id },
             data: {
                 quantity,
-                note: note !== undefined ? note : existingAssignment.note,
-                fleet_id: fleet_id ? Number(fleet_id) : existingAssignment.fleet_id,
-                boat_id: boat_id ? Number(boat_id) : existingAssignment.boat_id,
-                archived: archived !== undefined ? Boolean(archived) : existingAssignment.archived,
+                fleet_id: fleet.id,
+                boat_id: boat.id,
                 lastUpdated: new Date(),
                 total: (Number(existingAssignment.unitPrice) * quantity) / Number(existingAssignment.unitSize)
             },

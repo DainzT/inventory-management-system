@@ -10,6 +10,7 @@ import { roundTo } from "@/utils/RoundTo";
 import { ClipLoader } from "react-spinners";
 import { highlightText } from "@/utils/HighlightText";
 import { HighlightedItem } from "@/types";
+import { fixEncoding } from "@/utils/Normalization";
 
 interface OrdersTableProps {
   orders: OrderItem[];
@@ -116,8 +117,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           onSelect={onFilter || (() => { })}
         />
       </div>
-      
-      <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-cyan-900 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
+
+      <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-[#295C65] grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
         <div className="px-3">Date Out</div>
         <div className="px-3">Product Name</div>
         <div className="px-3">Note</div>
@@ -144,12 +145,12 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               <React.Fragment key={order.id}>
                 <div className={`
                   flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] 
-                  hover:bg-gray-50 bg-white border-[1px] border-[#E5E7EB]
-                  transition-colors duration-300
+                  hover:bg-gray-50 transition-[border-left-color,border-left-width] duration-150 ease-in-out
+                  ${highlightedItem?.id === order.id ? 'border-l-4' : 'border-[#E5E7EB] bg-white border'}
                   ${highlightedItem?.id === order.id
                     ? highlightedItem.type === 'edited'
-                      ? 'bg-amber-50/30 border-l-4 border-amber-400'
-                      : ''
+                      ? 'bg-amber-50/30 border-l-6 border-amber-400'
+                      : 'border-[#E5E7EB] bg-white border'
                     : ''
                   }
                   
@@ -188,7 +189,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                     text-[16px] text-gray-600 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
                   ">
-                    {highlightText(order.boat.boat_name, searchQuery)}
+                    {highlightText(fixEncoding(order.boat.boat_name), searchQuery)}
                   </div>
                   <div className="
                     flex items-center gap-2
@@ -201,7 +202,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                           flex items-center justify-center gap-2
                       "
                       onClick={() => handleModifyItemClick(order)}
-                      
+
                     >
                       <svg width="15" height="16" viewBox="0 0 15 16" fill="none">
                         <path
@@ -224,8 +225,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 </div>
                 <div
                   className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
-                      ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                      : "scale-100 opacity-0 max-h-0 overflow-hidden"
+                    ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                    : "scale-100 opacity-0 max-h-0 overflow-hidden"
                     }`}
                 >
                   {expandedOrderId === order.id && (

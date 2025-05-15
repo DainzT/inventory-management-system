@@ -8,7 +8,6 @@ import { fetchInventoryItems } from "@/api/inventoryAPI";
 import { PageTitle } from "@/components/PageTitle";
 import { ModifyOrderItem } from "@/types/modify-order-item";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useOrder } from "@/hooks/useOrder";
 import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
 import { HighlightedItem } from "@/types";
@@ -21,7 +20,7 @@ const Orders: React.FC = () => {
   const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
   const [highlightedItem, setHighlightedItem] = useState<HighlightedItem>(null);
 
-  const { updateAssignedItem, isLoading: isModifying, deleteOrderItem, isDeleting } = useUpdateAssignedItem();
+  const { handleModifyItem, isModifying, handleDeleteOrderItem, isDeleting } = useUpdateAssignedItem();
 
   const {
     orders,
@@ -91,72 +90,32 @@ const Orders: React.FC = () => {
     }
   }, [isModifyOpen, selectedOrder, inventoryItems]);
 
-  const handleModifyItem = async (quantity: number, fleetName: string, boatName: string) => {
-    if (!modifyOrderItem) return;
+  const handleEditItem = async (id: number, quantity: number, fleet_name: string, boat_name: string) => {
 
-    try {
-      const result = await updateAssignedItem({
+    await handleModifyItem(id, quantity, fleet_name, boat_name)
+    const Orders = await fetchAssignedItems();
+    setOrders(Orders)
+    setIsModifyOpen(false);
+    setSelectedOrder(null);
+    if (modifyOrderItem)
+      setHighlightedItem({
         id: modifyOrderItem.id,
-        quantity,
-        fleet_id: modifyOrderItem.fleet.id,
-        boat_id: modifyOrderItem.boat.id,
-        fleet_name: fleetName,
-        boat_name: boatName
+        type: 'edited'
       });
 
-      if (result.success) {
-        if (result.deleted) {
-          setOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
-          setFilteredOrders(prev => prev.filter(order => order.id !== modifyOrderItem.id));
+    setIsModifyOpen(false);
+    setSelectedOrder(null);
 
-          setIsModifyOpen(false);
-          setSelectedOrder(null);
-          toast.success("Item removed and quantity restored to inventory");
+    setTimeout(() => {
+      setHighlightedItem(null);
+    }, 3000);
 
-        } else if (result.data) {
-          const updatedOrder = {
-            ...result.data,
-            fleet: {
-              ...modifyOrderItem.fleet,
-              fleet_name: fleetName
-            },
-            boat: {
-              ...modifyOrderItem.boat,
-              boat_name: boatName
-            }
-          };
 
-          setOrders(prev => prev.map(order =>
-            order.id === modifyOrderItem.id ? updatedOrder : order
-          ));
-          setFilteredOrders(prev => prev.map(order =>
-            order.id === modifyOrderItem.id ? updatedOrder : order
-          ));
-
-          setHighlightedItem({
-            id: modifyOrderItem.id,
-            type: 'edited'
-          });
-
-          toast.success("Item updated successfully");
-        }
-        setIsModifyOpen(false);
-        setSelectedOrder(null);
-
-        setTimeout(() => {
-          setHighlightedItem(null);
-        }, 3000);
-
-      }
-    } catch (error) {
-      console.error("Error modifying item:", error);
-      toast.error("Failed to update item. Please try again.");
-    }
   };
 
 
   const handleRemoveItem = async (id: number) => {
-    await deleteOrderItem(id);
+    await handleDeleteOrderItem(id);
 
     const Orders = await fetchAssignedItems();
 
@@ -164,14 +123,14 @@ const Orders: React.FC = () => {
     setSelectedOrder(null);
     setIsModifyOpen(false);
   };
-  
+
   const allFleetCount = orders.filter((order) => !order.archived).length;
-const donyaDonyaCount = orders.filter(
-  (order) => !order.archived && order.fleet.fleet_name === "F/B DONYA DONYA 2x"
-).length;
-const donaLibradaCount = orders.filter(
-  (order) => !order.archived && order.fleet.fleet_name === "F/B Doña Librada"
-).length;
+  const donyaDonyaCount = orders.filter(
+    (order) => !order.archived && order.fleet.fleet_name === "F/B DONYA DONYA 2x"
+  ).length;
+  const donaLibradaCount = orders.filter(
+    (order) => !order.archived && order.fleet.fleet_name === "F/B Doña Librada"
+  ).length;
 
 
   return (
@@ -224,7 +183,7 @@ const donaLibradaCount = orders.filter(
         <ModifyModal
           isOpen={isModifyOpen}
           setIsOpen={setIsModifyOpen}
-          onModify={handleModifyItem}
+          onModify={handleEditItem}
           onRemove={handleRemoveItem}
           selectedOrder={modifyOrderItem}
           isDeleting={isDeleting}

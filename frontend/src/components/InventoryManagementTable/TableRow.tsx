@@ -34,7 +34,7 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
     highlightedItem,
     itemsPerPage,
     currentPage,
-    maxNoteLength = 48
+    maxNoteLength = 46
   },
   ref
 ) => {
