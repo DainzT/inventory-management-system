@@ -9,6 +9,7 @@ import { fixEncoding } from "@/utils/Normalization";
 import QuantitySelector from "../OutItemModal/QuantitySelector";
 import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
+import { toast } from "react-toastify";
 
 interface ModifyModalProps {
   isOpen: boolean,
@@ -58,9 +59,9 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const getBoatOptions = (fleet: string) => {
     switch (fleet) {
       case "F/B DONYA DONYA 2x":
-        return ["F/B Lady Rachelle", "F/B Mariella", "F/B My Shield", "F/B Abigail", "F/B DC-9"];
+        return ["F/B DONYA DONYA 2x", "F/B Lady Rachelle", "F/B Mariella", "F/B My Shield", "F/B Abigail", "F/B DC-9"];
       case "F/B Doña Librada":
-        return ["F/B Adomar", "F/B Prince of Peace", "F/B Ruth Gaily", "F/V Vadeo Scout", "F/B Mariene"];
+        return ["F/B Doña Librada", "F/B Adomar", "F/B Prince of Peace", "F/B Ruth Gaily", "F/V Vadeo Scout", "F/B Mariene"];
       default:
         return [];
     }
@@ -88,6 +89,13 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   };
 
   const handleConfirm = () => {
+
+    if (!hasChanges) {
+    setIsOpen(false);
+    toast.info("No changes were made to the order");
+    return;
+  }
+
     if (Number(quantity) > Number(maxAllowed)) {
       setQuantityError(
         selectedOrder?.inventory !== undefined
@@ -129,7 +137,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
       <div className="relative z-50 px-6 py-4 w-96 bg-white rounded-[19px] border-[1px] border-[#E0D8D8] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] animate-[fadeIn_0.2s_ease-out] h-[36rem]
         flex flex-col">
         <header className="flex justify-between items-center mb-4">
-          <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Modify Product</h1>
+          <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Edit Order</h1>
           <button
             onClick={handleCloseAttempt}
             className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"

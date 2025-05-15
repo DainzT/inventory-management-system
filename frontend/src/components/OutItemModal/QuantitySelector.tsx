@@ -64,7 +64,7 @@ const QuantitySelector = ({
               ? 'cursor-not-allowed opacity-70'
               : error
                 ? 'border-red-500 hover:border-red-600'
-                : 'border-[#0FE3FF] cursor-pointer'
+                : 'border-cyan-800 cursor-pointer'
             }
           `}
           onClick={decrementQuantity}
@@ -86,7 +86,7 @@ const QuantitySelector = ({
               ? 'cursor-not-allowed opacity-70'
               : error
                 ? 'border-red-500 hover:border-red-600'
-                : 'border-[#0FE3FF]'
+                : 'border-cyan-800'
             }
           `}
           aria-live="polite"
@@ -100,7 +100,7 @@ const QuantitySelector = ({
               ? 'cursor-not-allowed opacity-70'
               : error
                 ? 'border-red-500 hover:border-red-600'
-                : 'border-[#0FE3FF] cursor-pointer'
+                : 'border-cyan-800 cursor-pointer'
             }
           `}
           onClick={incrementQuantity}

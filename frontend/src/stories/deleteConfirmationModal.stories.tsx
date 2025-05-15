@@ -1,4 +1,4 @@
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
+import DeleteConfirmationModal from "@/components/ModifyModal/DeleteConfirmationModal";
 import type { Meta, StoryObj } from "@storybook/react";
 import { userEvent, within, waitFor, expect, fn } from "@storybook/test";
 

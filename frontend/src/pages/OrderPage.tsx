@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useOrder } from "@/hooks/useOrder";
 import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
+import { HighlightedItem } from "@/types";
 
 const Orders: React.FC = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
@@ -18,6 +19,7 @@ const Orders: React.FC = () => {
   const [modifyOrderItem, setModifyOrderItem] =
     useState<ModifyOrderItem | null>(null);
   const [isModifyOpen, setIsModifyOpen] = useState<boolean>(false);
+  const [highlightedItem, setHighlightedItem] = useState<HighlightedItem>(null);
 
   const { updateAssignedItem, isLoading: isModifying, deleteOrderItem, isDeleting } = useUpdateAssignedItem();
 
@@ -130,8 +132,21 @@ const Orders: React.FC = () => {
           setFilteredOrders(prev => prev.map(order =>
             order.id === modifyOrderItem.id ? updatedOrder : order
           ));
+
+          setHighlightedItem({
+            id: modifyOrderItem.id,
+            type: 'edited'
+          });
+
           toast.success("Item updated successfully");
         }
+        setIsModifyOpen(false);
+        setSelectedOrder(null);
+
+        setTimeout(() => {
+          setHighlightedItem(null);
+        }, 3000);
+
       }
     } catch (error) {
       console.error("Error modifying item:", error);
@@ -202,6 +217,7 @@ const donaLibradaCount = orders.filter(
               setSelectedOrder(item || null);
               setIsModifyOpen(isOpen);
             }}
+            highlightedItem={highlightedItem}
           />
         </div>
 
