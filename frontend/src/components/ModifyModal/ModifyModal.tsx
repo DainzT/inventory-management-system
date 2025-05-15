@@ -184,7 +184,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                 <p className="text-xs font-semibold text-red-500">This item no longer exists in inventory</p>
               ) : (
                 <p className="text-sm font-semibold text-black">
-                  {currentInventory} {pluralize(selectedOrder.selectUnit, Number(currentInventory))}
+                  {roundTo(Number(currentInventory), 2)} {pluralize(selectedOrder.selectUnit, Number(currentInventory))}
                 </p>
               )}
             </p>
