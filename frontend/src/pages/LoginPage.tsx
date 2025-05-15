@@ -65,8 +65,8 @@ const LoginPage: React.FC = () => {
               </div>
               <button
                 onClick={() => !isSuccess && setShowForgotPin(true)}
-                disabled={isSuccess}
-                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${isSuccess
+                disabled={isSuccess || loading}
+                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${isSuccess || loading
                     ? 'text-gray-400 cursor-not-allowed'
                     : 'text-blue-600 hover:text-blue-500'
                   }`}
