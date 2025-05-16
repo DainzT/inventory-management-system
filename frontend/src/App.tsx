@@ -20,9 +20,8 @@ const App: React.FC = () => {
     <Router>
       <ToastContainer
         position="top-center"
-        autoClose={3000}
+        autoClose={1200}
         hideProgressBar={false}
-        newestOnTop
         closeOnClick
         rtl={false}
         pauseOnFocusLoss={false}

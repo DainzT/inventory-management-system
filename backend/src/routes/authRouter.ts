@@ -42,23 +42,32 @@ router.post(
       const existingUser = await prisma.user.findFirst();
 
       if (existingUser) {
-        res.status(400).json({ message: "Admin account already exists", success: false });
+        res
+          .status(400)
+          .json({ message: "Admin account already exists", success: false });
         return;
       }
 
       const { email, pin } = req.body;
 
+      if (!email || !pin || email === "" || pin === "") {
+        res
+          .status(401)
+          .json({ message: "Fill in the requirements.", success: false });
+        return;
+      }
+
       const verifiedOtp = await prisma.otp.findFirst({
         where: {
           email: email,
-          verified: true
-        }
+          verified: true,
+        },
       });
 
       if (!verifiedOtp) {
-        res.status(400).json({ 
-          message: "Email not verified or OTP not completed", 
-          success: false 
+        res.status(400).json({
+          message: "Email not verified or OTP not completed",
+          success: false,
         });
         return;
       }
@@ -70,15 +79,15 @@ router.post(
           pin: hashedPin,
         },
       });
-      res.json({ 
-        message: "Admin account created successfully" ,
+      res.status(200).json({
+        message: "Admin account created successfully",
         success: true,
       });
       return;
     } catch (error) {
-      res.status(500).json({ 
+      res.status(500).json({
         message: "Internal server error",
-        success: false
+        success: false,
       });
       return;
     }
@@ -138,7 +147,13 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
     res.json({ accessToken });
     return;
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+      error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+        ? { message: (error as Error).message }
+        : undefined,
+    });
     return;
   }
 });
@@ -158,15 +173,16 @@ router.put(
       if (newPin.length !== MAX_PIN_LENGTH) {
         res.status(400).json({
           message: `New PIN must be exactly ${MAX_PIN_LENGTH} characters long`,
-          success: false
-          ,
+          success: false,
         });
         return;
       }
 
       const user = await prisma.user.findFirst();
       if (!user) {
-        res.status(404).json({ message: "No user account found", success: false });
+        res
+          .status(404)
+          .json({ message: "No user account found", success: false });
         return;
       }
 
@@ -174,7 +190,7 @@ router.put(
       if (isSamePin) {
         res.status(400).json({
           message: "New PIN must be different from current PIN",
-          success: false
+          success: false,
         });
         return;
       }
@@ -188,7 +204,13 @@ router.put(
       res.json({ message: "PIN updated successfully", success: true });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Internal server error", success: false });
+      res.status(500).json({
+        message: "Internal server error",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -206,26 +228,34 @@ router.put(
       typeof oldEmail !== "string" ||
       typeof newEmail !== "string"
     ) {
-      res.status(400).json({ message: "Both old and new email are required.", success: false });
+      res.status(400).json({
+        message: "Both old and new email are required.",
+        success: false,
+      });
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(oldEmail)) {
-      res.status(400).json({ message: "Old email format is invalid.", success: false });
+      res
+        .status(400)
+        .json({ message: "Old email format is invalid.", success: false });
       return;
     }
 
     if (!emailRegex.test(newEmail)) {
-      res.status(400).json({ message: "New email format is invalid.", success: false });
+      res
+        .status(400)
+        .json({ message: "New email format is invalid.", success: false });
       return;
     }
 
     if (oldEmail === newEmail) {
-      res
-        .status(400)
-        .json({ message: "New email must be different from old email.", success: false });
+      res.status(400).json({
+        message: "New email must be different from old email.",
+        success: false,
+      });
       return;
     }
 
@@ -235,7 +265,9 @@ router.put(
       });
 
       if (emailExists) {
-        res.status(409).json({ message: "New email is already in use.", success: false });
+        res
+          .status(409)
+          .json({ message: "New email is already in use.", success: false });
         return;
       }
 
@@ -244,7 +276,9 @@ router.put(
       });
 
       if (!user) {
-        res.status(404).json({ message: "Old email not found.", success: false });
+        res
+          .status(404)
+          .json({ message: "Old email not found.", success: false });
         return;
       }
 
@@ -256,7 +290,9 @@ router.put(
       res.json({ message: "Email updated successfully.", success: true });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Internal server error", success: false });
+      res
+        .status(500)
+        .json({ message: "Internal server error", success: false });
       return;
     }
   }
@@ -316,7 +352,13 @@ router.post("/logout", async (req: Request, res: Response): Promise<void> => {
     res.json({ message: "Logged out successfully" });
     return;
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+        ? { message: (error as Error).message }
+        : undefined,
+    });
     return;
   }
 });
@@ -329,21 +371,23 @@ router.post(
 
       if (!email || !pin || !confirmPin) {
         res.status(400).json({
-          message: "Email, PIN and confirmation PIN are required.",
+          message: "Fill in the requirements.",
         });
         return;
       }
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        res.status(400).json({ message: "Please enter a valid email address." });
+        res
+          .status(400)
+          .json({ message: "Please enter a valid email address." });
         return;
       }
 
       if (pin.length !== 6 || !/^\d+$/.test(pin)) {
         res.status(400).json({
           message: "PIN must be exactly 6 digits.",
-          success: false
+          success: false,
         });
         return;
       }
@@ -351,28 +395,30 @@ router.post(
       if (pin !== confirmPin) {
         res.status(400).json({
           message: "PIN and confirmation PIN do not match.",
-          success: false
+          success: false,
         });
         return;
       }
 
       const existingOtp = await prisma.otp.findFirst({
         where: {
-          email: email, 
+          email: email,
           verified: false,
           otpExpiration: {
-            gt: new Date()
-          }
+            gt: new Date(),
+          },
         },
       });
 
       if (existingOtp) {
-        const retryAfter = Math.ceil((existingOtp.otpExpiration.getTime() - Date.now()) / 1000);
+        const retryAfter = Math.ceil(
+          (existingOtp.otpExpiration.getTime() - Date.now()) / 1000
+        );
 
         res.status(429).json({
           message: `An active OTP already exists. Please check your email and retry after ${retryAfter}.`,
           success: false,
-          retryAfter: retryAfter
+          retryAfter: retryAfter,
         });
         return;
       }
@@ -392,7 +438,13 @@ router.post(
       res.status(200).json({ message: "OTP sent successfully", success: true });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Failed to send OTP", success: false });
+      res.status(500).json({
+        message: "Failed to send OTP",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -416,10 +468,18 @@ router.post(
         return;
       }
 
-      res.status(200).json({ message: "PIN verified successfully", success: true });
+      res
+        .status(200)
+        .json({ message: "PIN verified successfully", success: true });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Failed to verify PIN", success: false });
+      res.status(500).json({
+        message: "Failed to verify PIN",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -438,23 +498,33 @@ router.post(
         return;
       }
 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        res
+          .status(400)
+          .json({ message: "Please enter a valid email address." });
+        return;
+      }
+
       const existingOtp = await prisma.otp.findFirst({
         where: {
-          email: email, 
+          email: email,
           verified: false,
           otpExpiration: {
-            gt: new Date()
-          }
+            gt: new Date(),
+          },
         },
       });
 
       if (existingOtp) {
-        const retryAfter = Math.ceil((existingOtp.otpExpiration.getTime() - Date.now()) / 1000);
+        const retryAfter = Math.ceil(
+          (existingOtp.otpExpiration.getTime() - Date.now()) / 1000
+        );
 
         res.status(429).json({
           message: `An active OTP already exists. Please check your email and retry after ${retryAfter}.`,
           success: false,
-          retryAfter: retryAfter
+          retryAfter: retryAfter,
         });
         return;
       }
@@ -474,7 +544,13 @@ router.post(
       res.status(200).json({ message: "OTP sent successfully", success: true });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Failed to verify email", success: true });
+      res.status(500).json({
+        message: "Failed to verify email",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -518,13 +594,19 @@ router.post(
         },
       });
 
-      res.status(200).json({ 
+      res.status(200).json({
         message: "OTP verified successfully",
-        success: true
+        success: true,
       });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Failed to verify OTP", success: false });
+      res.status(500).json({
+        message: "Failed to verify OTP",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -542,19 +624,20 @@ router.post(
           success: false,
         });
         return;
-      };
-      
+      }
+
       if (newPin.length !== MAX_PIN_LENGTH || !/^\d+$/.test(newPin)) {
         res.status(400).json({
-          message: "New PIN must be exactly 6 digits long and only contain numbers.",
+          message:
+            "New PIN must be exactly 6 digits long and only contain numbers.",
           success: false,
         });
         return;
       }
-      
+
       const user = await prisma.user.findFirst({ where: { email } });
       if (!user) {
-        res.status(404).json({ message: "User not found", success: false, });
+        res.status(404).json({ message: "User not found", success: false });
         return;
       }
 
@@ -562,7 +645,7 @@ router.post(
       if (isSamePin) {
         res.status(400).json({
           message: "New PIN must be different from current PIN",
-          success: false
+          success: false,
         });
         return;
       }
@@ -573,10 +656,16 @@ router.post(
         where: { id: user.id },
         data: { pin: hashedNewPin },
       });
-      res.json({ message: "PIN reset successfully", success: true, });
+      res.json({ message: "PIN reset successfully", success: true });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Internal server error", success: false, });
+      res.status(500).json({
+        message: "Internal server error",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }

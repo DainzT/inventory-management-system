@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../routes/authRouter";
-import prisma from "../../lib/prisma";
+import authRoutes from "../../../routes/authRouter";
+import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 
 const app = express();
@@ -34,7 +34,10 @@ describe("POST /api/auth/verify-email", () => {
       .send({ email: "test@example.com" });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: "Email verified successfully" });
+    expect(response.body).toEqual({
+      message: "OTP sent successfully",
+      success: true,
+    });
   });
 
   it("should return 400 for incorrect email", async () => {
@@ -67,7 +70,10 @@ describe("POST /api/auth/verify-email (Negative Cases)", () => {
       .send({ email: "test@example.com" });
 
     expect(response.status).toBe(500);
-    expect(response.body).toEqual({ message: "Failed to verify email" });
+    expect(response.body).toEqual({
+      message: "Failed to verify email",
+      success: false,
+    });
 
     jest.restoreAllMocks();
   });

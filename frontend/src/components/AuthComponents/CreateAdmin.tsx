@@ -20,8 +20,10 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
 
   const {
     loading,
-    otpVerified, setOtpVerified,
-    otpSent, setOtpSent,
+    otpVerified,
+    setOtpVerified,
+    otpSent,
+    setOtpSent,
     handleSendOTP,
     handleVerifyOTP,
     handleCreateAdmin,
@@ -52,7 +54,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
       await handleVerifyOTP(otp);
       await handleCreateAdmin({ email, pin, confirmPin });
       toast.success("Redirecting to login", {
-        onClose: () => onSuccess()
+        onClose: () => onSuccess(),
       });
     }
   };
