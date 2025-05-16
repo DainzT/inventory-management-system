@@ -1,11 +1,10 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../routes/authRouter";
-import prisma from "../../lib/prisma";
+import authRoutes from "../../../routes/authRouter";
+import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
-import { authenticateToken } from "../../middleware/authMiddleware";
 
-jest.mock("../../middleware/authMiddleware", () => ({
+jest.mock("../../../middleware/authMiddleware", () => ({
   authenticateToken: (req: any, res: any, next: any) => {
     req.user = { userId: 1 };
     next();
@@ -165,7 +164,7 @@ describe("PUT /api/auth/change-email (Negative Cases)", () => {
   });
 
   it("should handle authentication failure", async () => {
-    jest.mock("../../middleware/authMiddleware", () => ({
+    jest.mock("../../../middleware/authMiddleware", () => ({
       authenticateToken: (req: any, res: any) =>
         res.status(401).json({ message: "Unauthorized" }),
     }));

@@ -1,10 +1,10 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../routes/authRouter";
-import prisma from "../../lib/prisma";
+import authRoutes from "../../../routes/authRouter";
+import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
-import { generateOtp, saveOtpToDatabase } from "../../lib/otpService";
+import { generateOtp, saveOtpToDatabase } from "../../../lib/otpService";
 
 const app = express();
 app.use(express.json());
@@ -34,7 +34,7 @@ jest.mock("nodemailer", () => ({
   }),
 }));
 
-jest.mock("../../lib/otpService", () => ({
+jest.mock("../../../lib/otpService", () => ({
   generateOtp: jest.fn(() => "123456"),
   saveOtpToDatabase: jest.fn().mockResolvedValue(true), // Simplified mock
 }));

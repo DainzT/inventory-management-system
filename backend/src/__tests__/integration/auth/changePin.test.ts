@@ -1,10 +1,10 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../routes/authRouter";
-import prisma from "../../lib/prisma";
+import authRoutes from "../../../routes/authRouter";
+import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 
-jest.mock("../../middleware/authMiddleware", () => ({
+jest.mock("../../../middleware/authMiddleware", () => ({
   authenticateToken: (req: any, res: any, next: any) => {
     req.user = { userId: 1 };
     next();
@@ -82,7 +82,7 @@ describe("PUT /api/auth/change-pin", () => {
 
 describe("PUT /api/auth/change-pin (Negative Cases)", () => {
   it("should return 404 with invalid authentication", async () => {
-    jest.mock("../../middleware/authMiddleware", () => ({
+    jest.mock("../../../middleware/authMiddleware", () => ({
       authenticateToken: (req: any, res: any) =>
         res.status(404).json({ message: "Not found" }),
     }));
@@ -130,7 +130,7 @@ describe("PUT /api/auth/change-pin (Negative Cases)", () => {
   });
 
   it("should handle authentication failure", async () => {
-    jest.mock("../../middleware/authMiddleware", () => ({
+    jest.mock("../../../middleware/authMiddleware", () => ({
       authenticateToken: (req: any, res: any, next: any) => {
         return res.status(401).json({ message: "Unauthorized" });
       },

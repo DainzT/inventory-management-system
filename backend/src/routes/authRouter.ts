@@ -518,7 +518,7 @@ router.post(
     } catch (error) {
       res
         .status(500)
-        .json({ message: "Failed to verify email", success: true });
+        .json({ message: "Failed to verify email", success: false });
       return;
     }
   }

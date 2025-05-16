@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../routes/authRouter";
-import prisma from "../../lib/prisma";
+import authRoutes from "../../../routes/authRouter";
+import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 
 const app = express();
@@ -35,7 +35,7 @@ describe("POST /api/auth/verify-email", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
-      message: "Email verified successfully",
+      message: "OTP sent successfully",
       success: true,
     });
   });
