@@ -151,17 +151,17 @@ const Orders: React.FC = () => {
   };
   
   const allFleetCount = orders.filter((order) => !order.archived).length;
-const donyaDonyaCount = orders.filter(
-  (order) => !order.archived && order.fleet.fleet_name === "F/B DONYA DONYA 2x"
-).length;
-const donaLibradaCount = orders.filter(
-  (order) => !order.archived && order.fleet.fleet_name === "F/B Doña Librada"
-).length;
+  const donyaDonyaCount = orders.filter(
+    (order) => !order.archived && order.fleet.fleet_name === "F/B DONYA DONYA 2x"
+  ).length;
+  const donaLibradaCount = orders.filter(
+    (order) => !order.archived && order.fleet.fleet_name === "F/B Doña Librada"
+  ).length;
 
 
   return (
     <div>
-      <main className="flex-1 p-0">
+      <main className="flex-1">
         <PageTitle title={activeFleet} />
 
         <div className="flex justify-center items-center h-[200px]">
@@ -190,7 +190,7 @@ const donaLibradaCount = orders.filter(
           </div>
         </div>
 
-        <div className="p-[30px]">
+        <div className="p-[20px]">
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}
