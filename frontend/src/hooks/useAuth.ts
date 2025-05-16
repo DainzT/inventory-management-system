@@ -95,7 +95,7 @@ export const useAuth = () => {
       const error = err as ErrorWithMessage;
       const message =
         error.message === "Failed to fetch"
-          ? "Network error. Please check your internet connection."
+          ? "Network error. Check your connection."
           : error.message || "Login failed. Try again.";
       setError(message);
       showErrorToast(loginId, message);
@@ -277,7 +277,7 @@ export const useAuth = () => {
 
     const accessToken = sessionStorage.getItem(TOKEN_KEY);
     if (!accessToken) {
-      showErrorToast(toastId, "No access token found. Please log in again.");
+      showErrorToast(toastId, "An Error occured. Please log in again.");
       return;
     }
 
@@ -308,10 +308,10 @@ export const useAuth = () => {
       if (showToast) {
         showErrorToast(
           "refresh-toast",
-          error.message || "Token refresh failed"
+          "We couldn't refresh your session. Please log in again."
         );
       }
-      setError(error.message || "Failed to refresh token.");
+      setError(error.message || "Unable to login. Please try again.");
       setToken(null);
     }
   };

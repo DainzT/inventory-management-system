@@ -58,7 +58,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to fetch items from inventory" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error. Please check your internet connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }
@@ -97,7 +97,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to add item to inventory" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error - unable to connect to server. Please check your connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }
@@ -132,7 +132,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to assign item" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error - unable to connect to server. Please check your connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }
@@ -170,7 +170,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to edit item" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error - unable to connect to server. Please check your connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }
@@ -204,7 +204,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to delete item" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error - unable to connect to server. Please check your connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }

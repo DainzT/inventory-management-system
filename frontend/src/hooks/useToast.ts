@@ -14,7 +14,7 @@ export const useToast = () => {
             render: message,
             type: "success",
             isLoading: false,
-            autoClose: 3000,
+            autoClose: 1200,
             hideProgressBar: false,
         });
     };
@@ -24,7 +24,7 @@ export const useToast = () => {
             render: message,
             type: "error",
             isLoading: false,
-            autoClose: 3000,
+            autoClose: 1200,
             hideProgressBar: false,
         });
     };

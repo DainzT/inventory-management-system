@@ -147,7 +147,13 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
     res.json({ accessToken });
     return;
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+      error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+        ? { message: (error as Error).message }
+        : undefined,
+    });
     return;
   }
 });
@@ -198,9 +204,13 @@ router.put(
       res.json({ message: "PIN updated successfully", success: true });
       return;
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Internal server error", success: false });
+      res.status(500).json({
+        message: "Internal server error",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -342,7 +352,13 @@ router.post("/logout", async (req: Request, res: Response): Promise<void> => {
     res.json({ message: "Logged out successfully" });
     return;
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+        ? { message: (error as Error).message }
+        : undefined,
+    });
     return;
   }
 });
@@ -422,7 +438,13 @@ router.post(
       res.status(200).json({ message: "OTP sent successfully", success: true });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Failed to send OTP", success: false });
+      res.status(500).json({
+        message: "Failed to send OTP",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -451,7 +473,13 @@ router.post(
         .json({ message: "PIN verified successfully", success: true });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Failed to verify PIN", success: false });
+      res.status(500).json({
+        message: "Failed to verify PIN",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -516,9 +544,13 @@ router.post(
       res.status(200).json({ message: "OTP sent successfully", success: true });
       return;
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Failed to verify email", success: false });
+      res.status(500).json({
+        message: "Failed to verify email",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -568,7 +600,13 @@ router.post(
       });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Failed to verify OTP", success: false });
+      res.status(500).json({
+        message: "Failed to verify OTP",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
@@ -621,9 +659,13 @@ router.post(
       res.json({ message: "PIN reset successfully", success: true });
       return;
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Internal server error", success: false });
+      res.status(500).json({
+        message: "Internal server error",
+        success: false,
+        error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+          ? { message: (error as Error).message }
+          : undefined,
+      });
       return;
     }
   }
