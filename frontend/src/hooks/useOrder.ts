@@ -1,4 +1,3 @@
-// src/hooks/useOrder.ts
 import { useEffect, useState } from "react";
 import { OrderItem } from "@/types/order-item";
 import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
@@ -36,8 +35,6 @@ export const useOrder = () => {
 
   useEffect(() => {
     const loadOrderItems = async () => {
-      const toastId = "loadOrders";
-      showLoadingToast(toastId, "Loading orders...");
       setIsLoading(true);
       try {
         const response = await fetchAssignedItems();
@@ -46,19 +43,11 @@ export const useOrder = () => {
           
           setOrders(unarchivedItems);
           setFilteredOrders(unarchivedItems);
-          showSuccessToast(
-            toastId,
-            `Loaded ${unarchivedItems.length} ${
-              unarchivedItems.length > 1 ? "items" : "item"
-            } successfully`
-          );
         } else {
           console.error("Unexpected response format:", response);
-          showErrorToast(toastId, "Unexpected response format.");
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
-        showErrorToast(toastId, "Failed to load orders.");
       } finally {
         setIsLoading(false); // Ensure loading state is updated in both success and error cases
       }
