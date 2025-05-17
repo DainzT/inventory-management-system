@@ -17,15 +17,15 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative ml-3 -mr-15 w-60">
       <div
-        className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-4 px-5 pr-8 rounded leading-tight focus:outline-none focus:border-teal-500 cursor-pointer"
+        className="block h-[50px] rounded-[12px] border-[2px] border-[#E5E7EB] bg-[#F8FAFA] px-[14px] appearance-none w-full text-gray-700 py-3 pr-10 leading-tight focus:outline-none focus:border-teal-500 cursor-pointer text-md"
         onClick={() => setIsOpen(!isOpen)}
       >
         {selectedOption}
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
           <svg
-            className="fill-current h-4 w-4"
+            className="fill-current h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
           >
@@ -36,13 +36,14 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
       {isOpen && (
         <ul
-          className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-50 mt-1 w-full bg-white border-[1px] border-[#E5E7EB] 
+            shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] rounded-lg max-h-60 overflow-auto"
           role="listbox"
         >
           {options.map((option) => (
             <li
               key={option}
-              className="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
+              className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
               onClick={() => handleSelect(option)}
               role="option"
               aria-selected={selectedOption === option}
