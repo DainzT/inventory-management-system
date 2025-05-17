@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { OrderItem } from "@/types/order-item";
 import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "react-toastify";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [
@@ -31,8 +31,6 @@ export const useOrder = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { showLoadingToast, showSuccessToast, showErrorToast } = useToast();
-
   useEffect(() => {
     const loadOrderItems = async () => {
       setIsLoading(true);
@@ -40,7 +38,7 @@ export const useOrder = () => {
         const response = await fetchAssignedItems();
         if (response && Array.isArray(response)) {
           const unarchivedItems = response.filter(item => !item.archived);
-          
+
           setOrders(unarchivedItems);
           setFilteredOrders(unarchivedItems);
         } else {
@@ -48,6 +46,11 @@ export const useOrder = () => {
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
+        toast.error("Failed to load orders", {
+          isLoading: false,
+          autoClose: 2000,
+          hideProgressBar: false,
+        });
       } finally {
         setIsLoading(false); // Ensure loading state is updated in both success and error cases
       }
@@ -98,26 +101,26 @@ export const useOrder = () => {
         orderDate.getMonth() === currentMonth &&
         orderDate.getFullYear() === currentYear;
 
-        const rowString = [
-          order.name || "",
-          order.note || "",
-          order.quantity || "",
-          typeof order.unitPrice === "number" ? order.unitPrice.toFixed(2) : order.unitPrice || "",
-          order.selectUnit || "",
-          order.unitSize || "",
-          order.boat.boat_name || "",
-          `${order.quantity || ""} ${order.selectUnit || ""}`,
-          `${order.unitPrice || ""} ${order.selectUnit || ""}`,
-          typeof order.unitPrice === "number" 
-            ? `${order.unitPrice.toFixed(2)} / ${order.unitSize || ""} ${order.selectUnit || ""}`
-            : `${order.unitPrice || ""} / ${order.unitSize || ""} ${order.selectUnit || ""}`,
-          new Date(order.outDate).toLocaleDateString() || ""
-        ].join(" ").toLowerCase();
+      const rowString = [
+        order.name || "",
+        order.note || "",
+        order.quantity || "",
+        typeof order.unitPrice === "number" ? order.unitPrice.toFixed(2) : order.unitPrice || "",
+        order.selectUnit || "",
+        order.unitSize || "",
+        order.boat.boat_name || "",
+        `${order.quantity || ""} ${order.selectUnit || ""}`,
+        `${order.unitPrice || ""} ${order.selectUnit || ""}`,
+        typeof order.unitPrice === "number"
+          ? `${order.unitPrice.toFixed(2)} / ${order.unitSize || ""} ${order.selectUnit || ""}`
+          : `${order.unitPrice || ""} / ${order.unitSize || ""} ${order.selectUnit || ""}`,
+        new Date(order.outDate).toLocaleDateString() || ""
+      ].join(" ").toLowerCase();
 
 
       console.log("Row String:", rowString);
       console.log("Search Query:", searchQuery.toLowerCase());
-        
+
       const matchesSearch = searchQuery
         ? rowString.includes(searchQuery.toLowerCase())
         : true;

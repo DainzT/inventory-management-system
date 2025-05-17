@@ -10,6 +10,7 @@ import { roundTo } from "@/utils/RoundTo";
 import { ClipLoader } from "react-spinners";
 import { highlightText } from "@/utils/HighlightText";
 import { Tooltip } from "../ToolTips";
+import { fixEncoding } from "@/utils/Normalization";
 
 interface OrdersTableProps {
   orders: OrderItem[];
@@ -31,7 +32,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   searchQuery,
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-  const maxNoteLength = 46;
+  const maxNoteLength = 48;
 
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(0);
@@ -106,28 +107,31 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   };
 
   return (
-    <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm flex flex-col">
-      <div className="flex gap-3  sm:p-[24px] sticky top-0 bg-white z-40 rounded-tr-[10px] rounded-tl-[10px]">
-        <SearchBar placeholder="Search Items..." onSearch={onSearch} />
-        <FilterDropdown
-          label="All Boats"
-          options={filterOptions}
-          onSelect={onFilter || (() => {})}
-        />
+    <section className="flex-1 bg-white rounded-xl flex flex-col ">
+      <div className="stick sticky top-0 z-10">
+        <div className="flex bg-white border-[1px] border-[#E5E7EB] 
+            shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] rounded-tr-[10px] rounded-tl-[10px]
+            p-2 sm:p-[15px] items-center gap-20    
+        ">
+          <SearchBar placeholder="Search Items..." onSearch={onSearch} />
+          <FilterDropdown
+            label="All Boats"
+            options={filterOptions}
+            onSelect={onFilter || (() => { })}
+          />
+        </div>
+        <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-[#295C65] grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
+          <div className="px-3">Date Out</div>
+          <div className="px-3">Product Name</div>
+          <div className="px-3">Note</div>
+          <div className="px-3">Quantity</div>
+          <div className="px-3">Unit Price</div>
+          <div className="px-3">Boat</div>
+          <div className="text-center">Actions</div>
+        </div>
       </div>
-      <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-cyan-900 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] sticky top-[88px] z-30 rounded-tr-[10px] rounded-tl-[10px]">
-        <div className="px-3">Date Out</div>
-        <div className="px-3">Product Name</div>
-        <div className="px-3">Note</div>
-        <div className="px-3">Quantity</div>
-        <div className="px-3">Unit Price</div>
-        <div className="px-3">Boat</div>
-        <div className="text-center">Actions</div>
-      </div>{" "}
       <div
-        className={`flex-1 min-h-0 orders-table-content ${
-          expandedOrderId !== null ? "overflow-hidden" : "overflow-y-auto"
-        }`}
+        className={`flex-1 min-h-0 orders-table-content`}
       >
         {isLoading ? (
           <div className="relative flex justify-center items-center pt-10 pb-10">
@@ -143,7 +147,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               index > 0 && currentItems[index - 1].outDate === order.outDate;
             return (
               <React.Fragment key={order.id}>
-                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
+                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
                   <div
                     className="
                     text-[16px] text-gray-600 px-3
@@ -166,8 +170,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   </div>
                   <div
                     className="
-                    text-[16px] text-gray-600 px-3
-                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
+                    text-sm text-gray-600 px-3
+                    shrink-0 break-all hyphens-auto flex-1
                   "
                   >
                     {order.note &&
@@ -208,8 +212,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   "
                   >
                     {highlightText(
-                      `₱${Number(order.unitPrice).toFixed(2)} / ${
-                        order.unitSize
+                      `₱${Number(order.unitPrice).toFixed(2)} / ${order.unitSize
                       } ${pluralize(order.selectUnit, Number(order.unitSize))}`,
                       searchQuery
                     )}
@@ -220,7 +223,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
                   "
                   >
-                    {highlightText(order.boat.boat_name, searchQuery)}
+                    {highlightText(fixEncoding(order.boat.boat_name), searchQuery)}
                   </div>
                   <div
                     className="
@@ -246,11 +249,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   </div>
                 </div>
                 <div
-                  className={`transition-all duration-300 ease-in-out ${
-                    expandedOrderId === order.id
+                  className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
                       ? "scale-[100.5%] opacity-100 max-h-[500px]"
                       : "scale-100 opacity-0 max-h-0 overflow-hidden"
-                  }`}
+                    }`}
                 >
                   {expandedOrderId === order.id && (
                     <ExpandedOrderDetails order={order} />
@@ -261,8 +263,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           })
         )}
       </div>
-      <div className="sticky bottom-0 bg-[#fff] border-t border-b border-[#E5E7EB] shadow-[0px_-4px_6px_0px_rgba(0,0,0,0.05)]  rounded-br-[10px] rounded-bl-[10px]">
-        <div className="p-4 px-6 flex justify-between items-center ">
+      <div className="sticky bottom-0 bg-[#fff] ml-[0.3px] pb-4">
+        <div className="p-4 px-6 flex justify-between items-center rounded-br-[10px] rounded-bl-[10px] border-[#E5E7EB] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] 
+            bg-gray-50 text-sm text-gray-500
+            border-t border-[1px]">
           <span className="text-sm text-gray-500">
             Showing {offset + 1} to{" "}
             {Math.min(offset + ITEMS_PER_PAGE, sortedOrders.length)} of{" "}

@@ -190,7 +190,7 @@ const Orders: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-[20px]">
+        <div className="p-[30px]">
           <OrdersTable
             orders={filteredOrders}
             onSearch={handleSearch}

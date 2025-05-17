@@ -19,7 +19,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   return (
     <div className="relative ml-3 -mr-15 w-60">
       <div
-        className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-6 pr-10 rounded leading-tight focus:outline-none focus:border-teal-500 cursor-pointer text-md"
+        className="block h-[50px] rounded-[12px] border-[2px] border-[#E5E7EB] bg-[#F8FAFA] px-[14px] appearance-none w-full text-gray-700 py-3 pr-10 leading-tight focus:outline-none focus:border-teal-500 cursor-pointer text-md"
         onClick={() => setIsOpen(!isOpen)}
       >
         {selectedOption}
@@ -36,13 +36,14 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
       {isOpen && (
         <ul
-          className="absolute z-50 mt-1 w-full bg-white rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-50 mt-1 w-full bg-white border-[1px] border-[#E5E7EB] 
+            shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] rounded-lg max-h-60 overflow-auto"
           role="listbox"
         >
           {options.map((option) => (
             <li
               key={option}
-              className="text-gray-900 cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-gray-100 text-lg"
+              className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
               onClick={() => handleSelect(option)}
               role="option"
               aria-selected={selectedOption === option}
