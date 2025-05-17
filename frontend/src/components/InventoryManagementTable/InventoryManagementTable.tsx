@@ -16,6 +16,7 @@ interface InventoryManagementTableProps {
   isLoading: boolean;
   searchQuery: string;
   highlightedItem?: HighlightedItem;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -29,28 +30,35 @@ const InventoryManagementTable = ({
   isLoading = false,
   searchQuery,
   highlightedItem,
+  containerRef,
 }: InventoryManagementTableProps) => {
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemRef = useRef<HTMLDivElement | null>(null); 
+  const itemRef = useRef<HTMLDivElement | null>(null);
   
   useEffect(() => {
-    if (highlightedItem) {
-        const itemIndex = inventoryItems.findIndex(item => item.id === highlightedItem.id);
-        if (itemIndex >= 0) {
-            const page = Math.floor(itemIndex / ITEMS_PER_PAGE);
-            setCurrentPage(page);
-            setTimeout(() => {
-              if (itemRef.current) {
-                itemRef.current.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'center'
-                });
-              }
-            }, 100);
-        }
+    if (highlightedItem && containerRef?.current) {
+      const itemIndex = inventoryItems.findIndex(item => item.id === highlightedItem.id);
+      if (itemIndex >= 0) {
+        const page = Math.floor(itemIndex / ITEMS_PER_PAGE);
+        setCurrentPage(page);
+        setTimeout(() => {
+          if (itemRef.current && containerRef.current) {
+            const containerRect = containerRef.current.getBoundingClientRect();
+            const itemRect = itemRef.current.getBoundingClientRect();
+            const scrollPosition = containerRef.current.scrollTop +
+              (itemRect.top - containerRect.top) -
+              (containerRect.height / 2);
+            
+            containerRef.current.scrollTo({
+              top: scrollPosition,
+              behavior: 'smooth'
+            });
+          }
+        }, 100);
+      }
     }
-}, [highlightedItem, inventoryItems]);
+  }, [highlightedItem, inventoryItems, containerRef]);
 
   const handleToggleExpand = (itemId: number) => {
     setExpandedItem(expandedItem === itemId ? null : itemId);
@@ -102,11 +110,11 @@ const InventoryManagementTable = ({
         <div className="
           flex flex-col
           w-[calc(100vw+170px)] sm:w-full md:w-[calc(100vw)] lg:w-full
-          overflow-hidden
+          
         ">
           {isLoading && (
             <div className="relative flex justify-center items-center pt-10 pb-10">
-              <ClipLoader size={60} color="#36D7B7" loading={isLoading} />
+              <ClipLoader size={60} color="#0e7490" loading={isLoading} />
             </div>
           )}
           {inventoryItems.length === 0 && !isLoading && (
@@ -127,7 +135,7 @@ const InventoryManagementTable = ({
             itemsPerPage={ITEMS_PER_PAGE}
           />
         </div>
-        <div className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px]">
+        <div className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px] ">
           <div className="
             p-4 px-6 
             border-t border-[1px] border-[#E5E7EB] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] 

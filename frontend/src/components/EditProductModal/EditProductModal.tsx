@@ -46,14 +46,14 @@ const EditProductModal = ({
                     </h1>
                     <button
                         onClick={handleCloseAttempt}
-                        className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10 cursor-pointer"
+                        className={`${isEditing ? "text-black/60 cursor-not-allowed": "text-black active:bg-black/10 cursor-pointer"} hover:bg-black/5 rounded-full transition-colors `}
                         aria-label="Close dialog"
                         disabled={isEditing}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M18 6L6 18M6 6L18 18"
-                                stroke="black"
+                                stroke={`${isEditing ? "gray":"black"}`}
                                 strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -75,7 +75,7 @@ const EditProductModal = ({
             </article>
             <div
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity "
-                onClick={handleCloseAttempt}
+                onClick={!isEditing ? handleCloseAttempt : undefined}
                 aria-hidden="true"
             />
             <UnsavedChangesModal

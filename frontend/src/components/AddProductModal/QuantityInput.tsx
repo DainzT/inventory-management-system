@@ -47,7 +47,12 @@ export const QuantityInput = ({
         <button
           type="button"
           onClick={handleDecrement}
-          className={`w-[32px] h-[32px] cursor-pointer flex items-center justify-center rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
+          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px]  bg-[#F4F1F1] transition-all duration-200 ${disabled
+            ? 'cursor-not-allowed opacity-70'
+            : error
+              ? 'border-red-500 hover:border-red-600'
+              : 'border-[#0FE3FF] cursor-pointer'
+          }`}
           disabled={disabled}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -67,13 +72,23 @@ export const QuantityInput = ({
           min="0"
           step="0.01"
           placeholder="0.00"
-          className={`w-[70px] h-[32px] text-center rounded-[8px] border-[1px]  ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1] inter-font`}
+          className={`w-[70px] h-[32px] text-center rounded-[8px] border-[1px]  bg-[#F4F1F1] inter-font  transition-all duration-200 ${disabled
+              ? 'cursor-not-allowed opacity-70'
+              : error
+                ? 'border-red-500 hover:border-red-600'
+                : 'border-[#0FE3FF]'
+            }`}
           disabled={disabled}
         />
         <button
           type="button"
           onClick={handleIncrement}
-          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px] cursor-pointer ${error ? "border-red-500" : "border-[#0FE3FF]"} bg-[#F4F1F1]`}
+          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px] cursor-pointer bg-[#F4F1F1] transition-all duration-200 ${disabled
+            ? 'cursor-not-allowed opacity-70'
+            : error
+              ? 'border-red-500 hover:border-red-600'
+              : 'border-[#0FE3FF] cursor-pointer'
+          }`}
           disabled={disabled}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">

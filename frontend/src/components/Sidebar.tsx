@@ -19,7 +19,6 @@ const Sidebar: React.FC = () => {
     location.pathname
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [showOptions, setShowOptions] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showChangePinModal, setShowChangePinModal] = useState(false);
   const [showChangeEmailModal, setShowChangeEmailModal] = useState(false);

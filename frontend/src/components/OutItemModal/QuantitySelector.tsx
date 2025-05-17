@@ -60,7 +60,12 @@ const QuantitySelector = ({
         <button
           className={`
             flex justify-center items-center w-8 h-8 rounded-lg border  border-solid bg-zinc-100  cursor-pointer
-            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+            transition-all duration-200 ${disabled
+              ? 'cursor-not-allowed opacity-70'
+              : error
+                ? 'border-red-500 hover:border-red-600'
+                : 'border-[#0FE3FF] cursor-pointer'
+            }
           `}
           onClick={decrementQuantity}
           aria-label="Decrease quantity"
@@ -78,16 +83,26 @@ const QuantitySelector = ({
           placeholder="0.00"
           className={`
             px-2 flex justify-center items-center w-16 h-8 rounded-lg border border-solid bg-zinc-100 text-black inter-font 
-            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+            transition-all duration-200 ${disabled
+              ? 'cursor-not-allowed opacity-70'
+              : error
+                ? 'border-red-500 hover:border-red-600'
+                : 'border-[#0FE3FF]'
+            }
           `}
           aria-live="polite"
           disabled={disabled}
         />
-        
+
         <button
           className={`
             flex justify-center items-center w-8 h-8 rounded-lg border border-solid bg-zinc-100 cursor-pointer
-            ${error ? "border-red-500" : "border-[#0FE3FF]"}
+            transition-all duration-200 ${disabled
+              ? 'cursor-not-allowed opacity-70'
+              : error
+                ? 'border-red-500 hover:border-red-600'
+                : 'border-[#0FE3FF] cursor-pointer'
+            }
           `}
           onClick={incrementQuantity}
           aria-label="Increase quantity"
@@ -96,7 +111,13 @@ const QuantitySelector = ({
           <Plus size={20} />
         </button>
       </div>
-      {error && <p className="absolute text-red-600 text-sm">{error}</p>}
+      <div className={`transition-all duration-200 ${error ? "mt-[0.2rem] max-h-10" : "h-0"}`}>
+        {error && (
+          <p className="text-red-600 text-sm">
+            {error}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

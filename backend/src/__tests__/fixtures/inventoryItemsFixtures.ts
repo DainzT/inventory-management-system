@@ -75,6 +75,14 @@ export const invalidAddInventoryItemFieldCases: InvalidAddFieldCase[] = [
                     error: "Valid name (string) is required",
                 },
             },
+            {
+                testCase: "name is greater than 40",
+                value: "This word is 40 This word is 40 This word is 40 ",
+                expected: {
+                    message: "Product name name must be 40 characters or less.",
+                    error: "Name.length <= 40 is required",
+                },
+            },
         ],
     },
     {
@@ -102,6 +110,14 @@ export const invalidAddInventoryItemFieldCases: InvalidAddFieldCase[] = [
                 expected: {
                     message: "Note is required.",
                     error: "Valid note (string) is required",
+                },
+            },
+            {
+                testCase: "note is greater than 120",
+                value: "This word is 120 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150This word is 150",
+                expected: {
+                    message: "Product note must be 120 characters or less.",
+                    error: "Name.length <= 120 is required",
                 },
             },
         ],
@@ -141,6 +157,14 @@ export const invalidAddInventoryItemFieldCases: InvalidAddFieldCase[] = [
                     error: "Valid quantity (number > 0) is required",
                 },
             },
+            {
+                testCase: "quantity is > 10,000",
+                value: 10001,
+                expected: {
+                    message: "Quantity cannot exceed 10,000.",
+                    error: "Valid quantity (number <= 10,000) is required",
+                },
+            },
         ],
     },
     {
@@ -176,6 +200,14 @@ export const invalidAddInventoryItemFieldCases: InvalidAddFieldCase[] = [
                 expected: {
                     message: "Enter a valid price.",
                     error: "Valid unitPrice (number > 0) is required",
+                },
+            },
+            {
+                testCase: "unitPrice is > 1,000,000",
+                value: 1000001,
+                expected: {
+                    message: "Price cannot exceed 1,000,000",
+                    error: "Valid unitPrice (number <= 1,000,000) is required",
                 },
             },
         ],
@@ -490,6 +522,14 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                     error: "Valid name (string) is required.",
                 }
             },
+            {
+                testCase: "updatedItem.name is greater than 40",
+                value: "This word is 40 This word is 40 This word is 40 ",
+                expected: {
+                    message: "Product name name must be 40 characters or less.",
+                    error: "Name.length <= 40 is required",
+                },
+            },
         ]
     },
     {
@@ -519,6 +559,14 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                     message: "Enter a valid note.",
                     error: "Valid note (string) is required.",
                 }
+            },
+            {
+                testCase: "updatedItem.note is greater than 120",
+                value: "This word is 120 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150 This word is 150This word is 150",
+                expected: {
+                    message: "Product note must be 120 characters or less.",
+                    error: "Name.length <= 120 is required",
+                },
             },
         ]
     },
@@ -558,6 +606,14 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                     error: "Valid quantity (number > 0) is required.",
                 }
             },
+            {
+                testCase: "updatedItem.quantity is > 10,000",
+                value: 10001,
+                expected: {
+                    message: "Quantity cannot exceed 10,000.",
+                    error: "Valid quantity (number <= 10,000) is required",
+                },
+            },
         ]
     },
     {
@@ -595,6 +651,14 @@ export const invalidEditInventoryItemFieldCases: InvalidEditFieldCase[] = [
                     message: "Enter a valid price.",
                     error: "Valid unitPrice (number > 0) is required",
                 }
+            },
+            {
+                testCase: "updatedItem.unitPrice is > 1,000,000",
+                value: 10000001,
+                expected: {
+                    message: "Price cannot exceed 1,000,000",
+                    error: "Valid unitPrice (number <= 1,000,000) is required",
+                },
             },
         ]
     },

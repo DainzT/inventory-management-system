@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
+import React, { useEffect, useRef, useState } from "react";
 import InventoryManagementTable from "@/components/InventoryManagementTable/InventoryManagementTable";
 import EditProductModal from "@/components/EditProductModal/EditProductModal";
 import AddProductModal from "@/components/AddProductModal/AddProductModal";
@@ -16,6 +13,7 @@ import { pluralize } from "@/utils/Pluralize";
 const Inventory: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const inventoryContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     inventoryItems,
@@ -59,7 +57,7 @@ const Inventory: React.FC = () => {
 
     const searchableFields = [
       item.name?.toLowerCase(),
-      item.note?.toLowerCase(),
+      item.note?.toLowerCase().slice(0, 46),
 
       item.quantity?.toString(),
       roundTo(Number(item.quantity), 2).toString(),
@@ -84,19 +82,10 @@ const Inventory: React.FC = () => {
   });
 
   return (
-    <div className="flex-1 p-0 overflow-auto">
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        theme="light"
-      />
-
+    <div
+      ref={inventoryContainerRef}
+      className="flex-1 p-0 overflow-auto "
+    >
       <PageTitle title="Main Inventory" />
       <InventoryManagementTable
         setIsAddOpen={setIsAddOpen}
@@ -113,6 +102,7 @@ const Inventory: React.FC = () => {
         isLoading={isLoading}
         searchQuery={searchQuery}
         highlightedItem={highlightedItem}
+        containerRef={inventoryContainerRef}
       />
       <AddProductModal
         isOpen={isAddOpen}
