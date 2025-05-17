@@ -12,6 +12,7 @@ import { roundTo } from "@/utils/RoundTo";
 import { toast } from "react-toastify";
 import { Tooltip } from "../ToolTips";
 import { BsArrowDown } from "react-icons/bs";
+import Orders from "@/pages/OrderPage";
 
 interface ModifyModalProps {
   isOpen: boolean,
@@ -142,10 +143,24 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const totalPrice = Number(selectedOrder.unitPrice) * (Number(quantity) / Number(selectedOrder.unitSize));
 
   if (!selectedOrder) return;
+  const getAdjustedMaxLength = (text: string) => {
+    if (!text) return maxNoteLength;
+    
+    const totalLetters = text.replace(/[^a-zA-Z]/g, '').length;
+    if (totalLetters === 0) return maxNoteLength;
+    
+    const upperCaseLetters = text.replace(/[^A-Z]/g, '').length;
+    const upperCaseRatio = upperCaseLetters / totalLetters;
 
-  const shouldTruncate = selectedOrder.note.length > maxNoteLength;
+    if (upperCaseRatio === 0) return 39;
+    if (upperCaseRatio >= 0.4 && upperCaseRatio < 0.5) return 32;
+    if (upperCaseRatio >= 0.5) return 30;
+    return maxNoteLength;
+  };
+  const adjustedMaxLength = getAdjustedMaxLength(selectedOrder.note);
+  const shouldTruncate = selectedOrder.note.length > adjustedMaxLength;
   const truncatedNote = shouldTruncate
-    ? `${selectedOrder.note.slice(0, maxNoteLength)}...`
+    ? `${selectedOrder.note.slice(0, adjustedMaxLength)}...`
     : selectedOrder.note;
 
   return (
@@ -175,7 +190,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           {selectedOrder.note && (
             <div className="mb-2">
               {shouldTruncate ? (
-                <Tooltip content={selectedOrder.note.slice(maxNoteLength, selectedOrder.note.length)} position="bottom">
+                <Tooltip content={selectedOrder.note.slice(adjustedMaxLength, selectedOrder.note.length)} position="bottom">
                   <p className="text-sm text-gray-600 break-words cursor-pointer">
                     {truncatedNote}
                     <span className="inline-block ml-1 text-cyan-600">↗</span>
