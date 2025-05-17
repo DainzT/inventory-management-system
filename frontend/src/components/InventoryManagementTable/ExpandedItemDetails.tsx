@@ -13,7 +13,8 @@ export const ExpandedItemDetails: React.FC<ExpandedItemDetailsProps> = ({
   extraDetails,
 }) => {
   return (
-    <div className="grid grid-cols-2 gap-6 px-15 py-4 bg-gray-50">
+    <div className="grid grid-cols-2 gap-6 px-15 py-4 bg-gray-50 border-[1px] border-[#E5E7EB] 
+            shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)]">
       <div>
         <div className="mb-1 text-sm text-gray-500">Total Value</div>
         <div className="text-base text-gray-800">
