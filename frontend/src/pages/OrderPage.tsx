@@ -109,8 +109,6 @@ const Orders: React.FC = () => {
     setTimeout(() => {
       setHighlightedItem(null);
     }, 3000);
-
-
   };
 
 

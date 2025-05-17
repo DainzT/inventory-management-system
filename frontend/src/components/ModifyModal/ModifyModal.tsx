@@ -11,6 +11,7 @@ import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
 import { toast } from "react-toastify";
 import { Tooltip } from "../ToolTips";
+import { BsArrowDown } from "react-icons/bs";
 
 interface ModifyModalProps {
   isOpen: boolean,
@@ -39,6 +40,8 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [quantityError, setQuantityError] = useState("");
+  const [fleetDropdownOpen, setFleetDropdownOpen] = useState(false);
+  const [boatDropdownOpen, setBoatDropdownOpen] = useState(false);
   console.log(selectedOrder)
   useEffect(() => {
     if (selectedOrder) {
@@ -193,31 +196,82 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
         <div className="flex-grow overflow-y-auto ">
           <div className="flex items-center mb-2">
-            <label htmlFor="fleet-select" className="text-base font-bold text-black inter-font">Assign to Fleet</label>
-          </div>
-          <select
-            id="fleet-select"
-            value={fleet}
-            onChange={(e) => handleFleetChange(e.target.value)}
-            className="w-full bg-white border border-[#0FE3FF] rounded-md px-3 py-2 focus:outline-none"
+  <label htmlFor="fleet-select" className="text-base font-bold text-black inter-font">
+    Assign to Fleet
+  </label>
+</div>
+<div className="relative">
+  <button
+    type="button"
+    onClick={() => setFleetDropdownOpen(!fleetDropdownOpen)}
+    className={`
+      flex justify-between items-center px-4 w-full h-12 rounded-lg border-[1px] 
+      ${isModifying || isDeleting ? "cursor-not-allowed border-black bg-gray-100" : "border-[#0FE3FF] bg-white"}
+      transition-all duration-200
+    `}
+    disabled={isModifying || isDeleting}
+  >
+    <span className="text-base text-black inter-font">{fleet || "Select a fleet"}</span>
+    <BsArrowDown />
+  </button>
+  {fleetDropdownOpen && (
+    <div className="absolute mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+      <ul>
+        {fleetOptions.map((fleetName) => (
+          <li
+            key={fleetName}
+            onClick={() => {
+              setFleet(fleetName);
+              setFleetDropdownOpen(false);
+            }}
+            className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
           >
-            {fleetOptions.map((fleetName) => (
-              <option key={fleetName} value={fleetName}>{fleetName}</option>
-            ))}
-          </select>
-          <div className="flex items-center mb-2">
-            <label htmlFor="boat-select" className="text-base font-bold text-black inter-font">Assign to Boat</label>
-          </div>
-          <select
-            id="boat-select"
-            value={boat}
-            onChange={(e) => handleBoatChange(e.target.value)}
-            className="w-full bg-white border border-[#0FE3FF]  rounded-md px-3 py-2 focus:outline-none"
+            {fleetName}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
+
+<div className="flex items-center mb-2">
+  <label htmlFor="boat-select" className="text-base font-bold text-black inter-font">
+    Assign to Boat
+  </label>
+</div>
+<div className="relative">
+  <button
+    type="button"
+    onClick={() => setBoatDropdownOpen(!boatDropdownOpen)}
+    className={`
+      flex justify-between items-center px-4 w-full h-12 rounded-lg border-[1px] 
+      ${isModifying || isDeleting ? "cursor-not-allowed border-black bg-gray-100" : "border-[#0FE3FF] bg-white"}
+      transition-all duration-200
+    `}
+    disabled={isModifying || isDeleting}
+  >
+    <span className="text-base text-black inter-font">{boat || "Select a boat"}</span>
+    <BsArrowDown />
+  </button>
+  {boatDropdownOpen && (
+    <div className="absolute mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+      <ul>
+        {boatOptions.map((boatName) => (
+          <li
+            key={boatName}
+            onClick={() => {
+              setBoat(boatName);
+              setBoatDropdownOpen(false);
+            }}
+            className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
           >
-            {boatOptions.map((boatName) => (
-              <option key={boatName} value={boatName}>{boatName}</option>
-            ))}
-          </select>
+            {boatName}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
           <QuantitySelector
             value={quantity}
             onChange={handleQuantityChange}
@@ -225,6 +279,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             required={false}
             maxQuantity={Number(maxAllowed)}
             unitSize={Number(selectedOrder.unitSize)}
+            disabled={isModifying || isDeleting}
           />
           <div className="mt-2">
             <SummarySection totalPrice={totalPrice} remainingStock={Number(remainingStock)} unit={selectedOrder.selectUnit} />
