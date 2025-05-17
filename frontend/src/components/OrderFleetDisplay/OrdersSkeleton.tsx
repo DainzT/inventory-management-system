@@ -87,27 +87,29 @@ export const OrdersSkeleton = () => {
                                 }}
                             />
                         </div>
-                        <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-[#295C65] grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
+                        <motion.div
+                            variants={shimmerVariants}
+                            initial="initial"
+                            animate="animate"
+                            style={{
+                                background:
+                                    "linear-gradient(90deg, #3d6571 25%, #275050 50%, #3d6571 75%)",
+                                backgroundSize: "200% 100%",
+                            }}
+                            className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-[#295C65] grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
                             {["Date Out", "Product Name", "Note", "Quantity", "Unit Price", "Boat", "Actions"].map((_, index) => (
                                 <motion.div
                                     key={index}
-                                    variants={shimmerVariants}
-                                    initial="initial"
-                                    animate="animate"
-                                    className="h-6 bg-gray-400 rounded mx-2 opacity-70 overflow-hidden"
-                                    style={{
-                                        background: "linear-gradient(90deg, #3b5362 25%, #2d4050 50%, #3b5362 75%)",
-                                        backgroundSize: "200% 100%",
-                                    }}
+                                    className="h-6 bg-[#295c6500] rounded mx-2 opacity-70 overflow-hidden"
                                 />
                             ))}
-                        </div>
+                        </motion.div>
                     </div>
                     <div className="flex-1 min-h-0 orders-table-content">
-                        {[...Array(5)].map((_, rowIndex) => (
+                        {[...Array(3)].map((_, rowIndex) => (
                             <div
                                 key={rowIndex}
-                                className="flex-1 px-5 grid items-center py-6 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] border-b border-[#E5E7EB] bg-white"
+                                className="flex-1 px-5 grid items-center py-[24.5px] grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] border-b border-[#E5E7EB] bg-white"
                             >
                                 {[...Array(8)].map((_, cellIndex) => (
                                     <motion.div

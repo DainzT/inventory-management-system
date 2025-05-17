@@ -13,6 +13,7 @@ export const useUpdateAssignedItem = () => {
     showErrorToast,
   } = useToast();
 
+
   const handleDeleteOrderItem = async (id: number) => {
     setIsDeleting(true);
     setError(null);
@@ -25,7 +26,7 @@ export const useUpdateAssignedItem = () => {
       const error = err as Error;
       setError(error.message || "Network error while deleting assigned item.");
       showErrorToast("deleting-order", error.message);
-      return { success: false, error: error.message };
+      throw error;
     } finally {
       setIsDeleting(false);
     }
@@ -42,11 +43,12 @@ export const useUpdateAssignedItem = () => {
         boat_name,
       })
       showSuccessToast("editing-order", result.message);
+      return { success: true, message: result.message };
     } catch (err) {
       const error = err as Error;
       setError(error.message || "Network error while deleting assigned item.");
-      showErrorToast("deleting-order", error.message);
-      return { success: false, error: error.message };
+      showErrorToast("editing-order", error.message);
+      throw error;
     } finally {
       setIsModifying(false);
     }

@@ -42,7 +42,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const [quantityError, setQuantityError] = useState("");
   const [fleetDropdownOpen, setFleetDropdownOpen] = useState(false);
   const [boatDropdownOpen, setBoatDropdownOpen] = useState(false);
-  console.log(selectedOrder)
+
   useEffect(() => {
     if (selectedOrder) {
       setQuantity(selectedOrder.quantity || 0);
@@ -86,6 +86,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleFleetChange = (newFleet: string) => {
     setFleet(newFleet);
+    const newBoatOptions = getBoatOptions(newFleet);
+    if (!newBoatOptions.includes(boat)) {
+      setBoat(newBoatOptions[0] || "");
+    }
   };
 
   const handleBoatChange = (newBoat: string) => {
@@ -123,6 +127,8 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleCloseAttempt = () => {
     if (isModifying || isDeleting) return;
+    setFleetDropdownOpen(false);
+    setBoatDropdownOpen(false);
     if (hasChanges) {
       setIsUnsavedChangesModalOpen(true);
     } else {
@@ -183,7 +189,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-500 inter-font whitespace-nowrap">Stock Available:</p>
             <p className="text-sm font-semibold text-black whitespace-nowrap">
-              {currentInventory === 0 ? (
+              {(currentInventory == 0 && selectedOrder.inventory == null) ? (
                 <p className="text-xs font-semibold text-red-500">This item no longer exists in inventory</p>
               ) : (
                 <p className="text-sm font-semibold text-black">
@@ -221,7 +227,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           <li
             key={fleetName}
             onClick={() => {
-              setFleet(fleetName);
+              handleFleetChange(fleetName);
               setFleetDropdownOpen(false);
             }}
             className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
@@ -281,7 +287,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             unitSize={Number(selectedOrder.unitSize)}
             disabled={isModifying || isDeleting}
           />
-          <div className="mt-2">
+          <div className={`${quantityError ? "mt-1": "mt-2"}`}>
             <SummarySection totalPrice={totalPrice} remainingStock={Number(remainingStock)} unit={selectedOrder.selectUnit} />
           </div>
         </div>

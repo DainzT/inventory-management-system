@@ -155,7 +155,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
             return (
               <React.Fragment key={order.id}>
                 <div className={`
-                  flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] 
+                  flex-1 px-5 grid items-center p-3 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] 
                   hover:bg-gray-50 transition-[border-left-color,border-left-width] duration-150 ease-in-out 
                   ${highlightedItem?.id === order.id ? 'border-l-4' : 'border-[#E5E7EB] bg-white border'}
                   ${highlightedItem?.id === order.id
