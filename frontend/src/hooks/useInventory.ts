@@ -9,6 +9,7 @@ import {
 import { InventoryItem, ItemFormData, OutItemData } from "@/types";
 import { useToast } from "./useToast";
 import { HighlightedItem, HighlightType } from "@/types";
+import { toast } from "react-toastify";
 
 export const useInventory = () => {
     const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
@@ -33,38 +34,37 @@ export const useInventory = () => {
     const focusItem = (itemId: number, type: HighlightType) => {
 
         setHighlightedItem({ id: itemId, type });
-        
+
         setTimeout(() => {
             setHighlightedItem(null);
         }, 3000);
     };
 
     const loadInventoryItems = async () => {
-        showLoadingToast("loading-inventory", "Loading inventory...");
         try {
             setIsLoading(true);
             const items = await fetchInventoryItems();
 
-            showSuccessToast(
-                "loading-inventory",
-                `Loaded ${items.length} ${items.length > 1 ? "items" : "item"} successfully`
-            );
-
             setInventoryItems(items);
         } catch (error) {
-            console.error("Failed to fetch inventory items:", error);
             let message = "Failed to load inventory";
+            console.error("Failed to fetch inventory items:", error);
             if (error instanceof Error) {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to fetch items from inventory" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error. Please check your internet connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }
             }
 
-            showErrorToast("loading-inventory", message);
+            toast.error(message, {
+                isLoading: false,
+                autoClose: 2000,
+                hideProgressBar: false,
+            });
+
         } finally {
             setIsLoading(false);
         }
@@ -78,7 +78,7 @@ export const useInventory = () => {
             const res = await addInventoryItem(newProduct);
 
             showSuccessToast("adding-product", res.message);
-            
+
             const items = await fetchInventoryItems();
             setInventoryItems(items);
             setIsAddOpen(false);
@@ -97,7 +97,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to add item to inventory" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error - unable to connect to server. Please check your connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }
@@ -132,7 +132,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to assign item" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error - unable to connect to server. Please check your connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }
@@ -170,7 +170,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to edit item" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error - unable to connect to server. Please check your connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }
@@ -204,7 +204,7 @@ export const useInventory = () => {
                 if (error.message === "No response received from server" ||
                     error.message === "Failed to delete item" ||
                     error.message.includes("Network Error")) {
-                    message = "Network error - unable to connect to server. Please check your connection.";
+                    message = "Network error. Check your connection.";
                 } else {
                     message = error.message;
                 }

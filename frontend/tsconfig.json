@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -17,26 +13,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": [
-      "jest",
-      "node",
-      "@playwright/test"
-    ],
+    "types": ["@storybook/jest", "jest", "node", "@playwright/test"],
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
-  "include": [
-    "src",
-  ],
-  "exclude": [
-    "node_modules",
-    "build",
-    "dist",
-    "e2e",
-  ]
+  "include": ["src", ".storybook"],
+  "exclude": ["node_modules", "build", "dist", "e2e"]
 }

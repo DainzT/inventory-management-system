@@ -15,33 +15,41 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
   const [otp, setOtp] = useState("");
   const [newPin, setNewPin] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { loading, otpSent, setOtpSent, otpVerified, handleVerifyEmail, handleVerifyOTP, ResetPin } = useAuth();
+  const {
+    loading,
+    otpSent,
+    setOtpSent,
+    otpVerified,
+    handleVerifyEmail,
+    handleVerifyOTP,
+    ResetPin,
+  } = useAuth();
   const [success, setSuccess] = useState(false);
 
   const validateEmail = () => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErrors(prev => ({ ...prev, email: "Invalid email format" }));
+      setErrors((prev) => ({ ...prev, email: "Invalid email format" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, email: "" }));
+    setErrors((prev) => ({ ...prev, email: "" }));
     return true;
   };
 
   const validateOTP = () => {
     if (!/^\d{6}$/.test(otp)) {
-      setErrors(prev => ({ ...prev, otp: "OTP must be 6 digits" }));
+      setErrors((prev) => ({ ...prev, otp: "OTP must be 6 digits" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, otp: "" }));
+    setErrors((prev) => ({ ...prev, otp: "" }));
     return true;
   };
 
   const validateNewPin = () => {
     if (!/^\d{6}$/.test(newPin)) {
-      setErrors(prev => ({ ...prev, newPin: "PIN must be 6 digits" }));
+      setErrors((prev) => ({ ...prev, newPin: "PIN must be 6 digits" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, newPin: "" }));
+    setErrors((prev) => ({ ...prev, newPin: "" }));
     return true;
   };
 
@@ -52,7 +60,7 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
 
   const handleOTPVerification = async () => {
     if (!validateOTP()) return;
-    await handleVerifyOTP(otp)
+    await handleVerifyOTP(otp);
   };
 
   const handleResetPin = async () => {
@@ -63,11 +71,11 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
       autoClose: 1500,
       onClose,
     });
-  }
+  };
 
   const handleBack = () => {
     setOtpSent(false);
-    setOtp("")
+    setOtp("");
     setErrors({});
   };
 
@@ -82,7 +90,6 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
     return "Reset PIN";
   };
 
-
   return (
     <Portal>
       <div className="flex fixed inset-0 justify-center items-center select-none">
@@ -96,8 +103,8 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
                 {!otpSent
                   ? "Enter your email to receive a verification code"
                   : !otpVerified
-                    ? "Enter the OTP sent to your email"
-                    : "Create a new 6-digit PIN"}
+                  ? "Enter the OTP sent to your email"
+                  : "Create a new 6-digit PIN"}
               </p>
             </header>
             {!otpSent ? (
@@ -144,7 +151,11 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
                 <button
                   onClick={handleBack}
                   className={`px-4 py-2.5 text-gray-600 rounded-lg bg-gray-200 transition flex items-center gap-2 active:scale-[0.98] border border-gray-200
-                    ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300 cursor-pointer'}`}
+                    ${
+                      loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-gray-300 cursor-pointer"
+                    }`}
                   disabled={loading || success}
                 >
                   <ArrowLeft size={18} />
@@ -153,16 +164,30 @@ const ForgotPin: React.FC<ForgotPinProps> = ({ onClose }) => {
               ) : (
                 <button
                   onClick={onClose}
-                  className={` ${loading ? "opacity-50 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300 cursor-pointer"} px-4 py-2 text-gray-700 active:scale-[0.98] rounded-md transition `}
+                  className={` ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                  } px-4 py-2 text-gray-700 active:scale-[0.98] rounded-md transition `}
                   disabled={loading}
                 >
                   Cancel
                 </button>
               )}
               <button
-                onClick={otpSent ? (otpVerified ? handleResetPin : handleOTPVerification) : handleSendOTP}
+                onClick={
+                  otpSent
+                    ? otpVerified
+                      ? handleResetPin
+                      : handleOTPVerification
+                    : handleSendOTP
+                }
                 className={`px-6 py-2.5 text-white rounded-lg transition-all flex-1 max-w-[11.58rem] flex items-center justify-center gap-2
-                  ${loading ? 'bg-accent/60 cursor-wait' : 'bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer'}
+                  ${
+                    loading
+                      ? "bg-accent/60 cursor-wait"
+                      : "bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer"
+                  }
                   active:scale-[0.98]`}
                 disabled={loading || success}
               >

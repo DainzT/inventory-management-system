@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../routes/authRouter";
-import prisma from "../../lib/prisma";
+import authRoutes from "../../../routes/authRouter";
+import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -28,6 +28,8 @@ describe("POST /api/auth/login (Negative Cases)", () => {
   });
 
   afterAll(async () => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
     await prisma.otp.deleteMany();
     await prisma.user.deleteMany();
     await prisma.$disconnect();

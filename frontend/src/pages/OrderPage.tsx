@@ -133,7 +133,7 @@ const Orders: React.FC = () => {
 
   return (
     <div>
-      <main className="flex-1 p-0">
+      <main className="flex-1">
         <PageTitle title={activeFleet} />
 
         <div className="flex justify-center items-center h-[200px]">

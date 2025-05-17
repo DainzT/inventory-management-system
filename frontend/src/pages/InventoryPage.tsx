@@ -57,7 +57,7 @@ const Inventory: React.FC = () => {
 
     const searchableFields = [
       item.name?.toLowerCase(),
-      item.note?.toLowerCase(),
+      item.note?.toLowerCase().slice(0, 46),
 
       item.quantity?.toString(),
       roundTo(Number(item.quantity), 2).toString(),
