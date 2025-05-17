@@ -9,15 +9,19 @@ import { fixEncoding } from "@/utils/Normalization";
 import QuantitySelector from "../OutItemModal/QuantitySelector";
 import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
+import { toast } from "react-toastify";
+import { Tooltip } from "../ToolTips";
+import { BsArrowDown } from "react-icons/bs";
 
 interface ModifyModalProps {
   isOpen: boolean,
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   selectedOrder: ModifyOrderItem | null;
-  onModify: (quantity: number, fleet: string, boat: string) => Promise<void>;
+  onModify: (id: number, quantity: number, fleet: string, boat: string) => Promise<void>;
   onRemove: (id: number) => void;
   isDeleting: boolean;
   isModifying?: boolean;
+  maxNoteLength?: number;
 }
 
 export const ModifyModal: React.FC<ModifyModalProps> = ({
@@ -27,17 +31,18 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   onRemove,
   selectedOrder,
   isModifying,
-  isDeleting
+  isDeleting,
+  maxNoteLength = 39,
 }) => {
-
   const [quantity, setQuantity] = useState<number | "">("");
   const [fleet, setFleet] = useState<string>("");
   const [boat, setBoat] = useState<string>("");
   const [isUnsavedChangesModalOpen, setIsUnsavedChangesModalOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [quantityError, setQuantityError] = useState("");
-  const [expanded, setExpanded] = useState(false);
-
+  const [fleetDropdownOpen, setFleetDropdownOpen] = useState(false);
+  const [boatDropdownOpen, setBoatDropdownOpen] = useState(false);
+  console.log(selectedOrder)
   useEffect(() => {
     if (selectedOrder) {
       setQuantity(selectedOrder.quantity || 0);
@@ -87,7 +92,12 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     setBoat(newBoat);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    if (!hasChanges) {
+      toast.info("No changes were made to the order");
+      return;
+    }
+
     if (Number(quantity) > Number(maxAllowed)) {
       setQuantityError(
         selectedOrder?.inventory !== undefined
@@ -96,9 +106,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
       );
       return;
     }
-
-    setQuantityError("");
-    onModify(Number(quantity), fleet, boat);
+    if (selectedOrder) {
+      setQuantityError("");
+      await onModify(selectedOrder.id, Number(quantity), fleet, boat);
+    }
   };
 
   const handleQuantityChange = (newValue: number | "") => {
@@ -111,6 +122,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   };
 
   const handleCloseAttempt = () => {
+    if (isModifying || isDeleting) return;
     if (hasChanges) {
       setIsUnsavedChangesModalOpen(true);
     } else {
@@ -122,7 +134,13 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   if (!isOpen || !selectedOrder) return null;
 
   const totalPrice = Number(selectedOrder.unitPrice) * (Number(quantity) / Number(selectedOrder.unitSize));
-  const showToggle = selectedOrder.note.length > 42;
+
+  if (!selectedOrder) return;
+
+  const shouldTruncate = selectedOrder.note.length > maxNoteLength;
+  const truncatedNote = shouldTruncate
+    ? `${selectedOrder.note.slice(0, maxNoteLength)}...`
+    : selectedOrder.note;
 
   return (
     <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
@@ -132,9 +150,9 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           <h1 className="text-[24px] font-bold text-cyan-800 inter-font">Edit Order</h1>
           <button
             onClick={handleCloseAttempt}
-            className="text-black rounded-full transition-colors hover:bg-black/5 active:bg-black/10"
+            className={`${isModifying || isDeleting ? "text-black/60 cursor-not-allowed" : "text-black active:bg-black/10 cursor-pointer"} hover:bg-black/5 rounded-full transition-colors `}
             aria-label="Close dialog"
-            disabled={isModifying}
+            disabled={isModifying || isDeleting}
             data-testid="close-button"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -142,117 +160,170 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             </svg>
           </button>
         </header>
-          <section className="p-2 mb-2 bg-gray-50 rounded-lg">
-            <div className="flex justify-between items-start mb-2">
-              <h2 className="text-base font-semibold text-black truncate max-w-[60%]">{selectedOrder.name}</h2>
-              <p className="text-base font-semibold text-cyan-800 inter-font" data-testid="price-display whitespace-nowrap">
-                ₱{Number(selectedOrder.unitPrice).toFixed(2)} / {selectedOrder.unitSize} {pluralize(selectedOrder.selectUnit, Number(selectedOrder.unitSize))}
-              </p>
-            </div>
-            {selectedOrder.note && (
-              <div className="mb-2">
-                <div
-                  className={`text-sm text-gray-500 inter-font break-words  ${expanded ? "" : "line-clamp-1"
-                    }`}
-                >
-                  {selectedOrder.note}
-                </div>
-                {showToggle && (
-                  <button
-                    onClick={() => setExpanded(!expanded)}
-                    className="text-xs mt-1 text-cyan-600 hover:text-cyan-800 transition-colors cursor-pointer"
-                  >
-                    {expanded ? "Show less..." : "Show more..."}
-                  </button>
-                )}
-              </div>
-            )}
-            <div className="flex justify-between items-center">
-              <p className="text-sm text-gray-500 inter-font whitespace-nowrap">Stock Available:</p>
-              <p className="text-sm font-semibold text-black whitespace-nowrap">
-                {roundTo(Number(selectedOrder.quantity), 2)} {pluralize(selectedOrder.selectUnit, Number(selectedOrder.quantity))}
-              </p>
-            </div>
-          </section>
-   
-          <div className="flex-grow overflow-y-auto ">
-            <div className="flex items-center mb-2">
-              <label htmlFor="fleet-select" className="text-base font-bold text-black inter-font">Assign to Fleet</label>
-            </div>
-            <select
-              id="fleet-select"
-              value={fleet}
-              onChange={(e) => handleFleetChange(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none"
-            >
-              {fleetOptions.map((fleetName) => (
-                <option key={fleetName} value={fleetName}>{fleetName}</option>
-              ))}
-            </select>
-            <div className="flex items-center mb-2">
-              <label htmlFor="boat-select" className="text-base font-bold text-black inter-font">Assign to Boat</label>
-            </div>
-            <select
-              id="boat-select"
-              value={boat}
-              onChange={(e) => handleBoatChange(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none"
-            >
-              {boatOptions.map((boatName) => (
-                <option key={boatName} value={boatName}>{boatName}</option>
-              ))}
-            </select>
-            <QuantitySelector
-              value={quantity}
-              onChange={handleQuantityChange}
-              error={quantityError}
-              required={false}
-              maxQuantity={Number(maxAllowed)}
-              unitSize={Number(selectedOrder.unitSize)}
-            />
-            <div className="mt-2">
-            <SummarySection totalPrice={totalPrice} remainingStock={Number(remainingStock)} unit={selectedOrder.selectUnit} />
-            </div> 
+        <section className="p-2 mb-2 bg-gray-50 rounded-lg">
+          <div className="flex justify-between items-start mb-2">
+            <h2 className="text-base font-semibold text-black truncate max-w-[60%]">{selectedOrder.name}</h2>
+            <p className="text-base font-semibold text-cyan-800 inter-font" data-testid="price-display whitespace-nowrap">
+              ₱{Number(selectedOrder.unitPrice).toFixed(2)} / {selectedOrder.unitSize} {pluralize(selectedOrder.selectUnit, Number(selectedOrder.unitSize))}
+            </p>
           </div>
-          <div className="pl-1 flex gap-18 mt-2">
-            <DeleteButton
-              onClick={() => {
-                if (selectedOrder) {
-                  onRemove(selectedOrder.id);
-                }
-                setQuantityError("");
-                setIsOpen(false);
-              }
-              }
-              disabled={isModifying || isDeleting}
-              isDeleting={isDeleting}
-              className="text-s"
-              title="Remove Item"
-              message="Are you sure you want to remove this item from your order? This action cannot be undone."
-              confirmButtonText="Remove Item"
-              data-testid="delete-button"
-            >
-              Delete
-            </DeleteButton>
-            <div className="flex item-center justify-end">
-              <Button
-                type="button"
-                className="text-s h-[3rem] w-[11rem]"
-                disabled={isModifying}
-                onClick={handleConfirm}
-              >
-                {isModifying ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <ClipLoader color="#ffffff" size={20} className="mr-2" />
-                    Updating...
-                  </div>
-                ) : (
-                  "Confirm Changes"
-                )}
-              </Button>
+          {selectedOrder.note && (
+            <div className="mb-2">
+              {shouldTruncate ? (
+                <Tooltip content={selectedOrder.note.slice(maxNoteLength, selectedOrder.note.length)} position="bottom">
+                  <p className="text-sm text-gray-600 break-words cursor-pointer">
+                    {truncatedNote}
+                    <span className="inline-block ml-1 text-cyan-600">↗</span>
+                  </p>
+                </Tooltip>
+              ) : (
+                <p className="text-sm text-gray-600 break-words">{selectedOrder.note}</p>
+              )}
             </div>
+          )}
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-500 inter-font whitespace-nowrap">Stock Available:</p>
+            <p className="text-sm font-semibold text-black whitespace-nowrap">
+              {currentInventory === 0 ? (
+                <p className="text-xs font-semibold text-red-500">This item no longer exists in inventory</p>
+              ) : (
+                <p className="text-sm font-semibold text-black">
+                  {roundTo(Number(currentInventory), 2)} {pluralize(selectedOrder.selectUnit, Number(currentInventory))}
+                </p>
+              )}
+            </p>
+          </div>
+        </section>
+
+        <div className="flex-grow overflow-y-auto ">
+          <div className="flex items-center mb-2">
+  <label htmlFor="fleet-select" className="text-base font-bold text-black inter-font">
+    Assign to Fleet
+  </label>
+</div>
+<div className="relative">
+  <button
+    type="button"
+    onClick={() => setFleetDropdownOpen(!fleetDropdownOpen)}
+    className={`
+      flex justify-between items-center px-4 w-full h-12 rounded-lg border-[1px] 
+      ${isModifying || isDeleting ? "cursor-not-allowed border-black bg-gray-100" : "border-[#0FE3FF] bg-white"}
+      transition-all duration-200
+    `}
+    disabled={isModifying || isDeleting}
+  >
+    <span className="text-base text-black inter-font">{fleet || "Select a fleet"}</span>
+    <BsArrowDown />
+  </button>
+  {fleetDropdownOpen && (
+    <div className="absolute mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+      <ul>
+        {fleetOptions.map((fleetName) => (
+          <li
+            key={fleetName}
+            onClick={() => {
+              setFleet(fleetName);
+              setFleetDropdownOpen(false);
+            }}
+            className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
+          >
+            {fleetName}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
+
+<div className="flex items-center mb-2">
+  <label htmlFor="boat-select" className="text-base font-bold text-black inter-font">
+    Assign to Boat
+  </label>
+</div>
+<div className="relative">
+  <button
+    type="button"
+    onClick={() => setBoatDropdownOpen(!boatDropdownOpen)}
+    className={`
+      flex justify-between items-center px-4 w-full h-12 rounded-lg border-[1px] 
+      ${isModifying || isDeleting ? "cursor-not-allowed border-black bg-gray-100" : "border-[#0FE3FF] bg-white"}
+      transition-all duration-200
+    `}
+    disabled={isModifying || isDeleting}
+  >
+    <span className="text-base text-black inter-font">{boat || "Select a boat"}</span>
+    <BsArrowDown />
+  </button>
+  {boatDropdownOpen && (
+    <div className="absolute mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+      <ul>
+        {boatOptions.map((boatName) => (
+          <li
+            key={boatName}
+            onClick={() => {
+              setBoat(boatName);
+              setBoatDropdownOpen(false);
+            }}
+            className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
+          >
+            {boatName}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
+          <QuantitySelector
+            value={quantity}
+            onChange={handleQuantityChange}
+            error={quantityError}
+            required={false}
+            maxQuantity={Number(maxAllowed)}
+            unitSize={Number(selectedOrder.unitSize)}
+            disabled={isModifying || isDeleting}
+          />
+          <div className="mt-2">
+            <SummarySection totalPrice={totalPrice} remainingStock={Number(remainingStock)} unit={selectedOrder.selectUnit} />
           </div>
         </div>
+        <div className="pl-1 flex gap-18 mt-2">
+          <DeleteButton
+            onClick={() => {
+              if (selectedOrder) {
+                onRemove(selectedOrder.id);
+              }
+              setQuantityError("");
+              setIsOpen(false);
+            }
+            }
+            disabled={isModifying || isDeleting}
+            isDeleting={isDeleting}
+            className="text-s"
+            title="Remove Item"
+            message="Are you sure you want to remove this item from your order? This action cannot be undone."
+            confirmButtonText="Remove Item"
+          >
+            Delete
+          </DeleteButton>
+          <div className="flex item-center justify-end">
+            <Button
+              type="button"
+              className="text-s h-[3rem] w-[11rem]"
+              disabled={isModifying || isDeleting}
+              onClick={handleConfirm}
+            >
+              {isModifying ? (
+                <div className="flex items-center justify-center gap-2">
+                  <ClipLoader color="#ffffff" size={20} className="mr-2" />
+                  Updating...
+                </div>
+              ) : (
+                "Confirm Changes"
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={!isModifying ? handleCloseAttempt : undefined}
@@ -266,6 +337,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           setQuantityError("");
         }}
         onConfirm={() => {
+          setIsUnsavedChangesModalOpen(false);
           setQuantityError("");
           setIsOpen(false);
         }}

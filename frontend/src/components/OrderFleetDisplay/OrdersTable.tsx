@@ -9,6 +9,9 @@ import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
 import { ClipLoader } from "react-spinners";
 import { highlightText } from "@/utils/HighlightText";
+import { HighlightedItem } from "@/types";
+import { Tooltip } from "../ToolTips";
+import { fixEncoding } from "@/utils/Normalization";
 
 interface OrdersTableProps {
   orders: OrderItem[];
@@ -18,6 +21,7 @@ interface OrdersTableProps {
   activeFleet: string;
   isLoading: boolean;
   searchQuery: string;
+  highlightedItem?: HighlightedItem
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -28,8 +32,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   activeFleet,
   isLoading,
   searchQuery,
+  highlightedItem
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const maxNoteLength = 48;
 
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(0);
@@ -59,7 +65,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       case "All Fleets":
         return [
           "All Boats",
-          "F/B DONYA DONYA 2X",
+          "F/B DONYA DONYA 2x",
           "F/B Doña Librada",
           "F/B Lady Rachelle",
           "F/B Mariella",
@@ -75,7 +81,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
       case "F/B DONYA DONYA 2X":
         return [
           "All Boats",
-          "F/B DONYA DONYA 2X",
+          "F/B DONYA DONYA 2x",
           "F/B Lady Rachelle",
           "F/B Mariella",
           "F/B My Shield",
@@ -104,27 +110,32 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   };
 
   return (
-    <section className="flex-1 bg-white rounded-xl border-[1px] border-[#E5E7EB] shadow-sm">
-      <div className="flex gap-5 p-2 sm:p-[24px] sticky top-0 bg-white z-10">
-        <SearchBar placeholder="Search Items..." onSearch={onSearch} />
-        <FilterDropdown
-          label="All Boats"
-          options={filterOptions}
-          onSelect={onFilter || (() => { })}
-        />
+    <section className="flex-1 bg-white rounded-xl flex flex-col ">
+      <div className="stick sticky top-0 z-10">
+        <div className="flex bg-white border-[1px] border-[#E5E7EB] 
+            shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] rounded-tr-[10px] rounded-tl-[10px]
+            p-2 sm:p-[15px] items-center gap-20    
+        ">
+          <SearchBar placeholder="Search Items..." onSearch={onSearch} />
+          <FilterDropdown
+            label="All Boats"
+            options={filterOptions}
+            onSelect={onFilter || (() => { })}
+          />
+        </div>
+        <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-[#295C65] grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
+          <div className="px-3">Date Out</div>
+          <div className="px-3">Product Name</div>
+          <div className="px-3">Note</div>
+          <div className="px-3">Quantity</div>
+          <div className="px-3">Unit Price</div>
+          <div className="px-3">Boat</div>
+          <div className="text-center">Actions</div>
+        </div>
       </div>
-      
-      <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-cyan-900 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">
-        <div className="px-3">Date Out</div>
-        <div className="px-3">Product Name</div>
-        <div className="px-3">Note</div>
-        <div className="px-3">Quantity</div>
-        <div className="px-3">Unit Price</div>
-        <div className="px-3">Boat</div>
-        <div className="text-center">Actions</div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto overflow-hidden">
+      <div
+        className={`flex-1 min-h-0 orders-table-content`}
+      >
         {isLoading ? (
           <div className="relative flex justify-center items-center pt-10 pb-10">
             <ClipLoader color="#0e7490" size={60} />
@@ -139,59 +150,124 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               index > 0 && currentItems[index - 1].outDate === order.outDate;
             return (
               <React.Fragment key={order.id}>
-                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,1fr)_minmax(150px,1fr)_minmax(200px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
+                <div className={`
+                  flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] 
+                  hover:bg-gray-50 transition-[border-left-color,border-left-width] duration-150 ease-in-out
+                  ${highlightedItem?.id === order.id ? 'border-l-4' : 'border-[#E5E7EB] bg-white border'}
+                  ${highlightedItem?.id === order.id
+                    ? highlightedItem.type === 'edited'
+                      ? 'bg-amber-50/30 border-l-6 border-amber-400'
+                      : 'border-[#E5E7EB] bg-white border'
+                    : ''
+                  }
+                  
+                `}>
                   <div className="
                     text-[16px] text-gray-600 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                  ">
-                    {!isSameDateAsPrevious && highlightText(new Date(order.outDate).toLocaleDateString(), searchQuery)}
+                  "
+                  >
+                    {!isSameDateAsPrevious &&
+                      highlightText(
+                        new Date(order.outDate).toLocaleDateString(),
+                        searchQuery
+                      )}
                   </div>
-                  <div className="
+                  <div
+                    className="
                     text-[16px] font-bold text-gray-800 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                  ">
+                  "
+                  >
                     {highlightText(order.name, searchQuery)}
                   </div>
-                  <div className="
-                    text-[16px] text-gray-600 px-3
-                    shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                  ">
-                    {highlightText(order.note, searchQuery)}
+                  <div
+                    className="
+                    text-sm text-gray-600 px-3
+                    shrink-0 break-all hyphens-auto flex-1
+                  "
+                  >
+                    {order.note &&
+                      (order.note.length > maxNoteLength ? (
+                        <Tooltip content={order.note} position="bottom">
+                          <div className="cursor-pointer">
+                            {highlightText(
+                              `${order.note.slice(0, maxNoteLength)}...`,
+                              searchQuery
+                            )}
+                            <span className="inline-block ml-1 text-cyan-600">
+                              ↗
+                            </span>
+                          </div>
+                        </Tooltip>
+                      ) : (
+                        highlightText(order.note, searchQuery)
+                      ))}
                   </div>
-                  <div className="
+                  <div
+                    className="
                     text-[16px] text-gray-800 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                  ">
-                    {highlightText(`${roundTo(Number(order.quantity), 2)} ${pluralize(order.selectUnit, Number(order.quantity))}`, searchQuery)}
+                  "
+                  >
+                    {highlightText(
+                      `${roundTo(Number(order.quantity), 2)} ${pluralize(
+                        order.selectUnit,
+                        Number(order.quantity)
+                      )}`,
+                      searchQuery
+                    )}
                   </div>
-                  <div className="
+                  <div
+                    className="
                     text-[16px] text-gray-800 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                  ">
-                    {highlightText(`₱${Number(order.unitPrice).toFixed(2)} / ${order.unitSize} ${pluralize(order.selectUnit, Number(order.unitSize))}`, searchQuery)}
+                  "
+                  >
+                    {highlightText(
+                      `₱${Number(order.unitPrice).toFixed(2)} / ${order.unitSize
+                      } ${pluralize(order.selectUnit, Number(order.unitSize))}`,
+                      searchQuery
+                    )}
                   </div>
-                  <div className="
+                  <div
+                    className="
                     text-[16px] text-gray-600 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
-                  ">
-                    {highlightText(order.boat.boat_name, searchQuery)}
+                  "
+                  >
+
+                    {highlightText(fixEncoding(order.boat.boat_name), searchQuery)}
                   </div>
-                  <div className="
+                  <div
+                    className="
                     flex items-center gap-2
                     shrink-0 break-all overflow-hidden hyphens-auto justify-center
-                  ">
+                  "
+                  >
                     <button
                       className="
-                          h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
-                          cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                          h-10 text-sm text-white bg-[#3B82F6] rounded-lg w-[85px]
+                          cursor-pointer hover:bg-[#2563EB] transition-colors duration-200
+                          flex items-center justify-center gap-2
                       "
                       onClick={() => handleModifyItemClick(order)}
+
                     >
-                      Modify
+                      <svg width="15" height="16" viewBox="0 0 15 16" fill="none">
+                        <path
+                          d="M9.99763 2L12.494 5M2.50867 14L5.00499 13L11.6618 5L9.99763 3L3.34077 11L2.50867 14Z"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span className="text-[16px] text-white">Edit</span>
                     </button>
                   </div>
                   <div
-                    className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+                    className="ml-4 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
                     onClick={() => toggleExpand(order.id)}
                   >
                     <ChevronIcon isExpanded={expandedOrderId === order.id} />
@@ -199,8 +275,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 </div>
                 <div
                   className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
-                      ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                      : "scale-100 opacity-0 max-h-0 overflow-hidden"
+                    ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                    : "scale-100 opacity-0 max-h-0 overflow-hidden"
                     }`}
                 >
                   {expandedOrderId === order.id && (
@@ -212,9 +288,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           })
         )}
       </div>
-      <div className="sticky bottom-0 bg-[#fff] border-t border-b border-[#E5E7EB] shadow-[0px_-4px_6px_0px_rgba(0,0,0,0.05)]  rounded-br-[10px] rounded-bl-[10px]">
-        <div className="p-4 px-6 flex justify-between items-center ">
-
+      <div className="sticky bottom-0 bg-[#fff] ml-[0.3px] pb-4">
+        <div className="p-4 px-6 flex justify-between items-center rounded-br-[10px] rounded-bl-[10px] border-[#E5E7EB] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] 
+            bg-gray-50 text-sm text-gray-500
+            border-t border-[1px]">
           <span className="text-sm text-gray-500">
             Showing {offset + 1} to{" "}
             {Math.min(offset + ITEMS_PER_PAGE, sortedOrders.length)} of{" "}
