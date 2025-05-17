@@ -155,7 +155,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             disabled={isModifying || isDeleting}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6L18 18" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M18 6L6 18M6 6L18 18" stroke={`${isModifying || isDeleting ? "gray" : "black"}`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </header>
@@ -211,11 +211,11 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     `}
     disabled={isModifying || isDeleting}
   >
-    <span className="text-base text-black inter-font">{fleet || "Select a fleet"}</span>
+    <span className="text-base text-black inter-font">{fixEncoding(fleet) || "Select a fleet"}</span>
     <BsArrowDown />
   </button>
   {fleetDropdownOpen && (
-    <div className="absolute mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+    <div className="absolute mt-2 w-full rounded-lg border border-red-100 bg-white shadow-lg z-50">
       <ul>
         {fleetOptions.map((fleetName) => (
           <li
@@ -234,7 +234,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   )}
 </div>
 
-<div className="flex items-center mb-2">
+<div className="flex items-center mb-2 mt-1">
   <label htmlFor="boat-select" className="text-base font-bold text-black inter-font">
     Assign to Boat
   </label>
@@ -250,11 +250,11 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     `}
     disabled={isModifying || isDeleting}
   >
-    <span className="text-base text-black inter-font">{boat || "Select a boat"}</span>
+    <span className="text-base text-black inter-font">{fixEncoding(boat) || "Select a boat"}</span>
     <BsArrowDown />
   </button>
   {boatDropdownOpen && (
-    <div className="absolute mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+    <div className="fixed mt-2 w-84 rounded-lg border  border-red-100 bg-white shadow-lg z-50">
       <ul>
         {boatOptions.map((boatName) => (
           <li
@@ -287,9 +287,9 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
         </div>
         <div className="pl-1 flex gap-18 mt-2">
           <DeleteButton
-            onClick={() => {
+            onClick={async () => {
               if (selectedOrder) {
-                onRemove(selectedOrder.id);
+                await onRemove(selectedOrder.id);
               }
               setQuantityError("");
               setIsOpen(false);
@@ -311,7 +311,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               disabled={isModifying || isDeleting}
               onClick={handleConfirm}
             >
-              {isModifying ? (
+              {isModifying || isDeleting ? (
                 <div className="flex items-center justify-center gap-2">
                   <ClipLoader color="#ffffff" size={20} className="mr-2" />
                   Updating...

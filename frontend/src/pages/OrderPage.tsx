@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { useOrder } from "@/hooks/useOrder";
 import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
 import { HighlightedItem } from "@/types";
+import { fixEncoding } from "@/utils/Normalization";
+import { OrdersSkeleton } from "@/components/OrderFleetDisplay/OrdersSkeleton";
 
 const Orders: React.FC = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
@@ -127,15 +129,17 @@ const Orders: React.FC = () => {
     (order) => !order.archived && order.fleet.fleet_name === "F/B DONYA DONYA 2x"
   ).length;
   const donaLibradaCount = orders.filter(
-    (order) => !order.archived && order.fleet.fleet_name === "F/B Doña Librada"
+    (order) => !order.archived && fixEncoding(order.fleet.fleet_name) === "F/B Doña Librada"
   ).length;
-
 
   return (
     <div>
       <main className="flex-1">
         <PageTitle title={activeFleet} />
-
+      {isLoading ? (
+        <OrdersSkeleton/>
+      ): (
+        <>
         <div className="flex justify-center items-center h-[200px]">
           <div className="justify-start items-center flex gap-16">
             <FleetCard
@@ -177,7 +181,8 @@ const Orders: React.FC = () => {
             highlightedItem={highlightedItem}
           />
         </div>
-
+        </>
+      )}
         <ModifyModal
           isOpen={isModifyOpen}
           setIsOpen={setIsModifyOpen}
