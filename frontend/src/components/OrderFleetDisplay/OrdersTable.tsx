@@ -9,6 +9,7 @@ import { pluralize } from "@/utils/Pluralize";
 import { roundTo } from "@/utils/RoundTo";
 import { ClipLoader } from "react-spinners";
 import { highlightText } from "@/utils/HighlightText";
+import { HighlightedItem } from "@/types";
 import { Tooltip } from "../ToolTips";
 import { fixEncoding } from "@/utils/Normalization";
 
@@ -20,6 +21,7 @@ interface OrdersTableProps {
   activeFleet: string;
   isLoading: boolean;
   searchQuery: string;
+  highlightedItem?: HighlightedItem
 }
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -30,6 +32,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   activeFleet,
   isLoading,
   searchQuery,
+  highlightedItem
 }) => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const maxNoteLength = 48;
@@ -147,9 +150,19 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               index > 0 && currentItems[index - 1].outDate === order.outDate;
             return (
               <React.Fragment key={order.id}>
-                <div className="flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] hover:bg-gray-50  bg-white border-[1px] border-[#E5E7EB] ">
-                  <div
-                    className="
+                <div className={`
+                  flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] 
+                  hover:bg-gray-50 transition-[border-left-color,border-left-width] duration-150 ease-in-out
+                  ${highlightedItem?.id === order.id ? 'border-l-4' : 'border-[#E5E7EB] bg-white border'}
+                  ${highlightedItem?.id === order.id
+                    ? highlightedItem.type === 'edited'
+                      ? 'bg-amber-50/30 border-l-6 border-amber-400'
+                      : 'border-[#E5E7EB] bg-white border'
+                    : ''
+                  }
+                  
+                `}>
+                  <div className="
                     text-[16px] text-gray-600 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
                   "
@@ -223,6 +236,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
                   "
                   >
+
                     {highlightText(fixEncoding(order.boat.boat_name), searchQuery)}
                   </div>
                   <div
@@ -233,16 +247,27 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   >
                     <button
                       className="
-                          h-9 text-sm text-white bg-emerald-700 rounded-lg w-[85px]
-                          cursor-pointer hover:bg-emerald-600 transition-colors duration-200
+                          h-10 text-sm text-white bg-[#3B82F6] rounded-lg w-[85px]
+                          cursor-pointer hover:bg-[#2563EB] transition-colors duration-200
+                          flex items-center justify-center gap-2
                       "
                       onClick={() => handleModifyItemClick(order)}
+
                     >
-                      Modify
+                      <svg width="15" height="16" viewBox="0 0 15 16" fill="none">
+                        <path
+                          d="M9.99763 2L12.494 5M2.50867 14L5.00499 13L11.6618 5L9.99763 3L3.34077 11L2.50867 14Z"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span className="text-[16px] text-white">Edit</span>
                     </button>
                   </div>
                   <div
-                    className="ml-3 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+                    className="ml-4 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
                     onClick={() => toggleExpand(order.id)}
                   >
                     <ChevronIcon isExpanded={expandedOrderId === order.id} />
@@ -250,8 +275,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 </div>
                 <div
                   className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
-                      ? "scale-[100.5%] opacity-100 max-h-[500px]"
-                      : "scale-100 opacity-0 max-h-0 overflow-hidden"
+                    ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                    : "scale-100 opacity-0 max-h-0 overflow-hidden"
                     }`}
                 >
                   {expandedOrderId === order.id && (

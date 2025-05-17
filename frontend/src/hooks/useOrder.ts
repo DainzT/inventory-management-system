@@ -117,10 +117,6 @@ export const useOrder = () => {
         new Date(order.outDate).toLocaleDateString() || ""
       ].join(" ").toLowerCase();
 
-
-      console.log("Row String:", rowString);
-      console.log("Search Query:", searchQuery.toLowerCase());
-
       const matchesSearch = searchQuery
         ? rowString.includes(searchQuery.toLowerCase())
         : true;

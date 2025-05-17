@@ -39,11 +39,28 @@ export const updateArchivedStatus = async (orders: OrderItem[]) => {
   }
 };
 
-export const deleteOrderItemAPI = async (
+export const deleteOrderItem = async (
   id: number
 ): Promise<{ success: boolean; message: string }> => {
   try {
     const response = await apiClient.delete(`/modify-item/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting order item:", error);
+    return handleApiError(error);
+  }
+};
+
+export const ModifyOrderItem = async (
+  id: number,
+  data: {
+    quantity: number,
+    boat_name: string,
+    fleet_name: string,
+  }
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await apiClient.put(`/modify-item/update/${id}`, data);
     return response.data;
   } catch (error) {
     console.error("Error deleting order item:", error);
