@@ -1,4 +1,5 @@
 import { roundTo } from "@/utils/RoundTo";
+import { Tooltip } from "../ToolTips";
 
 interface PriceInputProps {
   label: string;
@@ -30,6 +31,32 @@ export const PriceInput = ({
   error,
   disabled = false,
 }: PriceInputProps) => {
+  const MAX_UNIT_LENGTH = 6;
+
+  const getAdjustedMaxLength = (text: string) => {
+    if (!text) return MAX_UNIT_LENGTH;
+    
+    const totalLetters = text.replace(/[^a-zA-Z]/g, '').length;
+    if (totalLetters === 0) return MAX_UNIT_LENGTH;
+    
+    const upperCaseLetters = text.replace(/[^A-Z]/g, '').length;
+    const upperCaseRatio = upperCaseLetters / totalLetters;
+    const lowerCaseLetters = text.replace(/[^a-z]/g, '').length;
+    const lowerCaseRatio = lowerCaseLetters / totalLetters;
+
+    if (lowerCaseRatio > 0.5) return 7;
+    if (upperCaseRatio >= 0.4 && upperCaseRatio < 0.5) return 8;
+    if (upperCaseRatio >= 0.5) return 5;
+    return MAX_UNIT_LENGTH;
+  };
+
+  const adjustedMaxLength = getAdjustedMaxLength(String(unit));
+  const displayUnit = unit && unit.length > adjustedMaxLength
+    ? `${unit.slice(0, adjustedMaxLength)}…`
+    : unit;
+
+  const shouldTruncate = unit && unit.length > adjustedMaxLength;
+  const shouldShowTooltip = shouldTruncate && unit.trim().length > 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -71,7 +98,7 @@ export const PriceInput = ({
           min="0"
           step="0.01"
           readOnly={readonly}
-          className={`${readonly ? "w-[145px]": "w-[140px]"} h-[40px] pl-8 rounded-[8px] border-[1px] inter-font bg-[#F4F1F1]
+          className={`${readonly ? "w-[145px]" : "w-[140px]"} h-[40px] pl-8 rounded-[8px] border-[1px] inter-font bg-[#F4F1F1]
             transition-all duration-200
             ${disabled
               ? 'cursor-not-allowed opacity-70'
@@ -105,11 +132,20 @@ export const PriceInput = ({
               disabled={disabled}
             />
             {error && <span className="absolute text-red-600 text-sm -translate-19 translate-y-10 w-35">{error.unitSize}</span>}
-            <span className="ml-2 inter-font">{unit?.trim() || "unit"}</span>
+            {shouldShowTooltip ? (
+              <Tooltip content={unit} maxWidth={"w-30"} position="top">
+                <span className={`ml-2 inter-font w-full truncate ${unit && unit.length > adjustedMaxLength ? 'text-sm cursor-pointer' : ''}`}>{displayUnit?.trim() || "unit"}</span>
+                <span className="inline-block  text-cyan-600 cursor-pointer">↗</span>
+              </Tooltip>
+            ) : (
+              <span className="inter-font text-sm ml-2">
+                  {unit?.trim() || "unit"}
+              </span>
+            )}
           </>
         )}
-      </div>
-      {error && <p className="absolute text-red-600 text-sm">{error.unitPrice}</p>}
     </div>
+      { error && <p className="absolute text-red-600 text-sm">{error.unitPrice}</p> }
+    </div >
   );
 };
