@@ -44,8 +44,8 @@ export const PriceInput = ({
     const lowerCaseLetters = text.replace(/[^a-z]/g, '').length;
     const lowerCaseRatio = lowerCaseLetters / totalLetters;
 
-    if (lowerCaseRatio > 0.5) return 7;
-    if (upperCaseRatio >= 0.4 && upperCaseRatio < 0.5) return 8;
+    if (lowerCaseRatio > 0.5) return 6;
+    if (upperCaseRatio >= 0.4 && upperCaseRatio < 0.5) return 7;
     if (upperCaseRatio >= 0.5) return 5;
     return MAX_UNIT_LENGTH;
   };

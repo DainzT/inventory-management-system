@@ -48,7 +48,6 @@ export const Invoice = ({
   );
 
   const allOrders = boatGroups.flatMap((group) => group.orders);
-  console.log(allOrders)
   const getItemsPerPage = (orders: OrderItem[], pageIndex: number, totalPages: number) => {
     const isLastPage = pageIndex === totalPages - 1;
 
