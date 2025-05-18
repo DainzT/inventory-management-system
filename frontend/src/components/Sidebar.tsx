@@ -70,7 +70,7 @@ const Sidebar: React.FC = () => {
               className={`flex items-center justify-center w-9 h-9 rounded-full transition-all
                 bg-cyan-900 border border-gray-300 shadow-sm
                 hover:bg-cyan-800 hover:shadow-md
-                active:bg-cyan-800 active:scale-95
+                active:bg-cyan-800 active:scale-95 cursor-pointer
                 ${isSettingsOpen ? "bg-cyan-800 shadow-md" : ""}`}
               aria-label="Settings"
             >
