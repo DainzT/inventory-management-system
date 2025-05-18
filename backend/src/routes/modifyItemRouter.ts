@@ -125,7 +125,11 @@ router.put("/update/:id", async (req: Request, res: Response) => {
         });
 
         if (!boat) {
-            res.status(404).json({ error: "Boat not found or doesn't belong to the specified fleet" });
+            res.status(404).json({ 
+                error: "Boat not found or doesn't belong to the specified fleet", 
+                success: false,
+                message: `Boat does not exist on fleet`,
+            });
             return;
         }
 

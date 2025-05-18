@@ -110,7 +110,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   };
 
   return (
-    <section className="flex-1 bg-white rounded-xl flex flex-col ">
+    <section className="flex-1 bg-[#fff] rounded-xl flex flex-col">
       <div className="stick sticky top-0 z-10">
         <div className="flex bg-white border-[1px] border-[#E5E7EB] 
             shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] rounded-tr-[10px] rounded-tl-[10px]
@@ -148,11 +148,15 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           currentItems.map((order, index) => {
             const isSameDateAsPrevious =
               index > 0 && currentItems[index - 1].outDate === order.outDate;
+            const shouldTruncate = order.note && order.note.length > maxNoteLength;
+            const truncatedNote = shouldTruncate
+              ? `${order.note.slice(0, maxNoteLength)}...`
+              : order.note;
             return (
               <React.Fragment key={order.id}>
                 <div className={`
-                  flex-1 px-5 grid items-center py-4 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] 
-                  hover:bg-gray-50 transition-[border-left-color,border-left-width] duration-150 ease-in-out
+                  flex-1 px-5 grid items-center p-3 grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] 
+                  hover:bg-gray-50 transition-[border-left-color,border-left-width] duration-150 ease-in-out 
                   ${highlightedItem?.id === order.id ? 'border-l-4' : 'border-[#E5E7EB] bg-white border'}
                   ${highlightedItem?.id === order.id
                     ? highlightedItem.type === 'edited'
@@ -189,10 +193,10 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   >
                     {order.note &&
                       (order.note.length > maxNoteLength ? (
-                        <Tooltip content={order.note} position="bottom">
+                        <Tooltip content={order.note.slice(maxNoteLength, order.note.length)} position="bottom">
                           <div className="cursor-pointer">
                             {highlightText(
-                              `${order.note.slice(0, maxNoteLength)}...`,
+                              truncatedNote,
                               searchQuery
                             )}
                             <span className="inline-block ml-1 text-cyan-600">
@@ -267,7 +271,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                     </button>
                   </div>
                   <div
-                    className="ml-4 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
+                    className=" ml-3 mr-1 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
                     onClick={() => toggleExpand(order.id)}
                   >
                     <ChevronIcon isExpanded={expandedOrderId === order.id} />
@@ -288,7 +292,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           })
         )}
       </div>
-      <div className="sticky bottom-0 bg-[#fff] ml-[0.3px] pb-4">
+      <div className="sticky bottom-0 bg-[#fff] ml-[0.3px] pb-4 ">
         <div className="p-4 px-6 flex justify-between items-center rounded-br-[10px] rounded-bl-[10px] border-[#E5E7EB] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] 
             bg-gray-50 text-sm text-gray-500
             border-t border-[1px]">

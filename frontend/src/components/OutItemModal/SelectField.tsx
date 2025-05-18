@@ -48,7 +48,7 @@ const SelectField = ({
       </button>
 
       {isOpen && (
-        <div className="mt-2 absolute w-80 rounded-lg border border-red-100 bg-white shadow-lg z-50">
+        <div className="mt-2 absolute w-84 rounded-lg border border-red-100 bg-white shadow-lg z-50">
           <ul>
             {options.map((option) => (
               <li
