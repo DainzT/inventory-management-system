@@ -39,7 +39,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
-    timeout: 360_000,
+    timeout: 60000,
   },
   /* Configure projects for major browsers */
   projects: [

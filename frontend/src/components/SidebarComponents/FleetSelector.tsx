@@ -40,7 +40,6 @@ export const FleetSelector = ({
         {fleets.map((fleet, i) => {
           const fleetPath = getFleetPath(fleet);
           const isActive = normalizePath(location.pathname) === normalizePath(fleetPath);
-          console.log(`Fleet: ${fleet} | Fleet Path: ${fleetPath}`);
           return (
             <li key={i} className="w-full">
               <Link
