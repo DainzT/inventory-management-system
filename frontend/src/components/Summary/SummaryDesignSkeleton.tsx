@@ -29,7 +29,7 @@ const SummaryDesignSkeleton = () => {
             transition: {
                 repeat: Infinity,
                 repeatType: "reverse" as const,
-                duration: 1.5,
+                duration: 2.5,
                 ease: "linear",
             },
         },
