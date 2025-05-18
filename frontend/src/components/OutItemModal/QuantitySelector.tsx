@@ -81,7 +81,7 @@ const QuantitySelector = ({
           step="0.01"
           placeholder="0.00"
           className={`
-            px-2 flex justify-center items-center w-16 h-8 rounded-lg border border-solid bg-zinc-100 text-black inter-font 
+            px-4 flex justify-center items-center w-16 h-8 rounded-lg border border-solid bg-zinc-100 text-black inter-font 
             transition-all duration-200 ${disabled
               ? 'cursor-not-allowed opacity-70'
               : error

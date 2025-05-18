@@ -34,6 +34,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
   searchQuery,
   highlightedItem
 }) => {
+  const [selectedFilter, setSelectedFilter] = useState("All Boats");
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const maxNoteLength = 48;
 
@@ -103,6 +104,11 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
     }
   };
 
+  useEffect(() => {
+    setSelectedFilter("All Boats");
+    if (onFilter) onFilter("All Boats");
+  }, [activeFleet]);
+
   const filterOptions = getFilterOptions();
 
   const handleModifyItemClick = (item: OrderItem) => {
@@ -118,9 +124,12 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
         ">
           <SearchBar placeholder="Search Items..." onSearch={onSearch} />
           <FilterDropdown
-            label="All Boats"
+            label={selectedFilter}
             options={filterOptions}
-            onSelect={onFilter || (() => { })}
+            onSelect={(option) => {
+              setSelectedFilter(option);
+              if (onFilter) onFilter(option);
+            }}
           />
         </div>
         <div className="grid px-5 py-6 w-full text-[16px] font-bold text-white bg-[#295C65] grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px]">

@@ -32,7 +32,7 @@ const SummaryDesign = ({
   const [selectedYear, setSelectedYear] = useState(
     availableYears[0] || new Date().getFullYear()
   );
-  const [selectedMonth, setSelectedMonth] = useState("January");
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleString("default", { month: "long" }));
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
