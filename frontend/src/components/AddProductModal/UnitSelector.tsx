@@ -36,7 +36,7 @@ export const UnitSelector = ({
   ];
 
   const filteredUnits = presetUnits.filter((unit) =>
-    unit.toLowerCase().includes(searchTerm.toLowerCase()),
+    unit.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -60,7 +60,7 @@ export const UnitSelector = ({
       setLengthError(`Cannot exceed ${MAX_UNIT_LENGTH} characters`);
       return;
     }
-    
+
     if (customUnit.trim()) {
       onChange(customUnit);
       setCustomUnit("");
@@ -70,7 +70,7 @@ export const UnitSelector = ({
   };
 
   const handleCustomUnitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const input = e.target.value;
+    const input = e.target.value;
     if (input.length > MAX_UNIT_LENGTH) {
       e.preventDefault();
       setLengthError(`Maximum reached`);
@@ -87,9 +87,8 @@ export const UnitSelector = ({
     setSearchTerm("");
   };
 
-
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative select-none" ref={dropdownRef}>
       <label className="text-[16px] font-bold inter-font">
         <span>Select Unit </span>
         <span className="text-[#FF5757]">*</span>
@@ -97,19 +96,23 @@ export const UnitSelector = ({
       <div
         onClick={!disabled ? () => setIsOpen(!isOpen) : undefined}
         className={`mt-2 w-[140px] h-[32px] px-4 flex items-center justify-between rounded-[8px] border-[1px] bg-[#F4F1F1] transition-all duration-200
-        ${disabled
-            ? 'cursor-not-allowed opacity-70'
+        ${
+          disabled
+            ? "cursor-not-allowed opacity-70"
             : error || lengthError
-              ? 'border-red-500 hover:border-red-600'
-              : 'border-[#0FE3FF] cursor-pointer'
-          }`}
+            ? "border-red-500 hover:border-red-600"
+            : "border-accent-light cursor-pointer"
+        }`}
       >
-        <span className={`
+        <span
+          className={`
           ${value ? "inter-font" : "text-[#999] inter-font"}
           ${value.length > COMPACT_TEXT_LENGTH ? "text-xs" : "text-sm"}
           truncate
-        `}>
-        {value || "Unit"}</span>
+        `}
+        >
+          {value || "Unit"}
+        </span>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M12 15L7 10H17L12 15Z" fill="#1D1B20" />
         </svg>
@@ -124,14 +127,14 @@ export const UnitSelector = ({
                 onChange={handleCustomUnitChange}
                 type="text"
                 placeholder="Custom unit"
-                className="w-full px-2 py-1 text-[14px] text-[#999] border-[1px] border-[#0FE3FF] rounded-[4px] bg-[#F4F1F1] inter-font"
+                className="w-full px-2 py-1 text-[14px] text-[#999] border-[1px] border-accent-light rounded-[4px] bg-[#F4F1F1] inter-font focus:outline-none focus:ring-2 focus:ring-accent-light focus:border-transparent"
               />
               {lengthError && (
                 <p className="text-red-500 text-xs">{lengthError}</p>
               )}
               <button
                 onClick={handleCustomUnitAdd}
-                className="px-2 py-1 text-[#1B626E] bg-[#F4F1F1] rounded-[4px] border-[1px] border-[#0FE3FF] inter-font"
+                className="px-2 py-1 text-[#1B626E] bg-[#F4F1F1] rounded-[4px] border-[1px] border-accent-light inter-font focus:outline-none focus:ring-2 focus:ring-accent-light focus:border-transparent"
               >
                 Add
               </button>
@@ -175,7 +178,9 @@ export const UnitSelector = ({
           </div>
         </div>
       )}
-      {error && <p className="absolute text-red-600 text-sm">{error || lengthError}</p>}
+      {error && (
+        <p className="absolute text-red-600 text-sm">{error || lengthError}</p>
+      )}
     </div>
   );
 };

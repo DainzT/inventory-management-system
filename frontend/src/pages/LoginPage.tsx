@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
@@ -14,7 +14,14 @@ const LoginPage: React.FC = () => {
   const [pin, setPin] = useState("");
   const [showForgotPin, setShowForgotPin] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { login, showCreateAdmin, setShowCreateAdmin, loading, error, setError } = useAuth();
+  const {
+    login,
+    showCreateAdmin,
+    setShowCreateAdmin,
+    loading,
+    error,
+    setError,
+  } = useAuth();
 
   const navigate = useNavigate();
 
@@ -24,10 +31,23 @@ const LoginPage: React.FC = () => {
       setIsSuccess(true);
       toast.success("Redirecting to page....", {
         autoClose: 1500,
-        onClose: () => navigate("/inventory")
-      })
+        onClose: () => navigate("/inventory"),
+      });
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && pin && !loading && !isSuccess) {
+        handleLogin();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [pin, loading, isSuccess]);
 
   if (showCreateAdmin) {
     return <CreateAdmin onSuccess={() => setShowCreateAdmin(false)} />;
@@ -40,7 +60,9 @@ const LoginPage: React.FC = () => {
         <section className="w-full max-w-md">
           <div className="flex flex-col items-center mb-4">
             <Logo width={20} height={20} />
-            <h1 className="text-3xl font-semibold text-gray-800 mb-2">Welcome Back</h1>
+            <h1 className="text-3xl font-semibold text-gray-800 mb-2">
+              Welcome Back
+            </h1>
             <p className="text-gray-500">Admin Portal</p>
           </div>
           <div className="space-y-2">
@@ -50,11 +72,17 @@ const LoginPage: React.FC = () => {
               disabled={loading || isSuccess}
               error={error!}
               setError={setError}
+              onEnterPress={() => {
+                if (pin && !loading && !isSuccess) {
+                  handleLogin();
+                }
+              }}
             />
             <div className="w-full flex justify-between -mt-1 mb-2">
               <div
-                className={`transition-all duration-200 ease-in-out ${error ? 'max-h-10 opacity-100 mt-1' : 'max-h-0 opacity-0'
-                  }`}
+                className={`transition-all duration-200 ease-in-out ${
+                  error ? "max-h-10 opacity-100 mt-1" : "max-h-0 opacity-0"
+                }`}
               >
                 {error && (
                   <p className="text-xs text-red-500 flex items-center -mt-1">
@@ -66,20 +94,29 @@ const LoginPage: React.FC = () => {
               <button
                 onClick={() => !isSuccess && setShowForgotPin(true)}
                 disabled={isSuccess || loading}
-                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${isSuccess || loading
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-blue-600 hover:text-blue-500'
-                  }`}
+                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${
+                  isSuccess || loading
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-blue-600 hover:text-blue-500"
+                }`}
               >
                 Forgot PIN?
               </button>
             </div>
-            {showForgotPin && <ForgotPin onClose={() => setShowForgotPin(false)} />}
+            {showForgotPin && (
+              <ForgotPin onClose={() => setShowForgotPin(false)} />
+            )}
             <button
               onClick={handleLogin}
               disabled={loading || !pin || isSuccess}
-              className={`w-full h-10 rounded-xl text-lg font-semibold text-white transition-all duration-200 flex items-center justify-center ${loading ? 'cursor-wait' : ""}
-                ${!pin || isSuccess ? 'bg-accent/60 cursor-not-allowed' : 'bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg'}`}
+              className={`w-full h-10 rounded-xl text-lg font-semibold text-white transition-all duration-200 flex items-center justify-center ${
+                loading ? "cursor-wait" : ""
+              }
+                ${
+                  !pin || isSuccess
+                    ? "bg-accent/60 cursor-not-allowed"
+                    : "bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg"
+                }`}
             >
               {loading ? (
                 <>

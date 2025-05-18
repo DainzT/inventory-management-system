@@ -38,7 +38,7 @@ export const QuantityInput = ({
   };
 
   return (
-    <div>
+    <div className="select-none">
       <label className="text-[16px] font-bold inter-font">
         <span>Quantity </span>
         {required && <span className="text-[#FF5757]">*</span>}
@@ -47,11 +47,12 @@ export const QuantityInput = ({
         <button
           type="button"
           onClick={handleDecrement}
-          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px]  bg-[#F4F1F1] transition-all duration-200 ${disabled
-            ? 'cursor-not-allowed opacity-70'
-            : error
-              ? 'border-red-500 hover:border-red-600'
-              : 'border-[#0FE3FF] cursor-pointer'
+          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px]  bg-[#F4F1F1] transition-all duration-200 focus:outline-none ${
+            disabled
+              ? "cursor-not-allowed opacity-70"
+              : error
+              ? "border-red-500 hover:border-red-600"
+              : "border-accent-light  cursor-pointer"
           }`}
           disabled={disabled}
         >
@@ -72,22 +73,24 @@ export const QuantityInput = ({
           min="0"
           step="0.01"
           placeholder="0.00"
-          className={`w-[70px] h-[32px] text-center rounded-[8px] border-[1px]  bg-[#F4F1F1] inter-font  transition-all duration-200 ${disabled
-              ? 'cursor-not-allowed opacity-70'
+          className={`w-[70px] h-[32px] text-center rounded-[8px] border-[1px]  bg-[#F4F1F1] inter-font  transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-light focus:border-transparent ${
+            disabled
+              ? "cursor-not-allowed opacity-70"
               : error
-                ? 'border-red-500 hover:border-red-600'
-                : 'border-[#0FE3FF]'
-            }`}
+              ? "border-red-500 hover:border-red-600"
+              : "border-accent-light"
+          }`}
           disabled={disabled}
         />
         <button
           type="button"
           onClick={handleIncrement}
-          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px] cursor-pointer bg-[#F4F1F1] transition-all duration-200 ${disabled
-            ? 'cursor-not-allowed opacity-70'
-            : error
-              ? 'border-red-500 hover:border-red-600'
-              : 'border-[#0FE3FF] cursor-pointer'
+          className={`w-[32px] h-[32px] flex items-center justify-center rounded-[8px] border-[1px] cursor-pointer bg-[#F4F1F1] transition-all duration-200 focus:outline-none ${
+            disabled
+              ? "cursor-not-allowed opacity-70"
+              : error
+              ? "border-red-500 hover:border-red-600"
+              : "border-accent-light cursor-pointer"
           }`}
           disabled={disabled}
         >
@@ -103,4 +106,3 @@ export const QuantityInput = ({
     </div>
   );
 };
-
