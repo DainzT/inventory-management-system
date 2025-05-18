@@ -110,6 +110,14 @@ export const validateAddInventoryItem = (
         return;
     }
 
+    if (selectUnit.length > 15) {
+        res.status(400).json({
+            message: "Exceeded Maximum length for unit",
+            error: "Valid selectUnit (selectUnit.length <= 15) is required",
+        });
+        return;
+    }
+
     if (!unitSize || typeof unitSize !== 'number' || unitSize <= 0 || unitSize > quantity) {
         res.status(400).json({
             message: "Enter a valid unit size.",
@@ -330,6 +338,14 @@ export const validateEditInventoryItem = async (
         res.status(400).json({
             message: "Please select a unit.",
             error: "Valid selectUnit (string) is required",
+        });
+        return;
+    }
+
+    if (updatedItem.selectUnit.length > 15) {
+        res.status(400).json({
+            message: "Exceeded Maximum length for unit",
+            error: "Valid selectUnit (selectUnit.length <= 15) is required",
         });
         return;
     }

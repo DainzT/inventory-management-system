@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import ReactPaginate from "react-paginate";
 
 const shimmerVariants = {
     initial: { backgroundPosition: "-200% 0" },
@@ -8,7 +7,7 @@ const shimmerVariants = {
         transition: {
             repeat: Infinity,
             repeatType: "reverse" as const,
-            duration: 1.5,
+            duration: 2.5,
             ease: "linear",
         },
     },
@@ -121,36 +120,6 @@ const InventoryManagementTableSkeleton = () => {
                     >
                         <motion.div
                             className="h-5 w-40 rounded bg-gray-300"
-                        />
-                        <ReactPaginate
-                            previousLabel={"Previous"}
-                            nextLabel={"Next"}
-                            breakLabel={"..."}
-                            pageCount={20}
-                            marginPagesDisplayed={2}
-                            pageRangeDisplayed={5}
-                            onPageChange={() => { }}
-                            containerClassName={"flex items-center gap-1 select-none"}
-                            pageClassName={
-                                "relative px-3 py-3 border border-gray-400 rounded text-sm hover:bg-[#295C65]/10 hover:border-[#295C65]/30 transition-colors duration-200"
-                            }
-                            pageLinkClassName={
-                                "absolute inset-0 w-full h-full flex items-center justify-center text-gray-700 hover:text-[#295C65] select-none"
-                            }
-                            activeClassName={"bg-[#295C65] border-[#295C65] text-white font-bold"}
-                            activeLinkClassName={"text-white select-none"}
-                            previousClassName={
-                                "font-medium relative py-3 px-8 flex items-center justify-center px-3 border border-gray-400 rounded text-sm cursor-not-allowed opacity-50"
-                            }
-                            previousLinkClassName={"absolute inset-0 w-full h-full flex items-center justify-center focus:outline-none"}
-                            nextClassName={
-                                "font-medium relative py-3 px-6 flex items-center justify-center px-3 border border-gray-400 rounded text-sm cursor-not-allowed opacity-50"
-                            }
-                            nextLinkClassName={"absolute inset-0 w-full h-full flex items-center justify-center focus:outline-none"}
-                            disabledClassName={"opacity-50 cursor-not-allowed select-none"}
-                            disabledLinkClassName={"hover:bg-transparent hover:text-gray-700 select-none"}
-                            breakClassName={"px-2 text-gray-500 select-none"}
-                            forcePage={0}
                         />
                     </div>
                 </motion.div>
