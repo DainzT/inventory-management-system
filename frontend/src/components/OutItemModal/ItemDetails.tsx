@@ -12,9 +12,24 @@ const ItemDetails = ({
   item,
   maxNoteLength = 39,
 }: ItemDetailsProps) => {
-  const shouldTruncate = item.note.length > maxNoteLength;
+  const getAdjustedMaxLength = (text: string) => {
+    if (!text) return maxNoteLength;
+    
+    const totalLetters = text.replace(/[^a-zA-Z]/g, '').length;
+    if (totalLetters === 0) return maxNoteLength;
+    
+    const upperCaseLetters = text.replace(/[^A-Z]/g, '').length;
+    const upperCaseRatio = upperCaseLetters / totalLetters;
+
+    if (upperCaseRatio === 0) return 39;
+    if (upperCaseRatio >= 0.4 && upperCaseRatio < 0.5) return 32;
+    if (upperCaseRatio >= 0.5) return 30;
+    return maxNoteLength;
+  };
+  const adjustedMaxLength = getAdjustedMaxLength(item.note);
+  const shouldTruncate = item.note.length > adjustedMaxLength;
   const truncatedNote = shouldTruncate
-    ? `${item.note.slice(0, maxNoteLength)}...`
+    ? `${item.note.slice(0, adjustedMaxLength)}...`
     : item.note;
 
   return (
@@ -28,7 +43,7 @@ const ItemDetails = ({
       {item.note && (
         <div className="mb-2">
           {shouldTruncate ? (
-            <Tooltip content={item.note.slice(maxNoteLength, item.note.length)} position="bottom">
+            <Tooltip content={item.note.slice(adjustedMaxLength, item.note.length)} position="bottom">
               <p className="text-sm text-gray-600 break-words cursor-pointer">
                 {truncatedNote}
                 <span className="inline-block ml-1 text-cyan-600">↗</span>

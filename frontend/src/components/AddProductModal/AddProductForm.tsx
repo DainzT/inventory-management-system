@@ -38,12 +38,15 @@ const AddProductForm = ({
 
     const [errors, setErrors] = useState<{ [key in keyof ItemFormData]?: string }>({});
 
-    const validateStringField = (field: 'name' | 'note', value: string) => {
+    const validateStringField = (field: 'name' | 'note' | 'selectUnit', value: string) => {
         if (field === 'name') {
             if (value.length > 40) return "Maximum 40 characters reached.";
         }
         if (field === 'note') {
             if (value.length > 120) return "Maximum 120 characters reached.";
+        }
+        if (field === 'selectUnit') {
+            if (value.length > 15) return "Maximum 15 characters reached.";
         }
         return "";
     };
@@ -86,6 +89,10 @@ const AddProductForm = ({
             processedValue = value.substring(0, MAX_NOTE_LENGTH);
         }
 
+        if (field === 'selectUnit' && typeof value === 'string' && value.length > 15) {
+            processedValue = value.substring(0, 15);
+        }
+
         if (field === 'quantity' || field === 'unitPrice' || field === 'unitSize') {
             processedValue = roundTo(Number(value), 2) || "";
         }
@@ -95,7 +102,7 @@ const AddProductForm = ({
             [field]: processedValue,
         }));
 
-        if (field === 'name' || field === 'note') {
+        if (field === 'name' || field === 'note' || field === 'selectUnit') {
             const error = validateStringField(field, String(value));
             setErrors((prevErrors) => ({
                 ...prevErrors,
@@ -125,6 +132,7 @@ const AddProductForm = ({
         else if (productData.note.trim().length > MAX_NOTE_LENGTH) {
             newErrors.note = `Note must be ${MAX_NOTE_LENGTH} characters or less.`;
         }
+
         if (productData.quantity === "" || Number(productData.quantity) <= 0) newErrors.quantity = "Enter a valid quantity.";
         else if (Number(productData.quantity) > 10000) {
             newErrors.quantity = "Cannot exceed 10,000.";
@@ -138,7 +146,9 @@ const AddProductForm = ({
             newErrors.unitSize = "Cannot exceed 10,000.";
         }
         if (!productData.selectUnit.trim() || productData.selectUnit.trim() === "Unit") newErrors.selectUnit = "Please select a unit.";
-
+        else if (productData.selectUnit.trim().length > 15) {
+            newErrors.selectUnit = `Must be 15 characters or less`;
+        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };

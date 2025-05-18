@@ -16,7 +16,11 @@ export const UnitSelector = ({
   const [isOpen, setIsOpen] = useState(false);
   const [customUnit, setCustomUnit] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [lengthError, setLengthError] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const MAX_UNIT_LENGTH = 15;
+  const COMPACT_TEXT_LENGTH = 8;
 
   const presetUnits = [
     "Piece",
@@ -52,15 +56,33 @@ export const UnitSelector = ({
   }, []);
 
   const handleCustomUnitAdd = () => {
+    if (customUnit.length > MAX_UNIT_LENGTH) {
+      setLengthError(`Cannot exceed ${MAX_UNIT_LENGTH} characters`);
+      return;
+    }
+    
     if (customUnit.trim()) {
       onChange(customUnit);
       setCustomUnit("");
+      setLengthError("");
       setIsOpen(false);
     }
   };
 
+  const handleCustomUnitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const input = e.target.value;
+    if (input.length > MAX_UNIT_LENGTH) {
+      e.preventDefault();
+      setLengthError(`Maximum reached`);
+      return;
+    } else {
+      setLengthError("");
+    }
+    setCustomUnit(input);
+  };
+
   const selectUnit = (unit: string) => {
-    onChange(unit);
+    onChange(unit.slice(0, MAX_UNIT_LENGTH));
     setIsOpen(false);
     setSearchTerm("");
   };
@@ -77,12 +99,17 @@ export const UnitSelector = ({
         className={`mt-2 w-[140px] h-[32px] px-4 flex items-center justify-between rounded-[8px] border-[1px] bg-[#F4F1F1] transition-all duration-200
         ${disabled
             ? 'cursor-not-allowed opacity-70'
-            : error
+            : error || lengthError
               ? 'border-red-500 hover:border-red-600'
               : 'border-[#0FE3FF] cursor-pointer'
           }`}
       >
-        <span className={value ? "inter-font" : "text-[#999] inter-font"}>{value || "Unit"}</span>
+        <span className={`
+          ${value ? "inter-font" : "text-[#999] inter-font"}
+          ${value.length > COMPACT_TEXT_LENGTH ? "text-xs" : "text-sm"}
+          truncate
+        `}>
+        {value || "Unit"}</span>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M12 15L7 10H17L12 15Z" fill="#1D1B20" />
         </svg>
@@ -94,11 +121,14 @@ export const UnitSelector = ({
             <div className="flex gap-2">
               <input
                 value={customUnit}
-                onChange={(e) => setCustomUnit(e.target.value)}
+                onChange={handleCustomUnitChange}
                 type="text"
                 placeholder="Custom unit"
                 className="w-full px-2 py-1 text-[14px] text-[#999] border-[1px] border-[#0FE3FF] rounded-[4px] bg-[#F4F1F1] inter-font"
               />
+              {lengthError && (
+                <p className="text-red-500 text-xs">{lengthError}</p>
+              )}
               <button
                 onClick={handleCustomUnitAdd}
                 className="px-2 py-1 text-[#1B626E] bg-[#F4F1F1] rounded-[4px] border-[1px] border-[#0FE3FF] inter-font"
@@ -145,7 +175,7 @@ export const UnitSelector = ({
           </div>
         </div>
       )}
-      {error && <p className="absolute text-red-600 text-sm">{error}</p>}
+      {error && <p className="absolute text-red-600 text-sm">{error || lengthError}</p>}
     </div>
   );
 };

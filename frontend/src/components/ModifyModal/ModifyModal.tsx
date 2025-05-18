@@ -12,6 +12,7 @@ import { roundTo } from "@/utils/RoundTo";
 import { toast } from "react-toastify";
 import { Tooltip } from "../ToolTips";
 import { BsArrowDown } from "react-icons/bs";
+import Orders from "@/pages/OrderPage";
 
 interface ModifyModalProps {
   isOpen: boolean,
@@ -42,7 +43,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const [quantityError, setQuantityError] = useState("");
   const [fleetDropdownOpen, setFleetDropdownOpen] = useState(false);
   const [boatDropdownOpen, setBoatDropdownOpen] = useState(false);
-  console.log(selectedOrder)
+
   useEffect(() => {
     if (selectedOrder) {
       setQuantity(selectedOrder.quantity || 0);
@@ -86,6 +87,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleFleetChange = (newFleet: string) => {
     setFleet(newFleet);
+    const newBoatOptions = getBoatOptions(newFleet);
+    if (!newBoatOptions.includes(boat)) {
+      setBoat(newBoatOptions[0] || "");
+    }
   };
 
   const handleBoatChange = (newBoat: string) => {
@@ -123,6 +128,8 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleCloseAttempt = () => {
     if (isModifying || isDeleting) return;
+    setFleetDropdownOpen(false);
+    setBoatDropdownOpen(false);
     if (hasChanges) {
       setIsUnsavedChangesModalOpen(true);
     } else {
@@ -136,10 +143,24 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const totalPrice = Number(selectedOrder.unitPrice) * (Number(quantity) / Number(selectedOrder.unitSize));
 
   if (!selectedOrder) return;
+  const getAdjustedMaxLength = (text: string) => {
+    if (!text) return maxNoteLength;
+    
+    const totalLetters = text.replace(/[^a-zA-Z]/g, '').length;
+    if (totalLetters === 0) return maxNoteLength;
+    
+    const upperCaseLetters = text.replace(/[^A-Z]/g, '').length;
+    const upperCaseRatio = upperCaseLetters / totalLetters;
 
-  const shouldTruncate = selectedOrder.note.length > maxNoteLength;
+    if (upperCaseRatio === 0) return 39;
+    if (upperCaseRatio >= 0.4 && upperCaseRatio < 0.5) return 32;
+    if (upperCaseRatio >= 0.5) return 30;
+    return maxNoteLength;
+  };
+  const adjustedMaxLength = getAdjustedMaxLength(selectedOrder.note);
+  const shouldTruncate = selectedOrder.note.length > adjustedMaxLength;
   const truncatedNote = shouldTruncate
-    ? `${selectedOrder.note.slice(0, maxNoteLength)}...`
+    ? `${selectedOrder.note.slice(0, adjustedMaxLength)}...`
     : selectedOrder.note;
 
   return (
@@ -156,7 +177,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             data-testid="close-button"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6L18 18" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M18 6L6 18M6 6L18 18" stroke={`${isModifying || isDeleting ? "gray" : "black"}`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </header>
@@ -170,7 +191,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           {selectedOrder.note && (
             <div className="mb-2">
               {shouldTruncate ? (
-                <Tooltip content={selectedOrder.note.slice(maxNoteLength, selectedOrder.note.length)} position="bottom">
+                <Tooltip content={selectedOrder.note.slice(adjustedMaxLength, selectedOrder.note.length)} position="bottom">
                   <p className="text-sm text-gray-600 break-words cursor-pointer">
                     {truncatedNote}
                     <span className="inline-block ml-1 text-cyan-600">↗</span>
@@ -184,7 +205,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-500 inter-font whitespace-nowrap">Stock Available:</p>
             <p className="text-sm font-semibold text-black whitespace-nowrap">
-              {currentInventory === 0 ? (
+              {(currentInventory == 0 && selectedOrder.inventory == null) ? (
                 <p className="text-xs font-semibold text-red-500">This item no longer exists in inventory</p>
               ) : (
                 <p className="text-sm font-semibold text-black">
@@ -212,17 +233,17 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     `}
     disabled={isModifying || isDeleting}
   >
-    <span className="text-base text-black inter-font">{fleet || "Select a fleet"}</span>
+    <span className="text-base text-black inter-font">{fixEncoding(fleet) || "Select a fleet"}</span>
     <BsArrowDown />
   </button>
   {fleetDropdownOpen && (
-    <div className="absolute mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+    <div className="absolute mt-2 w-full rounded-lg border border-red-100 bg-white shadow-lg z-50">
       <ul>
         {fleetOptions.map((fleetName) => (
           <li
             key={fleetName}
             onClick={() => {
-              setFleet(fleetName);
+              handleFleetChange(fleetName);
               setFleetDropdownOpen(false);
             }}
             className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
@@ -235,7 +256,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   )}
 </div>
 
-<div className="flex items-center mb-2">
+<div className="flex items-center mb-2 mt-1">
   <label htmlFor="boat-select" className="text-base font-bold text-black inter-font">
     Assign to Boat
   </label>
@@ -251,11 +272,11 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     `}
     disabled={isModifying || isDeleting}
   >
-    <span className="text-base text-black inter-font">{boat || "Select a boat"}</span>
+    <span className="text-base text-black inter-font">{fixEncoding(boat) || "Select a boat"}</span>
     <BsArrowDown />
   </button>
   {boatDropdownOpen && (
-    <div className="absolute mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+    <div className="fixed mt-2 w-84 rounded-lg border  border-red-100 bg-white shadow-lg z-50">
       <ul>
         {boatOptions.map((boatName) => (
           <li
@@ -282,15 +303,15 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             unitSize={Number(selectedOrder.unitSize)}
             disabled={isModifying || isDeleting}
           />
-          <div className="mt-2">
+          <div className={`${quantityError ? "mt-1": "mt-2"}`}>
             <SummarySection totalPrice={totalPrice} remainingStock={Number(remainingStock)} unit={selectedOrder.selectUnit} />
           </div>
         </div>
         <div className="pl-1 flex gap-18 mt-2">
           <DeleteButton
-            onClick={() => {
+            onClick={async () => {
               if (selectedOrder) {
-                onRemove(selectedOrder.id);
+                await onRemove(selectedOrder.id);
               }
               setQuantityError("");
               setIsOpen(false);
@@ -312,7 +333,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
               disabled={isModifying || isDeleting}
               onClick={handleConfirm}
             >
-              {isModifying ? (
+              {isModifying || isDeleting ? (
                 <div className="flex items-center justify-center gap-2">
                   <ClipLoader color="#ffffff" size={20} className="mr-2" />
                   Updating...

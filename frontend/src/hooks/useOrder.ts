@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { OrderItem } from "@/types/order-item";
 import { fetchAssignedItems, updateArchivedStatus } from "@/api/orderAPI";
 import { toast } from "react-toastify";
+import { fixEncoding } from "@/utils/Normalization";
 
 const fleetBoats = {
   "F/B DONYA DONYA 2X": [
@@ -123,7 +124,7 @@ export const useOrder = () => {
 
       const matchesFleet =
         activeFleet === "All Fleets" ||
-        fleetBoats[activeFleet as keyof typeof fleetBoats]?.includes(
+        fleetBoats[fixEncoding(activeFleet) as keyof typeof fleetBoats]?.includes(
           order.boat.boat_name
         ) ||
         order.boat.boat_name === activeFleet;
