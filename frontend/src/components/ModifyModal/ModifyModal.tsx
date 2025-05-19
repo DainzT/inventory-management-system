@@ -123,32 +123,50 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleConfirm = async () => {
     if (!hasChanges) {
-      toast.info("No changes were made to the order");
-      return;
+        toast.info("No changes were made to the order");
+        return;
+    }
+
+    if (quantity === "") {
+        setQuantityError("Please enter a valid quantity.");
+        return;
+    }
+
+    if (Number(quantity) < 0) {
+        setQuantityError("Please enter a valid quantity.");
+        return;
     }
 
     if (Number(quantity) > Number(maxAllowed)) {
-      setQuantityError(
-        selectedOrder?.inventory !== undefined
-          ? `Cannot exceed available stock (${maxAllowed})`
-          : `Cannot exceed original order quantity (${maxAllowed})`
-      );
-      return;
+        setQuantityError(
+            selectedOrder?.inventory !== undefined
+                ? `Cannot exceed available stock (${maxAllowed})`
+                : `Cannot exceed original order quantity (${maxAllowed})`
+        );
+        return;
     }
+
     if (selectedOrder) {
-      setQuantityError("");
-      await onModify(selectedOrder.id, Number(quantity), fleet, boat);
+        setQuantityError("");
+        await onModify(selectedOrder.id, Number(quantity), fleet, boat);
+        setIsOpen(false);
     }
   };
 
   const handleQuantityChange = (newValue: number | "") => {
-    if (newValue === "") {
-      setQuantity("");
-      setQuantityError("");
-      return;
+    const numericValue = typeof newValue === "string" ? newValue.replace(/[^0-9.]/g, "") : newValue;
+
+    if (numericValue === "") {
+        setQuantity("");
+        return;
     }
-    setQuantity(newValue);
-  };
+
+    const parsedValue = Number(numericValue);
+
+    const roundedValue = parsedValue < 0 ? 0 : roundTo(parsedValue, 2);
+
+    setQuantity(roundedValue);
+};
 
   const handleCloseAttempt = () => {
     if (isModifying || isDeleting) return;
