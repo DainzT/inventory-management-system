@@ -4,12 +4,20 @@ import { AlertCircle, EyeIcon, EyeOffIcon } from "lucide-react";
 interface LoginInputProps {
   pin: string;
   setPin: (pin: string) => void;
-  disabled?: boolean
+  disabled?: boolean;
   error: string;
   setError: (error: string) => void;
+  onEnterPress: () => void;
 }
 
-function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps) {
+function LoginInput({
+  pin,
+  setPin,
+  disabled,
+  error,
+  setError,
+  onEnterPress,
+}: LoginInputProps) {
   const [showPin, setShowPin] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const shouldFloat = isFocused || pin.length > 0;
@@ -20,7 +28,7 @@ function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps)
       setPin(value);
       setError("");
     } else {
-      setPin(value.replace(/\D/g, ''));
+      setPin(value.replace(/\D/g, ""));
       setError("Only numbers are allowed");
     }
   };
@@ -29,19 +37,21 @@ function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps)
     <>
       <div
         className={`w-full relative max-w-md h-12 bg-white rounded-lg flex items-center px-4 border transition-all duration-200 
-        ${isFocused
-            ? 'border-blue-500 shadow-md'
+        ${
+          isFocused
+            ? "border-blue-500 shadow-md"
             : error
-              ? 'border-red-500'
-              : 'border-gray-300'
-          }`}>
+            ? "border-red-500"
+            : "border-gray-300"
+        }`}
+      >
         <label
           htmlFor="pin-input"
-          className={` absolute left-3 transition-all duration-200 pointer-events-none ${shouldFloat
-            ? '-top-2.5 px-1 bg-white text-xs text-blue-500'
-            : 'top-1/2 -translate-y-1/2 text-gray-500 text-lg tracking-wider'
-            } ${error ? 'text-red-500' : ''
-            }`}
+          className={` absolute left-3 transition-all duration-200 pointer-events-none ${
+            shouldFloat
+              ? "-top-2.5 px-1 bg-white text-xs text-blue-500"
+              : "top-1/2 -translate-y-1/2 text-gray-500 text-lg tracking-wider"
+          } ${error ? "text-red-500" : ""}`}
         >
           PIN
         </label>
@@ -61,18 +71,24 @@ function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps)
             autoComplete="off"
             disabled={disabled}
             data-edge-suppress-password-reveal="true"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                onEnterPress();
+              }
+            }}
           />
         </div>
         <div className="w-8 flex justify-end">
           <button
             onClick={() => setShowPin(!showPin)}
             aria-label={showPin ? "Hide PIN" : "Show PIN"}
-            className={`text-gray-500transition-colors duration-200 p-1 rounded-full ${disabled
-                ? 'text-gray-300 cursor-not-allowed'
+            className={`text-gray-500transition-colors duration-200 p-1 rounded-full ${
+              disabled
+                ? "text-gray-300 cursor-not-allowed"
                 : error
-                  ? 'text-red-400 hover:text-red-600'
-                  : 'text-gray-500 hover:text-gray-700 cursor-pointer'
-              }
+                ? "text-red-400 hover:text-red-600"
+                : "text-gray-500 hover:text-gray-700 cursor-pointer"
+            }
             `}
             disabled={disabled}
             type="button"
@@ -84,7 +100,6 @@ function LoginInput({ pin, setPin, disabled, error, setError }: LoginInputProps)
             )}
           </button>
         </div>
-        
       </div>
     </>
   );

@@ -35,13 +35,13 @@ export const PriceInput = ({
 
   const getAdjustedMaxLength = (text: string) => {
     if (!text) return MAX_UNIT_LENGTH;
-    
-    const totalLetters = text.replace(/[^a-zA-Z]/g, '').length;
+
+    const totalLetters = text.replace(/[^a-zA-Z]/g, "").length;
     if (totalLetters === 0) return MAX_UNIT_LENGTH;
-    
-    const upperCaseLetters = text.replace(/[^A-Z]/g, '').length;
+
+    const upperCaseLetters = text.replace(/[^A-Z]/g, "").length;
     const upperCaseRatio = upperCaseLetters / totalLetters;
-    const lowerCaseLetters = text.replace(/[^a-z]/g, '').length;
+    const lowerCaseLetters = text.replace(/[^a-z]/g, "").length;
     const lowerCaseRatio = lowerCaseLetters / totalLetters;
 
     if (lowerCaseRatio > 0.5) return 6;
@@ -51,9 +51,10 @@ export const PriceInput = ({
   };
 
   const adjustedMaxLength = getAdjustedMaxLength(String(unit));
-  const displayUnit = unit && unit.length > adjustedMaxLength
-    ? `${unit.slice(0, adjustedMaxLength)}…`
-    : unit;
+  const displayUnit =
+    unit && unit.length > adjustedMaxLength
+      ? `${unit.slice(0, adjustedMaxLength)}…`
+      : unit;
 
   const shouldTruncate = unit && unit.length > adjustedMaxLength;
   const shouldShowTooltip = shouldTruncate && unit.trim().length > 0;
@@ -83,13 +84,15 @@ export const PriceInput = ({
   };
 
   return (
-    <div>
+    <div className="select-none">
       <label className="text-[16px] font-bold inter-font">
         <span>{label} </span>
-        {(!readonly && required) && <span className="text-[#FF5757]">*</span>}
+        {!readonly && required && <span className="text-[#FF5757]">*</span>}
       </label>
       <div className="relative mt-2">
-        <span className="absolute left-4 top-[8px] text-[#666] inter-font">₱</span>
+        <span className="absolute left-4 top-[8px] text-[#666] inter-font">
+          ₱
+        </span>
         <input
           type="number"
           value={value !== "" ? roundTo(value, 2) : ""}
@@ -98,15 +101,18 @@ export const PriceInput = ({
           min="0"
           step="0.01"
           readOnly={readonly}
-          className={`${readonly ? "w-[145px]" : "w-[140px]"} h-[40px] pl-8 rounded-[8px] border-[1px] inter-font bg-[#F4F1F1]
-            transition-all duration-200
-            ${disabled
-              ? 'cursor-not-allowed opacity-70'
-              : error?.unitPrice
-                ? 'border-red-500 hover:border-red-600'
+          className={`${
+            readonly ? "w-[145px]" : "w-[140px]"
+          } h-[40px] pl-8 rounded-[8px] border-[1px] inter-font bg-[#F4F1F1]
+            transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-light focus:border-transparent
+            ${
+              disabled
+                ? "cursor-not-allowed opacity-70"
+                : error?.unitPrice
+                ? "border-red-500 hover:border-red-600"
                 : readonly
-                  ? "border-[#F8F8F8] bg-[rgba(244,241,241,0.77)] text-[#666] cursor-default pointer-events-none"
-                  : "border-[#0FE3FF]"
+                ? "border-[#F8F8F8] bg-[rgba(244,241,241,0.77)] text-[#666] cursor-default pointer-events-none"
+                : "border-accent-light"
             }`}
           disabled={disabled}
         />
@@ -122,30 +128,51 @@ export const PriceInput = ({
               min="0"
               step="0.01"
               readOnly={readonly}
-              className={`w-[70px] h-[40px] pl-3 rounded-[8px] border-[1px] inter-font  bg-[#F4F1F1] transition-all duration-200 ${disabled
-                ? 'cursor-not-allowed opacity-70'
-                : error?.unitSize
-                  ? 'border-red-500 hover:border-red-600'
-                  : 'border-[#0FE3FF]'
-                }`}
-              required={(typeof unitSize === "number" && typeof quantity === "number" && unitSize > quantity)}
+              className={`w-[70px] h-[40px] pl-3 rounded-[8px] border-[1px] inter-font  bg-[#F4F1F1] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-light focus:border-transparent ${
+                disabled
+                  ? "cursor-not-allowed opacity-70"
+                  : error?.unitSize
+                  ? "border-red-500 hover:border-red-600"
+                  : "border-accent-light"
+              }`}
+              required={
+                typeof unitSize === "number" &&
+                typeof quantity === "number" &&
+                unitSize > quantity
+              }
               disabled={disabled}
             />
-            {error && <span className="absolute text-red-600 text-sm -translate-19 translate-y-10 w-35">{error.unitSize}</span>}
+            {error && (
+              <span className="absolute text-red-600 text-sm -translate-19 translate-y-10 w-35">
+                {error.unitSize}
+              </span>
+            )}
             {shouldShowTooltip ? (
               <Tooltip content={unit} maxWidth={"w-30"} position="top">
-                <span className={`ml-2 inter-font w-full truncate ${unit && unit.length > adjustedMaxLength ? 'text-sm cursor-pointer' : ''}`}>{displayUnit?.trim() || "unit"}</span>
-                <span className="inline-block  text-cyan-600 cursor-pointer">↗</span>
+                <span
+                  className={`ml-2 inter-font w-full truncate ${
+                    unit && unit.length > adjustedMaxLength
+                      ? "text-sm cursor-pointer"
+                      : ""
+                  }`}
+                >
+                  {displayUnit?.trim() || "unit"}
+                </span>
+                <span className="inline-block  text-cyan-600 cursor-pointer">
+                  ↗
+                </span>
               </Tooltip>
             ) : (
               <span className="inter-font text-sm ml-2">
-                  {unit?.trim() || "unit"}
+                {unit?.trim() || "unit"}
               </span>
             )}
           </>
         )}
+      </div>
+      {error && (
+        <p className="absolute text-red-600 text-sm">{error.unitPrice}</p>
+      )}
     </div>
-      { error && <p className="absolute text-red-600 text-sm">{error.unitPrice}</p> }
-    </div >
   );
 };

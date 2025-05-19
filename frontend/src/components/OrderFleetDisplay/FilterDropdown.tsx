@@ -8,7 +8,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   onSelect,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string>("");
 
   const handleSelect = (value: string) => {
     setSelectedOption(value);
