@@ -9,6 +9,7 @@ import ItemDetails from "./ItemDetails";
 import { ClipLoader } from "react-spinners";
 import { UnsavedChangesModal } from "../EditProductModal/UnsavedChangesModal";
 import { roundTo } from "@/utils/RoundTo";
+import { validateTotalPrecision } from "@/utils/ValidateTotalPrecision";
 
 interface OutItemModalProps {
   isOpen: boolean,
@@ -53,6 +54,15 @@ const OutItemModal = ({
       newErrors.quantity = "Please enter a valid quantity.";
     } else if (selectedItem && Number(quantity) > Number(selectedItem.quantity)) {
       newErrors.quantity = "Quantity cannot exceed available stock.";
+    } else if (
+      selectedItem &&
+      !validateTotalPrecision(
+        Number(selectedItem.unitPrice),
+        Number(quantity),
+        Number(selectedItem.unitSize)
+      )
+    ) {
+      newErrors.quantity = "Quantity is too low (must round to 2 decimal places).";
     }
 
     setErrors(newErrors);
@@ -99,7 +109,14 @@ const OutItemModal = ({
   };
 
   const handleQuantityChange = (newValue: number | "") => {
-    const roundedValue = newValue === "" ? "" : roundTo(Number(newValue), 2);
+    const numericValue = newValue === "" ? "" : roundTo(Number(newValue), 2);
+
+    if (numericValue === "") {
+        setQuantity("");
+        return;
+    }
+    const parsedValue = Number(numericValue);
+    const roundedValue = parsedValue < 0 ? 0 : roundTo(parsedValue, 2);
     setQuantity(roundedValue);
     clearError("quantity");
   };

@@ -2,6 +2,7 @@ import express, { Request, Response, Router } from "express";
 import dotenv from "dotenv";
 import prisma from "../lib/prisma";
 import { authenticateToken } from "../middleware/authMiddleware";
+import { roundTo } from "../middleware/inventoryItemMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
@@ -50,14 +51,27 @@ router.put("/update/:id", async (req: Request, res: Response) => {
                         selectUnit: existingAssignment.selectUnit,
                         quantity: existingAssignment.quantity,
                         note: existingAssignment.note || "",
-                        total: existingAssignment.total || 0,
+                        total: roundTo(
+                            (Number(existingAssignment.unitPrice) *
+                                Number(existingAssignment.quantity) /
+                                Number(existingAssignment.unitSize)),
+                            2
+                        ),
                     }
                 });
             } else {
+                const newQuantity = inventoryItem.quantity + existingAssignment.quantity;
                 await prisma.inventoryItem.update({
                     where: { id: inventoryItem.id },
                     data: {
-                        quantity: inventoryItem.quantity + existingAssignment.quantity
+                        quantity: newQuantity,
+                        total: roundTo(
+                            (Number(inventoryItem.unitPrice) *
+                                Number(newQuantity) /
+                                Number(inventoryItem.unitSize)),
+                            2
+                        ),
+                        lastUpdated: new Date()
                     }
                 });
             }
@@ -88,7 +102,12 @@ router.put("/update/:id", async (req: Request, res: Response) => {
                         selectUnit: existingAssignment.selectUnit,
                         quantity: quantityDifference > 0 ? 0 : Math.abs(quantityDifference),
                         note: existingAssignment.note || "",
-                        total: existingAssignment.total || 0,
+                        total: roundTo(
+                            (Number(existingAssignment.unitPrice) *
+                                Number(quantityDifference > 0 ? 0 : Math.abs(quantityDifference)) /
+                                Number(existingAssignment.unitSize)),
+                            2
+                        ),
                     }
                 });
             } else {
@@ -101,7 +120,17 @@ router.put("/update/:id", async (req: Request, res: Response) => {
 
                 await prisma.inventoryItem.update({
                     where: { id: inventoryItem.id },
-                    data: { quantity: newInventoryQuantity }
+                    data: {
+                        quantity: newInventoryQuantity, 
+                        total: roundTo(
+                            (Number(inventoryItem.unitPrice) *
+                                Number(newInventoryQuantity) /
+                                Number(inventoryItem.unitSize)),
+                            2
+                        ),
+                        lastUpdated: new Date()
+                    }
+
                 });
             }
         }
@@ -125,8 +154,8 @@ router.put("/update/:id", async (req: Request, res: Response) => {
         });
 
         if (!boat) {
-            res.status(404).json({ 
-                error: "Boat not found or doesn't belong to the specified fleet", 
+            res.status(404).json({
+                error: "Boat not found or doesn't belong to the specified fleet",
                 success: false,
                 message: `Boat does not exist on fleet`,
             });
