@@ -7,8 +7,8 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   options,
   onSelect,
 }) => {
-  const [selectedOption, setSelectedOption] = useState(label);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string>("");
 
   const handleSelect = (value: string) => {
     setSelectedOption(value);
@@ -22,7 +22,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
         className="block h-[50px] rounded-[12px] border-[2px] border-[#E5E7EB] bg-[#F8FAFA] px-[14px] appearance-none w-full text-gray-700 py-3 pr-10 leading-tight focus:outline-none focus:border-teal-500 cursor-pointer text-md"
         onClick={() => setIsOpen(!isOpen)}
       >
-        {selectedOption}
+        {label}
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
           <svg
             className="fill-current h-5 w-5"

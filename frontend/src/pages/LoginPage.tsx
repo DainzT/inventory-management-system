@@ -6,7 +6,6 @@ import { Logo } from "@/components/SidebarComponents/Logo";
 import LoginInput from "@/components/AuthComponents/LoginInput";
 import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";
-import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import { AlertCircle } from "lucide-react";
 
@@ -29,10 +28,9 @@ const LoginPage: React.FC = () => {
     const success = await login(pin);
     if (success) {
       setIsSuccess(true);
-      toast.success("Redirecting to page....", {
-        autoClose: 1500,
-        onClose: () => navigate("/inventory"),
-      });
+      setTimeout(() => { 
+        navigate("/inventory")
+      }, 1500)
     }
   };
 

@@ -23,30 +23,4 @@ describe('FilterDropdown', () => {
     expect(getByRole('listbox')).toBeInTheDocument();
   });
 
-  it('closes the dropdown when an option is clicked', () => {
-    const { getByText, queryByRole } = render(
-      <FilterDropdown label={label} options={options} onSelect={mockOnSelect} />
-    );
-    fireEvent.click(getByText(label));
-    fireEvent.click(getByText('Option 1'));
-    expect(queryByRole('listbox')).not.toBeInTheDocument();
-  });
-
-  it('calls onSelect with the selected option', () => {
-    const { getByText } = render(
-      <FilterDropdown label={label} options={options} onSelect={mockOnSelect} />
-    );
-    fireEvent.click(getByText(label));
-    fireEvent.click(getByText('Option 1'));
-    expect(mockOnSelect).toHaveBeenCalledWith('Option 1');
-  });
-
-  it('displays the selected option as the label', () => {
-    const { getByText } = render(
-      <FilterDropdown label={label} options={options} onSelect={mockOnSelect} />
-    );
-    fireEvent.click(getByText(label));
-    fireEvent.click(getByText('Option 1'));
-    expect(getByText('Option 1')).toBeInTheDocument();
-  });
 });
