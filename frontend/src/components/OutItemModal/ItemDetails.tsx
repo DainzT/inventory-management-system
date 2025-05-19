@@ -41,7 +41,7 @@ const ItemDetails = ({
     <section className="p-2 mb-2 bg-gray-50 rounded-lg">
       <div className="flex justify-between items-start mb-2">
         <h2 className="text-base font-semibold text-black truncate max-w-[60%]">{item.name}</h2>
-        <p className="text-base font-semibold text-cyan-800 inter-font whitespace-nowrap text-overflow: ellipsis outline-1">
+        <p className="text-base font-semibold text-cyan-800 inter-font whitespace-nowrap text-overflow: ellipsis">
           ₱{Number(item.unitPrice).toFixed(2)} / {item.unitSize} {truncateUnit(pluralize(item.selectUnit, Number(item.unitSize)))}
         </p>
       </div>
