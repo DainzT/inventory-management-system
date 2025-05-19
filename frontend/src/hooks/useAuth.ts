@@ -156,7 +156,6 @@ export const useAuth = () => {
     const createAdminId = "create-admin-toast";
     try {
       setLoading(true);
-      showLoadingToast(createAdminId, "Creating account for Admin.");
       await createAdminAPI(payload);
       showSuccessToast(createAdminId, "Admin account created successfully.");
     } catch (err) {
