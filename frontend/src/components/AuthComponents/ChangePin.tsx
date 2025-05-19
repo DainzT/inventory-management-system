@@ -24,37 +24,37 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
 
   const validateCurrentPin = () => {
     if (!/^\d{6}$/.test(currentPin)) {
-      setErrors(prev => ({ ...prev, pin: "PIN must be 6 digits" }));
+      setErrors((prev) => ({ ...prev, pin: "PIN must be 6 digits" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, pin: "" }));
+    setErrors((prev) => ({ ...prev, pin: "" }));
     return true;
   };
 
   const validateNewPin = () => {
     if (!/^\d{6}$/.test(newPin)) {
-      setErrors(prev => ({ ...prev, pin: "PIN must be 6 digits" }));
+      setErrors((prev) => ({ ...prev, pin: "PIN must be 6 digits" }));
       return false;
     }
     if (newPin === currentPin) {
-      setErrors(prev => ({ ...prev, pin: "New PIN must be different" }));
+      setErrors((prev) => ({ ...prev, pin: "New PIN must be different" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, pin: "" }));
+    setErrors((prev) => ({ ...prev, pin: "" }));
     return true;
   };
 
   const validateConfirmPin = () => {
     if (!confirmPin) {
-      setErrors(prev => ({ ...prev, confirmPin: "Please confirm your PIN" }));
+      setErrors((prev) => ({ ...prev, confirmPin: "Please confirm your PIN" }));
       return false;
     }
 
     if (confirmPin !== newPin) {
-      setErrors(prev => ({ ...prev, confirmPin: "PINs don't match" }));
+      setErrors((prev) => ({ ...prev, confirmPin: "PINs don't match" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, confirmPin: "" }));
+    setErrors((prev) => ({ ...prev, confirmPin: "" }));
     return true;
   };
 
@@ -67,13 +67,13 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
   const handleUpdatePin = async () => {
     if (!validateNewPin() || !validateConfirmPin()) return;
     await updatePin(newPin);
-    setSuccess(true)
+    setSuccess(true);
     toast.success("PIN changed successfully. Please login again.", {
       autoClose: 1500,
       onClose: async () => {
         await logout();
         navigate("/login");
-      }
+      },
     });
   };
 
@@ -86,8 +86,8 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
     if (currentPinVerified) {
       setCurrentPinVerified(false);
     }
-    setNewPin("")
-    setConfirmPin("")
+    setNewPin("");
+    setConfirmPin("");
     setErrors({});
   };
 
@@ -101,8 +101,8 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
   return (
     <Portal>
       <div className="flex fixed inset-0 justify-center items-center select-none z-50">
-        <div className="relative w-[26rem] h-[28rem] bg-white rounded-2xl z-50 border border-gray-200 shadow-lg flex flex-col">
-          <div className="px-6 py-6 flex-1 overflow-y-auto">
+        <div className="relative w-[26rem] h-72 bg-white rounded-2xl z-50 border border-gray-200 shadow-lg flex flex-col">
+          <div className="px-6 py-5 flex-1 overflow-y-auto">
             <header className="mb-6">
               <h2 className="text-2xl font-bold text-gray-800">
                 Change Your PIN
@@ -154,7 +154,6 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
                 </div>
               </>
             )}
-
           </div>
 
           <div className="px-6 py-4 border-t border-gray-100">
@@ -163,7 +162,11 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
                 <button
                   onClick={handleBack}
                   className={`px-4 py-2.5 text-gray-600 rounded-lg bg-gray-200 transition flex active:scale-[0.98] items-center gap-2 border border-gray-200
-                    ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300 cursor-pointer'}`}
+                    ${
+                      loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-gray-300 cursor-pointer"
+                    }`}
                   disabled={loading || success}
                 >
                   <ArrowLeft size={18} />
@@ -172,7 +175,11 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
               ) : (
                 <button
                   onClick={onClose}
-                  className={` ${loading ? "opacity-50 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300 cursor-pointer"} px-4 active:scale-[0.98] py-2 text-gray-700  rounded-md transition`}
+                  className={` ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                  } px-4 active:scale-[0.98] py-2 text-gray-700  rounded-md transition`}
                   disabled={loading}
                 >
                   Cancel
@@ -181,7 +188,11 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
               <button
                 onClick={handleNextStep}
                 className={`px-6 py-2.5 text-white rounded-lg transition-all flex-1 max-w-[11rem] flex items-center justify-center gap-2
-                  ${loading ? 'bg-accent/60 cursor-wait' : 'bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer'}
+                  ${
+                    loading
+                      ? "bg-accent/60 cursor-wait"
+                      : "bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer"
+                  }
                   active:scale-[0.98]`}
                 disabled={loading || success}
               >

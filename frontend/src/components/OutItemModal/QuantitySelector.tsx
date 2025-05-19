@@ -49,9 +49,12 @@ const QuantitySelector = ({
   }
 
   return (
-    <div>
+    <div className="select-none">
       <div className="flex items-center mb-2">
-        <label htmlFor="quantity" className="text-base font-bold text-black inter-font">
+        <label
+          htmlFor="quantity"
+          className="text-base font-bold text-black inter-font"
+        >
           Quantity
         </label>
         {required && <span className="text-[#FF5757]">*</span>}
@@ -60,11 +63,12 @@ const QuantitySelector = ({
         <button
           className={`
             flex justify-center items-center w-8 h-8 rounded-lg border  border-solid bg-zinc-100  cursor-pointer
-            transition-all duration-200 ${disabled
-              ? 'cursor-not-allowed opacity-70'
-              : error
-                ? 'border-red-500 hover:border-red-600'
-                : 'border-[#0FE3FF] cursor-pointer'
+            transition-all duration-200 focus:outline-none ${
+              disabled
+                ? "cursor-not-allowed opacity-70"
+                : error
+                ? "border-red-500 hover:border-red-600"
+                : "border-accent-light cursor-pointer"
             }
           `}
           onClick={decrementQuantity}
@@ -82,11 +86,12 @@ const QuantitySelector = ({
           placeholder="0.00"
           className={`
             px-4 flex justify-center items-center w-16 h-8 rounded-lg border border-solid bg-zinc-100 text-black inter-font 
-            transition-all duration-200 ${disabled
-              ? 'cursor-not-allowed opacity-70'
-              : error
-                ? 'border-red-500 hover:border-red-600'
-                : 'border-[#0FE3FF]'
+            transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-light focus:border-transparent ${
+              disabled
+                ? "cursor-not-allowed opacity-70"
+                : error
+                ? "border-red-500 hover:border-red-600"
+                : "border-accent-light"
             }
           `}
           aria-live="polite"
@@ -96,11 +101,12 @@ const QuantitySelector = ({
         <button
           className={`
             flex justify-center items-center w-8 h-8 rounded-lg border border-solid bg-zinc-100 cursor-pointer
-            transition-all duration-200 ${disabled
-              ? 'cursor-not-allowed opacity-70'
-              : error
-                ? 'border-red-500 hover:border-red-600'
-                : 'border-[#0FE3FF] cursor-pointer'
+            transition-all duration-200 focus:outline-none ${
+              disabled
+                ? "cursor-not-allowed opacity-70"
+                : error
+                ? "border-red-500 hover:border-red-600"
+                : "border-accent-light cursor-pointer"
             }
           `}
           onClick={incrementQuantity}
@@ -110,12 +116,12 @@ const QuantitySelector = ({
           <Plus size={20} />
         </button>
       </div>
-      <div className={`transition-all duration-200 ${error ? "mt-[0.2rem] max-h-10" : "h-0"}`}>
-        {error && (
-          <p className="text-red-600 text-sm">
-            {error}
-          </p>
-        )}
+      <div
+        className={`transition-all duration-200 ${
+          error ? "mt-[0.2rem] max-h-10" : "h-0"
+        }`}
+      >
+        {error && <p className="text-red-600 text-sm">{error}</p>}
       </div>
     </div>
   );
