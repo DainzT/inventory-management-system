@@ -123,7 +123,9 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleConfirm = async () => {
     if (!hasChanges) {
-        toast.info("No changes were made to the order");
+        toast.info("No changes were made to the order", {
+          position: 'bottom-right',
+        });
         return;
     }
 
