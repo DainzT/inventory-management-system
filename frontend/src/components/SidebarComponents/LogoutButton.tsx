@@ -16,7 +16,6 @@ const LogoutButton: React.FC = () => {
       await logout();
       navigate("/login");
     } catch (err) {
-      console.error("Logout failed", err);
       setLoading(false);
     }
   };
@@ -47,7 +46,7 @@ const LogoutButton: React.FC = () => {
           />
         </svg>
         <span className="text-sm text-white">Logout</span>
-      </button >
+      </button>
 
       {isOpen && (
         <Portal>
@@ -94,8 +93,7 @@ const LogoutButton: React.FC = () => {
             />
           </section>
         </Portal>
-      )
-      }
+      )}
     </>
   );
 };
