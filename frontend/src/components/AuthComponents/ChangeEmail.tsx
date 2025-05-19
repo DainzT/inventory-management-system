@@ -18,53 +18,63 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
   const [currentPinVerified, setCurrentPinVerified] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { otpSent, setOtpSent, otpVerified, setOtpVerified, loading, verifyPin, handleVerifyEmail, handleVerifyOTP, changeEmail } = useAuth();
+  const {
+    otpSent,
+    setOtpSent,
+    otpVerified,
+    setOtpVerified,
+    loading,
+    verifyPin,
+    handleVerifyEmail,
+    handleVerifyOTP,
+    changeEmail,
+  } = useAuth();
 
   const validateCurrentPin = () => {
     if (!/^\d{6}$/.test(currentPin)) {
-      setErrors(prev => ({ ...prev, pin: "PIN must be 6 digits" }));
+      setErrors((prev) => ({ ...prev, pin: "PIN must be 6 digits" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, pin: "" }));
+    setErrors((prev) => ({ ...prev, pin: "" }));
     return true;
   };
 
   const validateCurrentEmail = () => {
     if (!currentEmail) {
-      setErrors(prev => ({ ...prev, email: "Email is required" }));
+      setErrors((prev) => ({ ...prev, email: "Email is required" }));
       return false;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(currentEmail)) {
-      setErrors(prev => ({ ...prev, email: "Invalid email format" }));
+      setErrors((prev) => ({ ...prev, email: "Invalid email format" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, email: "" }));
+    setErrors((prev) => ({ ...prev, email: "" }));
     return true;
   };
 
   const validateNewEmail = () => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-      setErrors(prev => ({ ...prev, email: "Invalid email format" }));
+      setErrors((prev) => ({ ...prev, email: "Invalid email format" }));
       return false;
     }
     if (newEmail === currentEmail) {
-      setErrors(prev => ({ ...prev, email: "New email must be different" }));
+      setErrors((prev) => ({ ...prev, email: "New email must be different" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, email: "" }));
+    setErrors((prev) => ({ ...prev, email: "" }));
     return true;
   };
 
   const validateOTP = () => {
     if (!otp) {
-      setErrors(prev => ({ ...prev, otp: "OTP is required" }));
+      setErrors((prev) => ({ ...prev, otp: "OTP is required" }));
       return false;
     }
     if (!/^\d{6}$/.test(otp)) {
-      setErrors(prev => ({ ...prev, otp: "OTP must be 6 digits" }));
+      setErrors((prev) => ({ ...prev, otp: "OTP must be 6 digits" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, otp: "" }));
+    setErrors((prev) => ({ ...prev, otp: "" }));
     return true;
   };
 
@@ -73,7 +83,6 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
     await verifyPin(currentPin);
     setCurrentPinVerified(true);
   };
-
 
   const handleSendOTP = async () => {
     if (!validateCurrentEmail()) return;
@@ -110,10 +119,10 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
     } else if (currentPinVerified) {
       setCurrentPinVerified(false);
     }
-    setCurrentEmail("")
-    setOtp("")
-    setNewEmail("")
-    setErrors({})
+    setCurrentEmail("");
+    setOtp("");
+    setNewEmail("");
+    setErrors({});
   };
 
   const getButtonText = () => {
@@ -131,7 +140,8 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
 
   const getStepDescription = () => {
     if (!currentPinVerified) return "Verify your current PIN to continue";
-    if (!otpSent) return "Enter your current email to receive a verification code";
+    if (!otpSent)
+      return "Enter your current email to receive a verification code";
     if (!otpVerified) return "Enter the OTP sent to your email";
     return "Enter your new email address";
   };
@@ -139,8 +149,8 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
   return (
     <Portal>
       <div className="flex fixed inset-0 justify-center items-center select-none z-50">
-        <div className="relative w-[26rem] h-[30rem] bg-white rounded-2xl z-50 border border-gray-200 shadow-lg flex flex-col">
-          <div className="px-6 py-6 flex-1 overflow-y-auto">
+        <div className="relative w-[26rem] h-72 bg-white rounded-2xl z-50 border border-gray-200 shadow-lg flex flex-col">
+          <div className="px-6 py-5 flex-1 overflow-y-auto">
             <header className="mb-6">
               <h2 className="text-2xl font-bold text-gray-800">
                 Change Email Address
@@ -206,7 +216,11 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
                 <button
                   onClick={handleBack}
                   className={`px-4 py-2.5 text-gray-600 rounded-lg bg-gray-200 transition  active:scale-[0.98] flex items-center gap-2 border border-gray-200
-                    ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300 cursor-pointer'}`}
+                    ${
+                      loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-gray-300 cursor-pointer"
+                    }`}
                   disabled={loading || success}
                 >
                   <ArrowLeft size={18} />
@@ -215,7 +229,11 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
               ) : (
                 <button
                   onClick={onClose}
-                  className={` ${loading ? "opacity-50 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300 cursor-pointer"} px-4 active:scale-[0.98] py-2 text-gray-700  rounded-md transition cursor-pointer`}
+                  className={` ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                  } px-4 active:scale-[0.98] py-2 text-gray-700  rounded-md transition cursor-pointer`}
                   disabled={loading}
                 >
                   Cancel
@@ -224,7 +242,11 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
               <button
                 onClick={handleNextStep}
                 className={`px-6 py-2.5 text-white rounded-lg transition-all flex-1 max-w-[11rem] flex items-center justify-center gap-2
-                  ${loading ? 'bg-accent/60 cursor-wait' : 'bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer'}
+                  ${
+                    loading
+                      ? "bg-accent/60 cursor-wait"
+                      : "bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer"
+                  }
                   active:scale-[0.98]`}
                 disabled={loading || success}
               >
