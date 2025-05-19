@@ -82,7 +82,7 @@ const InventoryManagementTableSkeleton = () => {
                     </motion.div>
                 </motion.div>
                 <div className="flex-1 min-h-0 orders-table-content">
-                    {[...Array(6)].map((_, rowIndex) => (
+                    {[...Array(10)].map((_, rowIndex) => (
                         <div
                             key={rowIndex}
                             className="flex-1 px-5 grid items-center py-[24.5px] grid-cols-[minmax(30px,0.5fr)_minmax(90px,1.6fr)_minmax(90px,1.5fr)_minmax(80px,1fr)_minmax(90px,1.8fr)_minmax(120px,1.6fr)_40px]

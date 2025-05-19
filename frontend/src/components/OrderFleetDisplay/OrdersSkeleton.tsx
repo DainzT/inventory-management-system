@@ -106,7 +106,7 @@ export const OrdersSkeleton = () => {
                         </motion.div>
                     </div>
                     <div className="flex-1 min-h-0 orders-table-content">
-                        {[...Array(3)].map((_, rowIndex) => (
+                        {[...Array(10)].map((_, rowIndex) => (
                             <div
                                 key={rowIndex}
                                 className="flex-1 px-5 grid items-center py-[24.5px] grid-cols-[minmax(120px,0.8fr)_minmax(150px,1.3fr)_minmax(200px,1.45fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_120px_40px] border-b border-[#E5E7EB] bg-white"
