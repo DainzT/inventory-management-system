@@ -131,7 +131,8 @@ export const UnitSelector = ({
               )}
               <button
                 onClick={handleCustomUnitAdd}
-                className="px-2 py-1 text-[#1B626E] bg-[#F4F1F1] rounded-[4px] border-[1px] border-[#0FE3FF] inter-font"
+                className="px-2 py-1 text-[#1B626E] bg-[#F4F1F1] rounded-[4px] border-[1px] border-[#0FE3FF] inter-font cursor-pointer"
+                type="button"
               >
                 Add
               </button>

@@ -8,8 +8,10 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   onSelect,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleSelect = (value: string) => {
+    setSelectedOption(value);
     onSelect(value);
     setIsOpen(false);
   };
@@ -44,7 +46,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
               className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
               onClick={() => handleSelect(option)}
               role="option"
-              aria-selected={option}
+              aria-selected={selectedOption === option}
             >
               {option}
             </li>
