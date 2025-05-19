@@ -38,7 +38,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   selectedOrder,
   isModifying,
   isDeleting,
-  maxNoteLength = 39,
+  maxNoteLength = 35,
 }) => {
   const [quantity, setQuantity] = useState<number | "">("");
   const [fleet, setFleet] = useState<string>("");
@@ -123,7 +123,9 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
 
   const handleConfirm = async () => {
     if (!hasChanges) {
-        toast.info("No changes were made to the order");
+        toast.info("No changes were made to the order", {
+          position: 'bottom-right',
+        });
         return;
     }
 
@@ -196,7 +198,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
     const upperCaseLetters = text.replace(/[^A-Z]/g, "").length;
     const upperCaseRatio = upperCaseLetters / totalLetters;
 
-    if (upperCaseRatio === 0) return 39;
+    if (upperCaseRatio === 0) return 35;
     if (upperCaseRatio >= 0.4 && upperCaseRatio < 0.5) return 32;
     if (upperCaseRatio >= 0.5) return 30;
     return maxNoteLength;
@@ -206,6 +208,11 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
   const truncatedNote = shouldTruncate
     ? `${selectedOrder.note.slice(0, adjustedMaxLength)}...`
     : selectedOrder.note;
+
+  const truncateUnit = (unit: string) => {
+    const maxLength = 7;
+    return unit.length > maxLength ? `${unit.slice(0, maxLength)}…` : unit;
+  };
 
   return (
     <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 select-none">
@@ -246,10 +253,10 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             <p className="text-base font-semibold text-cyan-800 inter-font whitespace-nowrap">
               ₱{Number(selectedOrder.unitPrice).toFixed(2)} /{" "}
               {selectedOrder.unitSize}{" "}
-              {pluralize(
+              {truncateUnit(pluralize(
                 selectedOrder.selectUnit,
                 Number(selectedOrder.unitSize)
-              )}
+              ))}
             </p>
           </div>
           {selectedOrder.note && (

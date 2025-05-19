@@ -3,7 +3,6 @@ import Portal from "@/utils/Portal";
 import { ClipLoader } from "react-spinners";
 import AuthInput from "@/components/AuthComponents/AuthInput";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "react-toastify";
 import { ArrowLeft, Check } from "lucide-react";
 
 interface CreateAdminModalProps {
@@ -53,9 +52,9 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onSuccess }) => {
     } else if (!otpVerified) {
       await handleVerifyOTP(otp);
       await handleCreateAdmin({ email, pin, confirmPin });
-      toast.success("Redirecting to login", {
-        onClose: () => onSuccess(),
-      });
+      setTimeout(() => { 
+        onSuccess();
+      }, 1000);
     }
   };
 

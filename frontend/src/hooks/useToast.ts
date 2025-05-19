@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 export const useToast = () => {
     const showLoadingToast = (toastId: string, message: string) => {
         toast.loading(message, {
-            position: "top-center",
+            position: "bottom-right",
             toastId,
         });
     };
