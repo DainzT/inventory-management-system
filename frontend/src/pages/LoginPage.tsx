@@ -28,9 +28,9 @@ const LoginPage: React.FC = () => {
     const success = await login(pin);
     if (success) {
       setIsSuccess(true);
-      setTimeout(() => { 
-        navigate("/inventory")
-      }, 1500)
+      setTimeout(() => {
+        navigate("/inventory");
+      }, 1500);
     }
   };
 
@@ -52,7 +52,7 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <main className="flex flex-col items-center justify-start h-screen outline-1 w-screen">
+    <main className="flex flex-col items-center justify-start h-screen w-screen">
       <Header />
       <div className="flex-grow flex flex-col items-center justify-center px-4 mb-8">
         <section className="w-full max-w-md">
