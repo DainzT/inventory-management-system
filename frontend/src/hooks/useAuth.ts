@@ -82,6 +82,7 @@ export const useAuth = () => {
         sessionStorage.setItem(TOKEN_KEY, data.accessToken);
         setToken(data.accessToken);
         setError(null);
+        showSuccessToast(loginId, "Logging in to page...");
         return true;
       } else {
         setError(data.message || "Invalid PIN");
