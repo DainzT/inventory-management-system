@@ -94,7 +94,7 @@ export const useAuth = () => {
       const message =
         error.message === "Failed to fetch"
           ? "Network error. Check your connection."
-          : "Login failed. Try again.";
+          : error.message || "Login failed. Try again.";
       setError(message);
       showErrorToast(loginId, message);
       return false;

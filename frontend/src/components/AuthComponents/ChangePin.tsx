@@ -101,7 +101,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ onClose }) => {
   return (
     <Portal>
       <div className="flex fixed inset-0 justify-center items-center select-none z-50">
-        <div className="relative w-[26rem] h-72 bg-white rounded-2xl z-50 border border-gray-200 shadow-lg flex flex-col">
+        <div className="relative w-[26rem] h-[28rem] bg-white rounded-2xl z-50 border border-gray-200 shadow-lg flex flex-col">
           <div className="px-6 py-5 flex-1 overflow-y-auto">
             <header className="mb-6">
               <h2 className="text-2xl font-bold text-gray-800">
