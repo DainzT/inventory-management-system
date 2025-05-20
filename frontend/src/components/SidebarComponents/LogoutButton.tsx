@@ -66,13 +66,13 @@ const LogoutButton: React.FC = () => {
                 <button
                   role="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-all w-30 active:scale-[0.98]"
+                  className="cursor-pointer px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-all w-30 active:scale-[0.98]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition-all w-35 h-11 flex items-center justify-center active:scale-[0.98]"
+                  className="cursor-pointer px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition-all w-35 h-11 flex items-center justify-center active:scale-[0.98]"
                   disabled={loading}
                 >
                   {loading ? (
