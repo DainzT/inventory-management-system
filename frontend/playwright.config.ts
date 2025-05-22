@@ -38,6 +38,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
     stderr: 'pipe',
+    
   },
   /* Configure projects for major browsers */
   projects: [
