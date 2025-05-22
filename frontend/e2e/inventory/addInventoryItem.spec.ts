@@ -24,7 +24,11 @@ test.describe("Inventory Page - Add Item", () => {
         await page.waitForURL('**/inventory')
     });
 
-    test('should load add product modal', async ({ page }) => {
+    test('should load empty table', async ({ page }) => {
+        await expect(page.getByText('Inventory is empty or no items match your search criteria.')).toBeVisible();
+    })
+
+    test('should load add product modal when click', async ({ page }) => {
         await page.getByRole("button", { name: "Add Item" }).click();
         const modal = page.locator('.flex.fixed.z-50.inset-0.justify-center.items-center');
         await expect(modal.getByText('Product Name')).toBeVisible();
