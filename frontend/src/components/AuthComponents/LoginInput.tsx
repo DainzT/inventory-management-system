@@ -59,7 +59,7 @@ function LoginInput({
         <div className="flex-grow flex items-center h-full pl-2">
           <input
             id="pin-input"
-            type={showPin ? "text" : "password"}
+            type={(showPin && !disabled) ? "text" : "password"}
             value={pin}
             onChange={handlePinChange}
             onFocus={() => setIsFocused(true)}
@@ -85,15 +85,13 @@ function LoginInput({
             className={`text-gray-500transition-colors duration-200 p-1 rounded-full ${
               disabled
                 ? "text-gray-300 cursor-not-allowed"
-                : error
-                ? "text-red-400 hover:text-red-600"
                 : "text-gray-500 hover:text-gray-700 cursor-pointer"
             }
             `}
             disabled={disabled}
             type="button"
           >
-            {showPin ? (
+            {(showPin && !disabled) ? (
               <EyeIcon className="w-5 h-5" />
             ) : (
               <EyeOffIcon className="w-5 h-5" />

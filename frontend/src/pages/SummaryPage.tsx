@@ -28,7 +28,6 @@ const Summary: React.FC = () => {
       try {
         setIsLoading(true);
         const fetchedOrders = await fetchAssignedItems();
-        await new Promise((res) => setTimeout(res, 3000));
         setOrders(fetchedOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);
