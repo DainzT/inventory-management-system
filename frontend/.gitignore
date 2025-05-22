@@ -27,6 +27,7 @@ dist-ssr
 .env.test
 
 # Playwright
+playwright
 test-results
 playwright-report
 blob-report
