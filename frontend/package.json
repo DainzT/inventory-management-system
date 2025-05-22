@@ -12,6 +12,8 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:e2e": "dotenv -e .env.test -- playwright test",
+    "test:e2e:ui": "dotenv -e .env.test -- playwright test --ui",
+    "test:e2e:debug": "dotenv -e .env.test -- playwright test --debug",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite preview --host",
