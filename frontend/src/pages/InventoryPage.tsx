@@ -9,6 +9,7 @@ import { InventoryItem } from "@/types";
 import { useInventory } from "@/hooks/useInventory";
 import { roundTo } from "@/utils/RoundTo";
 import { pluralize } from "@/utils/Pluralize";
+import InventoryManagementTableSkeleton from "@/components/InventoryManagementTable/InventoryManagementTableSkeleton";
 
 const Inventory: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
@@ -87,6 +88,11 @@ const Inventory: React.FC = () => {
       className="flex-1 p-0 overflow-auto "
     >
       <PageTitle title="Main Inventory" />
+
+      {isLoading ? (
+        <InventoryManagementTableSkeleton/>
+
+      ) : (
       <InventoryManagementTable
         setIsAddOpen={setIsAddOpen}
         setIsEditOpen={(isOpen, item) => {
@@ -104,6 +110,7 @@ const Inventory: React.FC = () => {
         highlightedItem={highlightedItem}
         containerRef={inventoryContainerRef}
       />
+      )}
       <AddProductModal
         isOpen={isAddOpen}
         setIsOpen={setIsAddOpen}

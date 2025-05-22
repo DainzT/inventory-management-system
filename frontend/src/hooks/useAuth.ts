@@ -9,7 +9,6 @@ import {
   verifyOtpAPI,
   createAdminAPI,
   refreshTokenAPI,
-
   logoutAPI,
   changeEmailAPI,
   resetPinAPI,
@@ -85,7 +84,7 @@ export const useAuth = () => {
         sessionStorage.setItem(TOKEN_KEY, data.accessToken);
         setToken(data.accessToken);
         setError(null);
-        showSuccessToast(loginId, "Login successful.");
+        showSuccessToast(loginId, "Logging in to page...");
         return true;
       } else {
         setError(data.message || "Invalid PIN");
@@ -96,7 +95,7 @@ export const useAuth = () => {
       const error = err as ErrorWithMessage;
       const message =
         error.message === "Failed to fetch"
-          ? "Network error. Please check your internet connection."
+          ? "Network error. Check your connection."
           : error.message || "Login failed. Try again.";
       setError(message);
       showErrorToast(loginId, message);
@@ -157,12 +156,8 @@ export const useAuth = () => {
     const createAdminId = "create-admin-toast";
     try {
       setLoading(true);
-      showLoadingToast(createAdminId, "creating account for Admin");
       await createAdminAPI(payload);
-      showSuccessToast(
-        createAdminId,
-        "Admin account created successfully."
-      );
+      showSuccessToast(createAdminId, "Admin account created successfully.");
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to create admin");
@@ -172,14 +167,18 @@ export const useAuth = () => {
     }
   };
 
-  const handleSendOTP = async (email: string, pin: string, confirmPin: string,) => {
+  const handleSendOTP = async (
+    email: string,
+    pin: string,
+    confirmPin: string
+  ) => {
     const sendOtpId = "send-otp-toast";
     showLoadingToast(sendOtpId, "Sending OTP...");
     try {
       setLoading(true);
       await sendOtpEmailAPI(email, pin, confirmPin);
       showSuccessToast(sendOtpId, "OTP sent to email.");
-      setOtpSent(true)
+      setOtpSent(true);
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Failed to send OTP");
@@ -221,6 +220,7 @@ export const useAuth = () => {
         verifyEmailId,
         data.message || "Email verified successfully."
       );
+      showLoadingToast(verifyEmailId, "Sending OTP...");
     } catch (err) {
       const error = err as ErrorWithMessage;
       setError(error.message || "Email verification failed");
@@ -252,12 +252,9 @@ export const useAuth = () => {
     }
   };
 
-  const ResetPin = async (
-    email: string,
-    newPin: string
-  ) => {
+  const ResetPin = async (email: string, newPin: string) => {
     const verifyResetId = "verify-reset-toast";
-    showLoadingToast(verifyResetId, "resetting PIN...");
+    showLoadingToast(verifyResetId, "Resetting PIN...");
     try {
       setLoading(true);
       await resetPinAPI(email, newPin);
@@ -274,23 +271,18 @@ export const useAuth = () => {
   };
 
   const changeEmail = async (oldEmail: string, newEmail: string) => {
-    
     const toastId = "change-email-toast";
     showLoadingToast(toastId, "Changing email...");
 
     const accessToken = sessionStorage.getItem(TOKEN_KEY);
     if (!accessToken) {
-      showErrorToast(toastId, "No access token found. Please log in again.");
+      showErrorToast(toastId, "An Error occured. Please log in again.");
       return;
     }
 
     try {
       setLoading(true);
-      await changeEmailAPI(
-        oldEmail,
-        newEmail,
-        accessToken
-      );
+      await changeEmailAPI(oldEmail, newEmail, accessToken);
       showSuccessToast(toastId, "Email updated successfully.");
     } catch (err) {
       const error = err as ErrorWithMessage;
@@ -315,10 +307,10 @@ export const useAuth = () => {
       if (showToast) {
         showErrorToast(
           "refresh-toast",
-          error.message || "Token refresh failed"
+          "We couldn't refresh your session. Please log in again."
         );
       }
-      setError(error.message || "Failed to refresh token.");
+      setError(error.message || "Unable to login. Please try again.");
       setToken(null);
     }
   };

@@ -33,7 +33,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         isActive ? "bg-[#295C65] text-white" : ""
       } ${
         disabled
-          ? "text-[#8f940a] opacity-80 cursor-context-menu drag"
+          ? "text-[#8f940a] opacity-80 cursor-not-allowed drag"
           : "cursor-pointer hover:bg-accent hover:text-white"
       }`}
       draggable={disabled ? "false" : "true"}

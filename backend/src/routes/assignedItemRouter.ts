@@ -13,9 +13,6 @@ router.use(authenticateToken);
 router.get("/assign-item", updateArchivedItems, async (req: Request, res: Response) => {
   try {
     const orders = await prisma.assignedItem.findMany({
-      where: {
-        archived: false, // now only return unarchived items
-      },
       include: {
         fleet: true,
         boat: true,

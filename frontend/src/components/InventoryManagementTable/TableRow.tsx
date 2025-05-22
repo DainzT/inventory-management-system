@@ -117,7 +117,7 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
         </div>
         <div
           className="
-            sm:mr-2 scale-80 cursor-pointer rounded-full 
+            sm:mr-1 ml-2 scale-80 cursor-pointer rounded-full
             transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50
           "
           onClick={() => onToggle(item.id)}

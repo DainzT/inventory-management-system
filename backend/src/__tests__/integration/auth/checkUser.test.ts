@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../routes/authRouter";
-import prisma from "../../lib/prisma";
+import authRoutes from "../../../routes/authRouter";
+import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 import cookieParser from "cookie-parser";
 

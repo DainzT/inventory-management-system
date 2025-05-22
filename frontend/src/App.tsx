@@ -5,7 +5,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -19,10 +19,10 @@ const App: React.FC = () => {
   return (
     <Router>
       <ToastContainer
+        transition={Slide}
         position="top-center"
-        autoClose={3000}
+        autoClose={1200}
         hideProgressBar={false}
-        newestOnTop
         closeOnClick
         rtl={false}
         pauseOnFocusLoss={false}
@@ -43,7 +43,7 @@ const App: React.FC = () => {
                     <Header />
                     <div className="flex flex-1 overflow-hidden">
                       <Sidebar />
-                      <div className="flex-1 p-4 overflow-hidden">
+                      <div className="flex-1 p-1 overflow-hidden">
                         <Routes>
                           <Route path="/inventory" element={<Inventory />} />
                           <Route

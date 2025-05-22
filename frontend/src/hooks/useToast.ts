@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 export const useToast = () => {
     const showLoadingToast = (toastId: string, message: string) => {
         toast.loading(message, {
-            position: "top-center",
+            position: "bottom-right",
             toastId,
         });
     };
@@ -14,7 +14,7 @@ export const useToast = () => {
             render: message,
             type: "success",
             isLoading: false,
-            autoClose: 3000,
+            autoClose: 1500,
             hideProgressBar: false,
         });
     };
@@ -24,7 +24,7 @@ export const useToast = () => {
             render: message,
             type: "error",
             isLoading: false,
-            autoClose: 3000,
+            autoClose: 2000,
             hideProgressBar: false,
         });
     };

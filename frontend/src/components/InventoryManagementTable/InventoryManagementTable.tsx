@@ -82,7 +82,7 @@ const InventoryManagementTable = ({
   };
 
   return (
-    <main className="p-[30px] max-sm:p-0 max-lg:p-[15px] h-[calc(100vh-136px)] ">
+    <main className="p-[30px] max-sm:p-0 max-lg:p-[15px] h-[calc(100vh-120px)] ">
       <section className="
         bg-white
         rounded-[10px]

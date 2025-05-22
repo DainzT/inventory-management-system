@@ -44,13 +44,17 @@ const EditProductForm = ({
     });
     const [errors, setErrors] = useState<{ [key in keyof InventoryItem]?: string }>({});
 
-    const validateField = (field: 'name' | 'note', value: string) => {
+    const validateField = (field: 'name' | 'note' | 'selectUnit', value: string) => {
         if (field === 'name') {
             if (value.length > 40) return "Maximum 40 characters reached.";
         }
         if (field === 'note') {
             if (value.length > 120) return "Maximum 120 characters reached.";
         }
+        if (field === 'selectUnit') {
+            if (value.length > 15) return "Maximum 15 characters reached.";
+        }
+        return "";
         return "";
     };
 
@@ -93,6 +97,10 @@ const EditProductForm = ({
             processedValue = value.substring(0, MAX_NOTE_LENGTH);
         }
 
+        if (field === 'selectUnit' && typeof value === 'string' && value.length > 15) {
+            processedValue = value.substring(0, 15);
+        }
+
         if (field === 'quantity' || field === 'unitPrice' || field === 'unitSize') {
             processedValue = roundTo(Number(value), 2) || "";
         }
@@ -102,7 +110,7 @@ const EditProductForm = ({
             [field]: processedValue,
         }));
 
-        if (field === 'name' || field === 'note') {
+        if (field === 'name' || field === 'note' || field === 'selectUnit') {
             const error = validateField(field, String(value));
             setErrors((prevErrors) => ({
                 ...prevErrors,
@@ -139,6 +147,9 @@ const EditProductForm = ({
             newErrors.unitSize = "Cannot exceed 10,000.";
         }
         if (!productData.selectUnit.trim() || productData.selectUnit.trim() === "Unit") newErrors.selectUnit = "Please select a unit.";
+        else if (productData.selectUnit.trim().length > 15) {
+            newErrors.selectUnit = `Must be 15 characters or less`;
+        }
         if (productData.name.trim().length > 40) newErrors.name = "Product name must be 40 characters or less."
         if (productData.note.trim().length > 120) newErrors.note = "Note must be 120 characters or less."
 

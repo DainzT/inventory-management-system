@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DeleteConfirmationModal from "../DeleteConfirmationModal";
+import DeleteConfirmationModal from "../ModifyModal/DeleteConfirmationModal";
 
 interface DeleteButtonProps {
     children?: React.ReactNode; 

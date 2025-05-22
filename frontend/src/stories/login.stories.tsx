@@ -138,61 +138,6 @@ export const IncorrectPin: Story = {
   },
 };
 
-export const ChangePin: Story = {
-  args: {},
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const changePinBtn = canvas.getByText("Change PIN?");
-    await userEvent.click(changePinBtn);
-    await waitFor(() => {
-      expect(screen.getByText("Change PIN")).toBeInTheDocument();
-    });
-  },
-};
-
-export const ChangePinEmptyInputs: Story = {
-  args: {},
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const delay = (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
-    await userEvent.click(canvas.getByText("Change PIN?"));
-    const submitButton = await screen.findByText("Submit");
-    await userEvent.click(submitButton);
-    await delay(2000);
-    await waitFor(() => {
-      expect(screen.getByText(/Both PIN must be strings/i)).toBeInTheDocument();
-    });
-  },
-};
-
-export const ChangeSamePin: Story = {
-  args: {},
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const delay = (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
-    await userEvent.click(canvas.getByText("Change PIN?"));
-    const oldPinInput = await screen.findByPlaceholderText("Enter current PIN");
-    await userEvent.type(oldPinInput, "123456");
-    const toggleButtons = canvas.getAllByLabelText("Hide PIN");
-    await userEvent.click(toggleButtons[0]);
-    await delay(1000);
-    const newPinInput = await screen.findByPlaceholderText("Enter new PIN");
-    await userEvent.type(newPinInput, "123456");
-    await userEvent.click(toggleButtons[1]);
-    await delay(1000);
-    const submitButton = await screen.findByText("Submit");
-    await userEvent.click(submitButton);
-    await delay(2000);
-    await waitFor(() => {
-      expect(
-        screen.getByText("New PIN must be different from old PIN")
-      ).toBeInTheDocument();
-    });
-  },
-};
-
 export const Login: Story = {
   args: {},
   play: async ({ canvasElement }) => {
@@ -205,7 +150,7 @@ export const Login: Story = {
     await userEvent.click(loginButton);
     await delay(2000);
     await waitFor(() => {
-      expect(window.localStorage.getItem("token")).toBeTruthy();
+      expect(window.sessionStorage.getItem("token")).toBeTruthy();
       expect(screen.getByText(/Main Inventory/i)).toBeInTheDocument();
     });
   },

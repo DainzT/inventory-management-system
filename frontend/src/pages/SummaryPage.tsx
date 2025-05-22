@@ -5,6 +5,7 @@ import { OrderItem } from "@/types";
 import { useParams } from "react-router-dom";
 import { fetchAssignedItems } from "@/api/orderAPI";
 import { useToast } from "@/hooks/useToast";
+import { toast } from "react-toastify";
 
 const Summary: React.FC = () => {
   const { fleetName } = useParams<{ fleetName: string }>();
@@ -23,28 +24,21 @@ const Summary: React.FC = () => {
       : fleetName?.replaceAll("-", " ").toUpperCase();
 
   useEffect(() => {
-    const toastId = "fetch-orders-toast";
-
     const fetchOrders = async () => {
       try {
         setIsLoading(true);
         const fetchedOrders = await fetchAssignedItems();
         await new Promise((res) => setTimeout(res, 3000));
         setOrders(fetchedOrders);
-        memoizedShowSuccessToast(
-          toastId,
-          "Invoices loaded successfully"
-        );
       } catch (error) {
         console.error("Error fetching orders:", error);
-        memoizedShowErrorToast(toastId, "Failed to fetch orders.");
+        toast.error("Failed to fetch orders.");
       } finally {
         setIsLoading(false);
       }
     };
 
     const initializeFetch = () => {
-      memoizedShowLoadingToast(toastId, "Loading invoices");
       fetchOrders();
     };
 
