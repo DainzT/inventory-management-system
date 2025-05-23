@@ -45,7 +45,6 @@ export const useAuth = () => {
   useEffect(() => {
     const statusId = "pin-status-toast";
     const fetchUserStatus = async () => {
-      // showLoadingToast(statusId, "Checking PIN status...");
       try {
         const data = await checkUserAPI();
         setIsPinSet(data.isPinSet ?? false);
@@ -54,7 +53,6 @@ export const useAuth = () => {
           sessionStorage.setItem(TOKEN_KEY, data.token);
           setToken(data.token);
         }
-        // showSuccessToast(statusId, "PIN status checked successfully.");
       } catch (err) {
         const error = err as ErrorWithMessage;
         setError(error.message || "Failed to check PIN status.");
@@ -130,7 +128,7 @@ export const useAuth = () => {
     if (!accessToken) {
       showErrorToast(
         updatePinId,
-        "No access token found. Please log in again."
+        "Please log in again." // no access token
       );
       return;
     }
@@ -294,22 +292,15 @@ export const useAuth = () => {
     }
   };
 
-  const refreshToken = async (showToast = false) => {
+  const refreshToken = async () => {
     try {
       const data = await refreshTokenAPI();
       if (data.accessToken) {
         sessionStorage.setItem(TOKEN_KEY, data.accessToken);
         setToken(data.accessToken);
-        if (showToast) showSuccessToast("refresh-toast", "Token refreshed");
       }
     } catch (err) {
       const error = err as ErrorWithMessage;
-      if (showToast) {
-        showErrorToast(
-          "refresh-toast",
-          "We couldn't refresh your session. Please log in again."
-        );
-      }
       setError(error.message || "Unable to login. Please try again.");
       setToken(null);
     }

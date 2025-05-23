@@ -95,7 +95,7 @@ const LoginPage: React.FC = () => {
                 className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${
                   isSuccess || loading
                     ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:text-blue-500"
+                    : "text-blue-600 hover:text-blue-500 cursor-pointer"
                 }`}
               >
                 Forgot PIN?
@@ -113,7 +113,7 @@ const LoginPage: React.FC = () => {
                 ${
                   !pin || isSuccess
                     ? "bg-accent/60 cursor-not-allowed"
-                    : "bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg"
+                    : "bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg cursor-pointer"
                 }`}
             >
               {loading ? (
