@@ -1,4 +1,3 @@
-import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
 import SummaryDesign from "@/components/summary/SummaryDesign";
 import { OrderItem } from "@/types";
