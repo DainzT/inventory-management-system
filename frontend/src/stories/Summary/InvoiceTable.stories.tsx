@@ -2,7 +2,7 @@ import { Meta, StoryFn } from "@storybook/react";
 import {
   InvoiceTable,
   InvoiceTableProps,
-} from "@/components/summary/InvoiceTable";
+} from "@/components/temp/summary/InvoiceTable";
 import { GroupedOrders } from "@/types";
 
 export default {
