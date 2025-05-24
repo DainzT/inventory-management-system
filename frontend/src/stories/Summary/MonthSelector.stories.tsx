@@ -2,7 +2,7 @@ import { Meta, StoryFn } from "@storybook/react";
 import {
   MonthSelector,
   MonthSelectorProps,
-} from "@/components/temp/summary/MonthSelector";
+} from "@/components/summary/MonthSelector";
 import { useState } from "react";
 
 export default {
