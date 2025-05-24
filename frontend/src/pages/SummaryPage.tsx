@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import SummaryDesign from "@/components/summary/SummaryDesign";
-import { PageTitle } from "@/layout/PageTitle";
+import { PageTitle } from "@/layout";
 import { OrderItem } from "@/types";
 import { useParams } from "react-router-dom";
 import { fetchAssignedItems } from "@/api/orderAPI";
 import { useToast } from "@/hooks/useToast";
 import { toast } from "react-toastify";
 
-const Summary: React.FC = () => {
+const SummaryPage = () => {
   const { fleetName } = useParams<{ fleetName: string }>();
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,8 +52,8 @@ const Summary: React.FC = () => {
     !fleetName || fleetName === "all-fleets"
       ? orders
       : orders.filter(
-          (order) => order.fleet?.fleet_name.toUpperCase() === modifiedName
-        );
+        (order) => order.fleet?.fleet_name.toUpperCase() === modifiedName
+      );
 
   return (
     <div className="flex-1 p-0">
@@ -67,4 +67,4 @@ const Summary: React.FC = () => {
   );
 };
 
-export default Summary;
+export default SummaryPage;
