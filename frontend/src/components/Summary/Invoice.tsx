@@ -2,7 +2,7 @@ import { GroupedOrders, OrderItem } from "@/types";
 import { InvoiceHeader } from "./InvoiceHeader";
 import { InvoiceTable } from "./InvoiceTable";
 import { InvoiceSummary } from "./InvoiceSummary";
-import { DownloadButton } from "./DownloadButton";
+import { DownloadButton } from "../summary/DownloadButton";
 import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";

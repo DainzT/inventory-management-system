@@ -1,5 +1,4 @@
 import {Meta, StoryFn} from "@storybook/react";
-
 import { InvoiceSummary, InvoiceSummaryProps } from "@/components/summary/InvoiceSummary";
 
 export default {
