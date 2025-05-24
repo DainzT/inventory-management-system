@@ -77,8 +77,10 @@ export const QuantityInput = ({
               : error
                 ? 'border-red-500 hover:border-red-600'
                 : 'border-[#0FE3FF]'
-            }`}
+            }`
+          }
           disabled={disabled}
+          data-testid ="quantity-input"
         />
         <button
           type="button"
@@ -90,6 +92,7 @@ export const QuantityInput = ({
               : 'border-[#0FE3FF] cursor-pointer'
           }`}
           disabled={disabled}
+          data-testid="increment-quantity-button"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path

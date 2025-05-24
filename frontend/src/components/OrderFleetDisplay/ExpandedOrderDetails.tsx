@@ -21,11 +21,11 @@ export const ExpandedOrderDetails: React.FC<ExpandedOrderDetailsProps> = ({
       </div>
       <div>
         <div className="mb-1 text-sm text-gray-500">Fleet Assigned:</div>
-        <div className="text-base text-gray-800">{fixEncoding(order.fleet.fleet_name)}</div>
+        <div className="text-base text-gray-800" data-testid="fleet-name">{fixEncoding(order.fleet.fleet_name)}</div>
       </div>
       <div>
         <div className="mb-1 text-sm text-gray-500">Last Updated</div>
-        <div className="text-base text-gray-800">
+        <div className="text-base text-gray-800" data-testid="last-updated">
           {order.lastUpdated ? (
             order.lastUpdated instanceof Date
               ? order.lastUpdated.toLocaleDateString('en-US', {

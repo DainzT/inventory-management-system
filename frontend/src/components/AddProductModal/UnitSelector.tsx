@@ -87,7 +87,6 @@ export const UnitSelector = ({
     setSearchTerm("");
   };
 
-
   return (
     <div className="relative" ref={dropdownRef}>
       <label className="text-[16px] font-bold inter-font">
@@ -165,6 +164,7 @@ export const UnitSelector = ({
           <div className="max-h-[200px] overflow-y-auto">
             {filteredUnits.map((unit) => (
               <div
+                data-testid="unit-dropdown"
                 key={unit}
                 onClick={() => selectUnit(unit)}
                 className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"

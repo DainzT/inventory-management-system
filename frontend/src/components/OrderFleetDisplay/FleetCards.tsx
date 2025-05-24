@@ -17,10 +17,11 @@ export const FleetCard: React.FC<FleetCardProps> = ({
         isActive ? "shadow-2xl" : "shadow-md"
       } ${backgroundColor} ${isActive ? "" : "opacity-70"}`}
       onClick={onClick}
+      data-testid={`fleet-card-${title.replace(/\s+/g, "-").toLowerCase()}`}
     >
-      <h2 className="text-2xl font-bold text-white text-left">{title}</h2>
+      <h2 className="text-2xl font-bold text-white text-left" data-testid="fleet-card-title">{title}</h2>
 
-      <h3 className="text-white text-sm mt-1">
+      <h3 className="text-white text-sm mt-1" data-testid="fleet-card-order-count">
         {orderCount} {orderCount === 1 ? "item" : "items"}
       </h3>
 
