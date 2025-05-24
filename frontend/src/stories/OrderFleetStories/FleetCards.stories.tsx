@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { FleetCard } from "../../components/OrderFleetDisplay/FleetCards";
+import { FleetCard } from "../../components/orders/FleetCard/FleetCard";
 import { Decorator } from "@storybook/react";
 
 const defaultArgs = {

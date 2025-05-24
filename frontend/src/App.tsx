@@ -1,19 +1,26 @@
 import React from "react";
+import "react-toastify/dist/ReactToastify.css";
+import { 
+  Slide, 
+  ToastContainer 
+} from "react-toastify";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   Navigate,
 } from "react-router-dom";
-import { Slide, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Header from "./components/Header";
-import Sidebar from "@/components/Sidebar";
-import Inventory from "./pages/InventoryPage";
-import Orders from "./pages/OrderPage";
-import Summary from "./pages/SummaryPage";
-import LoginPage from "./pages/LoginPage";
-import ProtectedRoute from "./components/ProtectedRoutes";
+import { 
+  LoginPage, 
+  InventoryPage, 
+  SummaryPage, 
+  OrderPage 
+} from "./pages";
+import { 
+  Header, 
+  Sidebar, 
+  ProtectedRoutes 
+} from "./layout";
 
 const App: React.FC = () => {
   return (
@@ -37,7 +44,7 @@ const App: React.FC = () => {
           <Route
             path="/*"
             element={
-              <ProtectedRoute>
+              <ProtectedRoutes>
                 <>
                   <div className="flex flex-col h-screen">
                     <Header />
@@ -45,12 +52,12 @@ const App: React.FC = () => {
                       <Sidebar />
                       <div className="flex-1 p-1 overflow-hidden">
                         <Routes>
-                          <Route path="/inventory" element={<Inventory />} />
+                          <Route path="/inventory" element={<InventoryPage />} />
                           <Route
                             path="/orders"
                             element={
                               <div className="h-full overflow-y-auto">
-                                <Orders />
+                                <OrderPage />
                               </div>
                             }
                           />
@@ -58,7 +65,7 @@ const App: React.FC = () => {
                             path="/summary/:fleetName"
                             element={
                               <div className="h-full overflow-y-auto">
-                                <Summary />
+                                <SummaryPage />
                               </div>
                             }
                           />
@@ -67,7 +74,7 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </>
-              </ProtectedRoute>
+              </ProtectedRoutes>
             }
           />
           <Route path="*" element={<Navigate to="/login" replace />} />

@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import Header from "@/components/Header";
-import { Logo } from "@/components/SidebarComponents/Logo";
-import LoginInput from "@/components/AuthComponents/LoginInput";
-import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
-import ForgotPin from "@/components/AuthComponents/ForgotPin";
+import Header from "@/layout/Header";
+import { Logo } from "@/layout/Sidebar/Logo";
+import LoginInput from "@/components/authentication/LoginInput";
+import CreateAdmin from "@/components/authentication/CreateAdmin";
+import ForgotPin from "@/components/authentication/ForgotPin";
 import { ClipLoader } from "react-spinners";
 import { AlertCircle } from "lucide-react";
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [pin, setPin] = useState("");
   const [showForgotPin, setShowForgotPin] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -78,9 +78,8 @@ const LoginPage: React.FC = () => {
             />
             <div className="w-full flex justify-between -mt-1 mb-2">
               <div
-                className={`transition-all duration-200 ease-in-out ${
-                  error ? "max-h-10 opacity-100 mt-1" : "max-h-0 opacity-0"
-                }`}
+                className={`transition-all duration-200 ease-in-out ${error ? "max-h-10 opacity-100 mt-1" : "max-h-0 opacity-0"
+                  }`}
               >
                 {error && (
                   <p className="text-xs text-red-500 flex items-center -mt-1">
@@ -92,11 +91,10 @@ const LoginPage: React.FC = () => {
               <button
                 onClick={() => !isSuccess && setShowForgotPin(true)}
                 disabled={isSuccess || loading}
-                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${
-                  isSuccess || loading
+                className={`text-sm font-medium flex justify-end hover:underline underline-offset-2 ${isSuccess || loading
                     ? "text-gray-400 cursor-not-allowed"
                     : "text-blue-600 hover:text-blue-500 cursor-pointer"
-                }`}
+                  }`}
               >
                 Forgot PIN?
               </button>
@@ -107,13 +105,11 @@ const LoginPage: React.FC = () => {
             <button
               onClick={handleLogin}
               disabled={loading || !pin || isSuccess}
-              className={`w-full h-10 rounded-xl text-lg font-semibold text-white transition-all duration-200 flex items-center justify-center ${
-                loading ? "cursor-wait" : ""
-              }
-                ${
-                  !pin || isSuccess
-                    ? "bg-accent/60 cursor-not-allowed"
-                    : "bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg cursor-pointer"
+              className={`w-full h-10 rounded-xl text-lg font-semibold text-white transition-all duration-200 flex items-center justify-center ${loading ? "cursor-wait" : ""
+                }
+                ${!pin || isSuccess
+                  ? "bg-accent/60 cursor-not-allowed"
+                  : "bg-accent   hover:bg-[#297885] active:scale-[0.98] shadow-md hover:shadow-lg cursor-pointer"
                 }`}
             >
               {loading ? (

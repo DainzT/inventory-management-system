@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { userEvent, within, waitFor, expect, fn } from "@storybook/test";
-import ModifyModal from "@/components/ModifyModal/ModifyModal";
+import ModifyModal from "@/components/orders/modals/ModifyOrderModal";
 import type { ModifyOrderItem } from "@/types/modify-order-item";
 import { Fleet, Boat } from "@/types";
 

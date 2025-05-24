@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { fn, expect, userEvent, within, waitFor } from "@storybook/test";
-import AddProductModal from "@/components/AddProductModal/AddProductModal";
+import AddProductModal from "@/components//inventory/modals/AddProductModal/AddProductModal";
 import { action } from "@storybook/addon-actions";
 import { fireEvent } from "@testing-library/react";
 import { useState } from "react";

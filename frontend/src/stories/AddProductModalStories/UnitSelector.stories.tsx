@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { fn, userEvent, within, waitFor, expect } from "@storybook/test";
-import { UnitSelector } from "@/components/AddProductModal/UnitSelector";
+import { UnitSelector } from "@/components/shared/fields/UnitSelector";
 import { useState } from "react";
 
 const meta: Meta<typeof UnitSelector> = {

@@ -1,20 +1,21 @@
-import { FleetCard } from "@/components/OrderFleetDisplay/FleetCards";
-import { OrdersTable } from "@/components/OrderFleetDisplay/OrdersTable";
+import { FleetCard } from "@/components/orders/FleetCard/FleetCard";
+import OrdersManagementTable from "@/components/orders/OrdersManagementTable/OrdersManagementTable";
 import { OrderItem } from "@/types/order-item";
 import { InventoryItem } from "@/types/inventory-item";
-import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
+import ModifyOrderModal from "@/components/orders/modals/ModifyOrderModal";
 import { fetchAssignedItems } from "@/api/orderAPI";
 import { fetchInventoryItems } from "@/api/inventoryAPI";
-import { PageTitle } from "@/components/PageTitle";
+import { PageTitle } from "@/layout";
 import { ModifyOrderItem } from "@/types/modify-order-item";
 import { useEffect, useState } from "react";
 import { useOrder } from "@/hooks/useOrder";
 import { useUpdateAssignedItem } from "@/hooks/useUpdateAssignedItem";
 import { HighlightedItem } from "@/types";
 import { fixEncoding } from "@/utils/Normalization";
-import { OrdersSkeleton } from "@/components/OrderFleetDisplay/OrdersSkeleton";
+import OrdersManagementTableSkeleton from "@/components/orders/OrdersManagementTable/OrdersManagementTableSkeleton";
+import FleetCardsSkeleton from "@/components/orders/FleetCard/FleetCardsSkeleton";
 
-const Orders: React.FC = () => {
+const OrderPage = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] =
@@ -123,11 +124,11 @@ const Orders: React.FC = () => {
   const handleRemoveItem = async (id: number) => {
     setIsDeleting(true);
     try {
-    await handleDeleteOrderItem(id);
-    const Orders = await fetchAssignedItems();
-    setOrders(Orders);
-    setIsModifyOpen(false);
-    setSelectedOrder(null);
+      await handleDeleteOrderItem(id);
+      const Orders = await fetchAssignedItems();
+      setOrders(Orders);
+      setIsModifyOpen(false);
+      setSelectedOrder(null);
     } catch (error) {
       console.error("Error deleting order:", error);
     } finally {
@@ -148,7 +149,10 @@ const Orders: React.FC = () => {
       <main className="flex-1">
         <PageTitle title={activeFleet} />
         {isLoading ? (
-          <OrdersSkeleton />
+          <>
+            <FleetCardsSkeleton />
+            <OrdersManagementTableSkeleton />
+          </>
         ) : (
           <>
             <div className="flex justify-center items-center h-[200px]">
@@ -178,7 +182,7 @@ const Orders: React.FC = () => {
             </div>
 
             <div className="p-[30px]">
-              <OrdersTable
+              <OrdersManagementTable
                 orders={filteredOrders}
                 onSearch={handleSearch}
                 searchQuery={searchQuery}
@@ -194,7 +198,7 @@ const Orders: React.FC = () => {
             </div>
           </>
         )}
-        <ModifyModal
+        <ModifyOrderModal
           isOpen={isModifyOpen}
           setIsOpen={setIsModifyOpen}
           onModify={handleEditItem}
@@ -208,4 +212,4 @@ const Orders: React.FC = () => {
   );
 };
 
-export default Orders;
+export default OrderPage;

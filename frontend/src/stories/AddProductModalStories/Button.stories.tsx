@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { fn, expect, userEvent, within } from "@storybook/test";
-import { Button } from "@/components/AddProductModal/Button";
+import { Button } from "@/components/shared/buttons/Button";
 
 const meta: Meta<typeof Button> = {
     title: "Add Product Modal/Button",

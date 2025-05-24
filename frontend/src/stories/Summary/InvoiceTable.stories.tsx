@@ -1,9 +1,8 @@
-import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
 import {
   InvoiceTable,
   InvoiceTableProps,
-} from "@/components/Summary/InvoiceTable";
+} from "@/components/summary/InvoiceTable";
 import { GroupedOrders } from "@/types";
 
 export default {
