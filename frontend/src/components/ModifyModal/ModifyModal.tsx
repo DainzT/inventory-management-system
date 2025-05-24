@@ -233,6 +233,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
             } hover:bg-black/5 rounded-full transition-colors `}
             aria-label="Close dialog"
             disabled={isModifying || isDeleting}
+            data-testid="close-button"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
