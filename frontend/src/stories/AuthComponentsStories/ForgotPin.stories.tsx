@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import { http, HttpResponse, delay } from "msw";
 import { expect, userEvent, within } from "@storybook/test";
-import ForgotPin from "@/components/AuthComponents/ForgotPin";
+import ForgotPin from "@/components/authentication/ForgotPin";
 
 export default {
   title: "Auth/ForgotPin",

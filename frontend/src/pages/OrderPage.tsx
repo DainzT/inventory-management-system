@@ -5,7 +5,7 @@ import { InventoryItem } from "@/types/inventory-item";
 import ModifyOrderModal from "@/components/orders/modals/ModifyOrderModal";
 import { fetchAssignedItems } from "@/api/orderAPI";
 import { fetchInventoryItems } from "@/api/inventoryAPI";
-import { PageTitle } from "@/layout/PageTitle";
+import { PageTitle } from "@/layout";
 import { ModifyOrderItem } from "@/types/modify-order-item";
 import { useEffect, useState } from "react";
 import { useOrder } from "@/hooks/useOrder";
@@ -15,7 +15,7 @@ import { fixEncoding } from "@/utils/Normalization";
 import OrdersManagementTableSkeleton from "@/components/orders/OrdersManagementTable/OrdersManagementTableSkeleton";
 import FleetCardsSkeleton from "@/components/orders/FleetCard/FleetCardsSkeleton";
 
-const Orders: React.FC = () => {
+const OrderPage = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [modifyOrderItem, setModifyOrderItem] =
@@ -212,4 +212,4 @@ const Orders: React.FC = () => {
   );
 };
 
-export default Orders;
+export default OrderPage;

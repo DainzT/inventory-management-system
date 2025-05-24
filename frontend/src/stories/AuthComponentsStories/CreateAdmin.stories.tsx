@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
-import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
+import CreateAdmin from "@/components/authentication/CreateAdmin";
 
 export default {
   title: "Auth/CreateAdmin",

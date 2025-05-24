@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { fn, expect, userEvent, within, waitFor } from "@storybook/test";
-import AddProductForm from "@/components/AddProductModal/AddProductForm";
+import AddProductForm from "@/components/inventory/modals/AddProductModal/AddProductForm";
 import { fireEvent } from "@testing-library/react";
 
 const meta: Meta<typeof AddProductForm> = {

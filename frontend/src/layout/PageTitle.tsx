@@ -2,7 +2,7 @@ interface PageTitle {
     title: string;
 }
 
-export const PageTitle = ({
+const PageTitle = ({
     title,
 }: PageTitle) => {
     return (
@@ -15,3 +15,5 @@ export const PageTitle = ({
         </h2>
     );
 };
+
+export default PageTitle;

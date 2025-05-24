@@ -1,18 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { OrdersTable } from "../../components/orders/OrdersManagementTable/OrdersManagementTable";
+import OrdersManagementTable from "@/components/orders/OrdersManagementTable/OrdersManagementTable";
 import { OrderItem } from "@/types/order-item";
 import { useState } from "react";
 import { waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-const meta: Meta<typeof OrdersTable> = {
+const meta: Meta<typeof OrdersManagementTable> = {
   title: " Order Components/OrdersTable",
-  component: OrdersTable,
+  component: OrdersManagementTable,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof OrdersTable>;
+type Story = StoryObj<typeof OrdersManagementTable>;
 
 // Sample data
 const sampleOrders: OrderItem[] = [
@@ -74,7 +74,7 @@ const Template: Story["render"] = (args) => {
   });
 
   return (
-    <OrdersTable
+    <OrdersManagementTable
       {...args}
       orders={filteredOrders}
       onSearch={(query) => setSearchQuery(query)}
