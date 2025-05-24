@@ -5,7 +5,7 @@ import { InventoryItem } from "@/types/inventory-item";
 import { ModifyModal } from "@/components/ModifyModal/ModifyModal";
 import { fetchAssignedItems } from "@/api/orderAPI";
 import { fetchInventoryItems } from "@/api/inventoryAPI";
-import { PageTitle } from "@/components/PageTitle";
+import { PageTitle } from "@/layout/PageTitle";
 import { ModifyOrderItem } from "@/types/modify-order-item";
 import { useEffect, useState } from "react";
 import { useOrder } from "@/hooks/useOrder";

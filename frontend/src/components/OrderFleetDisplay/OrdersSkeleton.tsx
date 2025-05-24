@@ -128,7 +128,7 @@ export const OrdersSkeleton = () => {
                         ))}
                     </div>
                     <motion.div
-                        className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px]"
+                        className="sticky bottom-0 bg-[#fff]  pb-5 w-full ml-[0.2px]"
                         variants={shimmerVariants}
                         initial="initial"
                         animate="animate"

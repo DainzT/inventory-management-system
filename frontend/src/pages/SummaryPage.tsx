@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import SummaryDesign from "@/components/Summary/SummaryDesign";
-import { PageTitle } from "@/components/PageTitle";
+import { PageTitle } from "@/layout/PageTitle";
 import { OrderItem } from "@/types";
 import { useParams } from "react-router-dom";
 import { fetchAssignedItems } from "@/api/orderAPI";

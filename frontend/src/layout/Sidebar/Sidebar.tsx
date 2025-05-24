@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Logo } from "./SidebarComponents/Logo";
-import { NavigationItem } from "./SidebarComponents/NavigationItem";
-import { FleetSelector } from "./SidebarComponents/FleetSelector";
+import { Logo } from "./Logo";
+import { NavigationItem } from "./NavigationItem";
+import { FleetSelector } from "./FleetSelector";
 import { CiBoxList } from "react-icons/ci";
-import LogoutButton from "./SidebarComponents/LogoutButton";
+import LogoutButton from "./LogoutButton";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { BsBoxSeam } from "react-icons/bs";
 import { HiMenu, HiX } from "react-icons/hi";
-import ChangePinModal from "./AuthComponents/ChangePin";
-import ChangeEmailModal from "./AuthComponents/ChangeEmail";
+import ChangePinModal from "../../components/AuthComponents/ChangePin";
+import ChangeEmailModal from "../../components/AuthComponents/ChangeEmail";
 import { IoSettingsOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 

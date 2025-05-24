@@ -288,7 +288,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 </div>
                 <div
                   className={`transition-all duration-300 ease-in-out ${expandedOrderId === order.id
-                    ? "scale-[100.5%] opacity-100 max-h-[500px]"
+                    ? "scale-[100%] opacity-100 max-h-[500px]"
                     : "scale-100 opacity-0 max-h-0 overflow-hidden"
                     }`}
                 >
@@ -301,7 +301,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
           })
         )}
       </div>
-      <div className="sticky bottom-0 bg-[#fff] ml-[0.3px] pb-4 ">
+      <div className="sticky bottom-0 bg-[#fff]  pb-5 w-full ml-[0.2px]">
         <div className="p-4 px-6 flex justify-between items-center rounded-br-[10px] rounded-bl-[10px] border-[#E5E7EB] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] 
             bg-gray-50 text-sm text-gray-500
             border-t border-[1px]">

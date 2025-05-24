@@ -6,13 +6,13 @@ interface UnsavedChangesModalProps {
   header?: string;
 }
 
-export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
+export const UnsavedChangesModal = ({
   isOpen,
   onClose,
   onConfirm,
   text = "You have unsaved changes. Are you sure you want to leave without saving?",
   header = "Unsaved Changes"
-}) => {
+}: UnsavedChangesModalProps) => {
   if (!isOpen) return null;
 
   return (

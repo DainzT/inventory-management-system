@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import Header from "@/components/Header";
-import { Logo } from "@/components/SidebarComponents/Logo";
+import Header from "@/layout/Header";
+import { Logo } from "@/layout/Sidebar/Logo";
 import LoginInput from "@/components/AuthComponents/LoginInput";
 import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
 import ForgotPin from "@/components/AuthComponents/ForgotPin";

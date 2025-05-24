@@ -135,7 +135,7 @@ const InventoryManagementTable = ({
             itemsPerPage={ITEMS_PER_PAGE}
           />
         </div>
-        <div className="sticky bottom-0 bg-[#fff] pb-4 w-full ml-[0.3px] ">
+        <div className="sticky bottom-0 bg-[#fff] pb-5 w-full ml-[0.2px] ">
           <div className="
             p-4 px-6 
             border-t border-[1px] border-[#E5E7EB] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] 

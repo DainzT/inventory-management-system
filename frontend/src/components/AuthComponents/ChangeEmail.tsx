@@ -14,9 +14,12 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
   const [currentPin, setCurrentPin] = useState("");
   const [currentEmail, setCurrentEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [confirmNewEmail, setConfirmNewEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [currentPinVerified, setCurrentPinVerified] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [emailOTP, setEmailOTP] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const {
     otpSent,
@@ -27,6 +30,7 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
     verifyPin,
     handleVerifyEmail,
     handleVerifyOTP,
+    handleSendOTP,
     changeEmail,
   } = useAuth();
 
@@ -57,10 +61,22 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
       setErrors((prev) => ({ ...prev, email: "Invalid email format" }));
       return false;
     }
+
+    if (!confirmNewEmail) {
+      setErrors((prev) => ({ ...prev, email: "Please confirm your new Email" }));
+      return false;
+    }
+
     if (newEmail === currentEmail) {
       setErrors((prev) => ({ ...prev, email: "New email must be different" }));
       return false;
     }
+
+    if (newEmail && newEmail !== confirmNewEmail) {
+      setErrors((prev) => ({ ...prev, confirmEmail: "New email do not match" }));
+      return false;
+    }
+
     setErrors((prev) => ({ ...prev, email: "" }));
     return true;
   };
@@ -74,6 +90,7 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
       setErrors((prev) => ({ ...prev, otp: "OTP must be 6 digits" }));
       return false;
     }
+
     setErrors((prev) => ({ ...prev, otp: "" }));
     return true;
   };
@@ -84,7 +101,7 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
     setCurrentPinVerified(true);
   };
 
-  const handleSendOTP = async () => {
+  const handleSendEmailOTP = async () => {
     if (!validateCurrentEmail()) return;
     await handleVerifyEmail(currentEmail);
   };
@@ -94,8 +111,17 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
     await handleVerifyOTP(otp);
   };
 
-  const handleUpdateEmail = async () => {
+  const handleSendNewEmailOTP = async () => {
     if (!validateNewEmail()) return;
+    await handleSendOTP(newEmail, currentPin, currentPin);
+    setEmailOTP(true)
+    setOtp("");
+  };
+
+  const handleVerifyNewEmailOTP = async () => {
+    if (!validateOTP()) return;
+    await handleVerifyOTP(otp);
+    setVerifiedEmail(true);
     await changeEmail(currentEmail, newEmail);
     setSuccess(true);
     toast.success("Closing modal...", {
@@ -104,21 +130,26 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
     });
   };
 
+
   const handleNextStep = () => {
     if (!currentPinVerified) return handleVerifyCurrentPin();
-    if (!otpSent) return handleSendOTP();
+    if (!otpSent) return handleSendEmailOTP();
     if (!otpVerified) return VerifyOTP();
-    return handleUpdateEmail();
+    if (!emailOTP) return handleSendNewEmailOTP();
+    if (!verifiedEmail) return handleVerifyNewEmailOTP();
   };
 
   const handleBack = () => {
-    if (otpVerified) {
+    if (emailOTP) {
+      setEmailOTP(false);
+    } else if (otpVerified) {
       setOtpVerified(false);
     } else if (otpSent) {
       setOtpSent(false);
     } else if (currentPinVerified) {
       setCurrentPinVerified(false);
     }
+    setConfirmNewEmail("");
     setCurrentEmail("");
     setOtp("");
     setNewEmail("");
@@ -130,11 +161,15 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
       if (!currentPinVerified) return "Verifying...";
       if (!otpSent) return "Sending...";
       if (!otpVerified) return "Verifying...";
+      if (!emailOTP) return "Send OTP";
+      if (!verifiedEmail) return "Verifying...";
       return "Updating...";
     }
     if (!currentPinVerified) return "Verify PIN";
     if (!otpSent) return "Send OTP";
     if (!otpVerified) return "Verify OTP";
+    if (!emailOTP) return "Send OTP";
+    if (!verifiedEmail) return "Verify OTP";
     return "Change Email";
   };
 
@@ -143,6 +178,8 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
     if (!otpSent)
       return "Enter your current email to receive a verification code";
     if (!otpVerified) return "Enter the OTP sent to your email";
+    if (!emailOTP) return "Enter your new email address";
+    if (!verifiedEmail) return "Enter the OTP sent to your new email";
     return "Enter your new email address";
   };
 
@@ -196,13 +233,38 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
                 errors={errors}
                 setErrors={setErrors}
               />
+            ) : !emailOTP ? (
+              <>
+                <AuthInput
+                  label="New Email"
+                  value={newEmail}
+                  type="email"
+                  onChange={setNewEmail}
+                  placeholder="Enter new email"
+                  required
+                  disabled={loading || success}
+                  errors={errors}
+                  setErrors={setErrors}
+                />
+                <AuthInput
+                  label="Confirm New Email"
+                  value={confirmNewEmail}
+                  type="confirmEmail"
+                  onChange={setConfirmNewEmail}
+                  placeholder="confirm New Email"
+                  required
+                  disabled={loading || success}
+                  errors={errors}
+                  setErrors={setErrors}
+                />
+              </>
             ) : (
               <AuthInput
-                label="New Email"
-                value={newEmail}
-                type="email"
-                onChange={setNewEmail}
-                placeholder="Enter new email"
+                label="OTP"
+                value={otp}
+                type="otp"
+                onChange={setOtp}
+                placeholder="Enter OTP sent to your new email"
                 required
                 disabled={loading || success}
                 errors={errors}
@@ -216,10 +278,9 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
                 <button
                   onClick={handleBack}
                   className={`px-4 py-2.5 text-gray-600 rounded-lg bg-gray-200 transition  active:scale-[0.98] flex items-center gap-2 border border-gray-200
-                    ${
-                      loading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-gray-300 cursor-pointer"
+                    ${loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-300 cursor-pointer"
                     }`}
                   disabled={loading || success}
                 >
@@ -229,11 +290,10 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
               ) : (
                 <button
                   onClick={onClose}
-                  className={` ${
-                    loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
-                  } px-4 active:scale-[0.98] py-2 text-gray-700  rounded-md transition cursor-pointer`}
+                  className={` ${loading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                    } px-4 active:scale-[0.98] py-2 text-gray-700  rounded-md transition cursor-pointer`}
                   disabled={loading}
                 >
                   Cancel
@@ -242,10 +302,9 @@ const ChangeEmailModal: React.FC<ChangeEmailModalProps> = ({ onClose }) => {
               <button
                 onClick={handleNextStep}
                 className={`px-6 py-2.5 text-white rounded-lg transition-all flex-1 max-w-[11rem] flex items-center justify-center gap-2
-                  ${
-                    loading
-                      ? "bg-accent/60 cursor-wait"
-                      : "bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer"
+                  ${loading
+                    ? "bg-accent/60 cursor-wait"
+                    : "bg-accent hover:bg-[#297885] shadow-md hover:shadow-lg cursor-pointer"
                   }
                   active:scale-[0.98]`}
                 disabled={loading || success}

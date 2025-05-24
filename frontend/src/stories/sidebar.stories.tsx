@@ -1,4 +1,4 @@
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/layout/Sidebar/Sidebar";
 import LoginPage from "@/pages/LoginPage";
 import type { Meta, StoryObj } from "@storybook/react";
 import { userEvent, within, waitFor, expect, screen } from "@storybook/test";

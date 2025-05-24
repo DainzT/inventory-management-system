@@ -3,7 +3,7 @@ import InventoryManagementTable from "@/components/InventoryManagementTable/Inve
 import EditProductModal from "@/components/EditProductModal/EditProductModal";
 import AddProductModal from "@/components/AddProductModal/AddProductModal";
 import OutItemModal from "@/components/OutItemModal/OutItemModal";
-import { PageTitle } from "@/components/PageTitle";
+import { PageTitle } from "@/layout/PageTitle";
 
 import { InventoryItem } from "@/types";
 import { useInventory } from "@/hooks/useInventory";

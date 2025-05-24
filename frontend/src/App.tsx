@@ -7,13 +7,13 @@ import {
 } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Header from "./components/Header";
-import Sidebar from "@/components/Sidebar";
+import Header from "./layout/Header";
+import Sidebar from "@/layout/Sidebar/Sidebar";
 import Inventory from "./pages/InventoryPage";
 import Orders from "./pages/OrderPage";
 import Summary from "./pages/SummaryPage";
 import LoginPage from "./pages/LoginPage";
-import ProtectedRoute from "./components/ProtectedRoutes";
+import ProtectedRoute from "./layout/ProtectedRoutes";
 
 const App: React.FC = () => {
   return (

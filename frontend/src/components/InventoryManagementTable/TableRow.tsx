@@ -127,7 +127,7 @@ export const TableRow = forwardRef<HTMLDivElement, TableRowProps>((
       </div>
       <div
         className={`transition-all duration-300 ease-in-out ${isExpanded
-          ? "scale-[100.5%] opacity-100 max-h-[500px]"
+          ? "scale-[100%] opacity-100 max-h-[500px]"
           : "scale-100 opacity-0 max-h-0 overflow-auto"
           }`}
       >
