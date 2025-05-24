@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import QuantitySelector from "@/components/OutItemModal/QuantitySelector";
+import QuantitySelector from "@/components/shared/fields/QuantitySelector";
 import { fn } from "@storybook/test";
 
 const meta: Meta<typeof QuantitySelector> = {

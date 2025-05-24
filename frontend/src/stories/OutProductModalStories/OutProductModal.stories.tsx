@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import OutItemModal from "@/components/OutItemModal/OutItemModal";
+import OutItemModal from "@/components/inventory/modals/OutProductModal/OutProductModal";
 import { fn, within, userEvent, waitFor } from "@storybook/test";
 import { action } from "@storybook/addon-actions";
 

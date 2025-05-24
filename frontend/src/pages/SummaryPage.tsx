@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import SummaryDesign from "@/components/Summary/SummaryDesign";
+import SummaryDesign from "@/components/summary/SummaryDesign";
 import { PageTitle } from "@/layout/PageTitle";
 import { OrderItem } from "@/types";
 import { useParams } from "react-router-dom";

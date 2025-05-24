@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { fn, expect, userEvent, within, waitFor } from "@storybook/test";
-import { QuantityInput } from "@/components/AddProductModal/QuantityInput";
+import { QuantityInput } from "@/components/shared/fields/QuantityInput";
 import { useState } from "react";
 
 const meta: Meta<typeof QuantityInput> = {

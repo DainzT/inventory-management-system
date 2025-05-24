@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { OrdersTable } from "../../components/OrderFleetDisplay/OrdersTable";
+import { OrdersTable } from "../../components/orders/OrdersManagementTable/OrdersManagementTable";
 import { OrderItem } from "@/types/order-item";
 import { useState } from "react";
 import { waitFor, within } from "@testing-library/react";

@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/layout/Header";
 import { Logo } from "@/layout/Sidebar/Logo";
-import LoginInput from "@/components/AuthComponents/LoginInput";
-import CreateAdmin from "@/components/AuthComponents/CreateAdmin";
-import ForgotPin from "@/components/AuthComponents/ForgotPin";
+import LoginInput from "@/components/authentication/LoginInput";
+import CreateAdmin from "@/components/authentication/CreateAdmin";
+import ForgotPin from "@/components/authentication/ForgotPin";
 import { ClipLoader } from "react-spinners";
 import { AlertCircle } from "lucide-react";
 

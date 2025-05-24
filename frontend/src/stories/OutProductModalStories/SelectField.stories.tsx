@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import SelectField from "@/components/OutItemModal/SelectField";
+import SelectField from "@/components/inventory/modals/OutProductModal/SelectField";
 import { fn, within, userEvent, waitFor } from "@storybook/test";
 
 const meta: Meta<typeof SelectField> = {
