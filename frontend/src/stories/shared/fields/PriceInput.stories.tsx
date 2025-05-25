@@ -4,7 +4,7 @@ import { PriceInput } from "@/components/shared/fields/PriceInput";
 import { useState } from "react";
 
 const meta: Meta<typeof PriceInput> = {
-    title: "Add Product Modal/PriceInput",
+    title: "shared/fields/PriceInput",
     component: PriceInput,
     parameters: {
         layout: 'centered',
@@ -133,21 +133,9 @@ export default meta;
 type Story = StoryObj<typeof PriceInput>
 
 export const Default: Story = {
-    render: (args) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const [price, setPrice] = useState<number | "">("");
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const [unitSize, setUnitSize] = useState<number | "">("");
-        return (
-            <PriceInput
-                {...args}
-                value={price}
-                onChange={setPrice}
-                unitSize={unitSize}
-                unitChange={setUnitSize}
-            />
-        );
-    },
+    args : {
+        value: ""
+    }
 };
 
 export const WithValue: Story = {
