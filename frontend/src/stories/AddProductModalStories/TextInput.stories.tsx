@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { fn, expect, userEvent, within, waitFor } from "@storybook/test";
-import { InputField } from "@/components/shared/fields/TextInput";
+import { TextInput } from "@/components/shared/fields/TextInput";
 import { useState } from "react";
 
-const meta: Meta<typeof InputField> = {
+const meta: Meta<typeof TextInput> = {
     title: "Add Product Modal/InputField",
-    component: InputField,
+    component: TextInput,
     parameters: {
         layout: 'centered',
         docs: {
@@ -100,17 +100,17 @@ const meta: Meta<typeof InputField> = {
             <Story />
         ),
     ],
-} satisfies Meta<typeof InputField>;
+} satisfies Meta<typeof TextInput>;
 
 
 export default meta;
-type Story = StoryObj<typeof InputField>
+type Story = StoryObj<typeof TextInput>
 
 export const Default: Story = {
     render: (args) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const [value, setValue] = useState('');
-        return <InputField {...args} value={value} onChange={setValue} />;
+        return <TextInput {...args} value={value} onChange={setValue} />;
     },
     args: {
         label: 'Default Input',
@@ -229,7 +229,7 @@ export const InteractiveExample: Story = {
     render: (args) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const [value, setValue] = useState('');
-        return <InputField {...args} value={value} onChange={setValue} />;
+        return <TextInput {...args} value={value} onChange={setValue} />;
     },
     args: {
         label: 'Interactive Example',

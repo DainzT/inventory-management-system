@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import { within, expect, userEvent, waitFor, screen } from "@storybook/test";
-import ChangeEmail from "@/components/AuthComponents/ChangeEmail";
+import ChangeEmail from "@/components/authentication/ChangeEmail";
 import { IoSettingsOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { MemoryRouter } from "react-router-dom";
