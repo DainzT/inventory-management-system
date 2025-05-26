@@ -23,7 +23,7 @@ const meta: Meta<typeof EditProductModal> = {
     parameters: {
         layout: 'centered',
         description: {
-            component: 'The Edit Product Modal Component that handles editable inputs and form submission',
+            component: 'The Edit Product Modal Component allows editing values and control various states',
         },
     },
     tags: ['autodocs'],
@@ -42,7 +42,7 @@ const meta: Meta<typeof EditProductModal> = {
         selectedItem: {
             description: 'Selected data',
             table: {
-                category: 'value',
+                category: 'Value',
             }
         },
         onDeleteItem: {
@@ -124,7 +124,7 @@ const StatefulWrapper = () => {
 };
 
 
-export const EditableItem: Story = {
+export const EditableState: Story = {
     args: {
         selectedItem: sampleProduct,
         isOpen: true

@@ -44,7 +44,7 @@ const meta: Meta<typeof TextInput> = {
             }
         },
         value: {
-            control: 'text',
+            control: { type: 'text' },
             description: 'Controlled input value',
             table: {
                 type: { summary: 'string' },
@@ -60,7 +60,7 @@ const meta: Meta<typeof TextInput> = {
             }
         },
         placeholder: {
-            control: 'text',
+            control: { type: 'text' },
             description: 'Input placeholder text',
             table: {
                 type: { summary: 'string' },
@@ -68,7 +68,7 @@ const meta: Meta<typeof TextInput> = {
             }
         },
         error: {
-            control: 'text',
+            control: { type: 'text' },
             description: 'Error message to display below input',
             table: {
                 type: { summary: 'string' },
