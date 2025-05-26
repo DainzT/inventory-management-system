@@ -4,13 +4,13 @@ import { UnitSelector } from "@/components/shared/fields/UnitSelector";
 import { useState } from "react";
 
 const meta: Meta<typeof UnitSelector> = {
-    title: "Add Product Modal/UnitSelector",
+    title: "shared/fields/UnitSelector",
     component: UnitSelector,
     parameters: {
         layout: 'centered',
         docs: {
             description: {
-                component: 'A flexible input component with validation and multiple input types',
+                component: 'A flexible select component with validation and unit selections',
             },
         },
     },

@@ -4,7 +4,7 @@ import { TextInput } from "@/components/shared/fields/TextInput";
 import { useState } from "react";
 
 const meta: Meta<typeof TextInput> = {
-    title: "Add Product Modal/InputField",
+    title: "shared/fields/TextInput",
     component: TextInput,
     parameters: {
         layout: 'centered',
@@ -44,7 +44,7 @@ const meta: Meta<typeof TextInput> = {
             }
         },
         value: {
-            control: 'text',
+            control: { type: 'text' },
             description: 'Controlled input value',
             table: {
                 type: { summary: 'string' },
@@ -60,7 +60,7 @@ const meta: Meta<typeof TextInput> = {
             }
         },
         placeholder: {
-            control: 'text',
+            control: { type: 'text' },
             description: 'Input placeholder text',
             table: {
                 type: { summary: 'string' },
@@ -68,7 +68,7 @@ const meta: Meta<typeof TextInput> = {
             }
         },
         error: {
-            control: 'text',
+            control: { type: 'text' },
             description: 'Error message to display below input',
             table: {
                 type: { summary: 'string' },
@@ -107,21 +107,8 @@ export default meta;
 type Story = StoryObj<typeof TextInput>
 
 export const Default: Story = {
-    render: (args) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const [value, setValue] = useState('');
-        return <TextInput {...args} value={value} onChange={setValue} />;
-    },
     args: {
-        label: 'Default Input',
-        type: 'text',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'The default text input field with basic styling and functionality.',
-            },
-        },
+        value: "",
     },
 }
 
@@ -244,7 +231,7 @@ export const InteractiveExample: Story = {
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
         const input = canvas.getByRole('textbox');
-        
+
         await userEvent.type(input, 'Interactive test');
         await waitFor(() => {
             expect(input).toHaveValue('Interactive test');

@@ -4,13 +4,13 @@ import { QuantityInput } from "@/components/shared/fields/QuantityInput";
 import { useState } from "react";
 
 const meta: Meta<typeof QuantityInput> = {
-    title: "Add Product Modal/QuantityInput",
+    title: "shared/fields/QuantityInput",
     component: QuantityInput,
     parameters: {
         layout: 'centered',
         docs: {
             description: {
-                component: 'A flexible input component with validation and multiple input types',
+                component: 'A flexible input component with validation for handling related product volumes',
             },
         },
     },
@@ -81,18 +81,9 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 
 export const Default: Story = {
-    render: (args) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const [value, setValue] = useState<number | "">("");
-        return <QuantityInput {...args} value={value} onChange={setValue} />;
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Default empty state of the quantity input',
-            },
-        },
-    },
+   args: {
+    value: ""
+   }
 };
 
 export const WithValue: Story = {
