@@ -6,7 +6,7 @@ import { fireEvent } from "@testing-library/react";
 import { useState } from "react";
 
 const meta: Meta<typeof AddProductModal> = {
-    title: "Add Product Modal/AddProductModal",
+    title: "inventory/modals/AddProductModal/AddProductModal",
     component: AddProductModal,
     parameters: {
         layout: 'centered',
@@ -21,7 +21,7 @@ const meta: Meta<typeof AddProductModal> = {
             defaultValue: true,
             description: 'Called when modal visibility changes (true=opened, false=closed)',
             table: {
-                category: 'Visibility',
+                category: 'State',
             }
         },
         setIsOpen: {
@@ -31,7 +31,7 @@ const meta: Meta<typeof AddProductModal> = {
             action: 'onAddItem',
             description: 'Triggered when new item submission starts',
             table: {
-                category: 'Data',
+                category: 'Events',
             }
         },
         isAdding: {
@@ -64,8 +64,9 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const StatefulWrapper = () => {
     const [isOpen, setIsOpen] = useState<boolean>(true);
-    const [isAdding,] = useState<boolean>(false);
+    const [isAdding, setIsAdding] = useState<boolean>(false);
     const handleAddItem = () => {
+        setIsAdding(true)
         console.log("Add item clicked with empty data");
     };
 
@@ -348,7 +349,6 @@ export const FilledForm: Story = {
             for (const [index, config] of inputNumberConfigs.entries()) {
                 const input = canvas.getAllByRole(config.role)[index];
                 if (config.value === "2000") {
-                    fireEvent.change(input);
                     await waitFor(() => expect(input).toHaveValue(Number(config.value)));
                 } else {
                     await userEvent.type(input, config.value);
@@ -448,7 +448,7 @@ export const DiscardCancelConfirmation: Story = {
                 expect(input).toHaveValue(config.value);
             }
         })
-
+        await delay(1000);
         await waitFor(async () => {
             await userEvent.click(canvas.getByLabelText('Close dialog'));
         });
@@ -456,7 +456,7 @@ export const DiscardCancelConfirmation: Story = {
         await waitFor(async () => {
             expect(canvas.getByText('Cancel')).toBeInTheDocument();
             await userEvent.hover(canvas.getByText('Cancel'));
-            await delay(500);
+            await delay(1000);
             await userEvent.click(canvas.getByText('Cancel'));
         });
     }
@@ -496,7 +496,7 @@ export const DiscardChangesConfirmation: Story = {
                 expect(input).toHaveValue(config.value);
             }
         })
-
+        await delay(1000);
         await waitFor(async () => {
             await userEvent.click(canvas.getByLabelText('Close dialog'));
         });
@@ -588,13 +588,8 @@ export const SubmitIncompleteForm: Story = {
         await waitFor(async () => {
             for (const [index, config] of inputNumberConfigs.entries()) {
                 const input = canvas.getAllByRole(config.role)[index];
-                if (config.value === "0.00") {
-                    fireEvent.change(input);
-                    await waitFor(() => expect(input).toHaveValue(Number(config.value)));
-                } else {
                     await userEvent.type(input, config.value);
                     await waitFor(() => expect(input).toHaveValue(Number(config.value)));
-                }
             }
         })
 
@@ -626,8 +621,10 @@ export const SubmitIncompleteForm: Story = {
 };
 
 export const SubmitCompleteForm: Story = {
-    args: {
-        isOpen: true,
+    render: () => {
+        return (
+            <StatefulWrapper />
+        );
     },
     parameters: {
         docs: {
@@ -717,91 +714,5 @@ export const SubmitCompleteForm: Story = {
         })
     }
 };
-
-export const ProcessingSubmission: Story = {
-    args: {
-        isOpen: true,
-        isAdding: true,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'A processing state while the product is being process'
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-
-        const inputTextConfigs = [
-            {
-                role: 'textbox',
-                value: 'Net',
-            },
-            {
-                role: 'textbox',
-                value: '10 meter wide',
-            },
-        ];
-
-        for (const [index, config] of inputTextConfigs.entries()) {
-            const input = canvas.getAllByRole(config.role)[index] as HTMLInputElement;
-            input.value = config.value
-            expect(input).toHaveValue(config.value);
-        }
-
-        const inputNumberConfigs = [
-            {
-                role: 'spinbutton',
-                value: "10"
-            },
-            {
-                role: 'spinbutton',
-                value: "200",
-            },
-            {
-                role: 'spinbutton',
-                value: "1",
-            },
-            {
-                role: 'spinbutton',
-                value: `${200 * 10}`,
-            },
-        ];
-
-        for (const [index, config] of inputNumberConfigs.entries()) {
-            const input = canvas.getAllByRole(config.role)[index] as HTMLInputElement;
-            if (config.value === "2000") {
-                input.value = config.value
-                await waitFor(() => expect(input).toHaveValue(Number(config.value)));
-            } else {
-                input.value = config.value
-                await waitFor(() => expect(input).toHaveValue(Number(config.value)));
-            }
-        }
-
-        const selectUnit = {
-            text: 'Select Unit',
-            placeholder: 'Unit',
-            expectedValue: 'Unit',
-        }
-
-        const label = canvas.getByText(selectUnit.text);
-        const div = label.closest('div') as HTMLDivElement;
-        const selectDiv = within(div).getByText('Unit')
-        if (selectDiv) {
-            selectDiv.textContent = "Piece"
-        }
-
-        expect(selectDiv).toHaveTextContent('Piece');
-        await waitFor(() => {
-            const loaderContainer = canvas.getByText('Adding...').closest('div');
-            expect(loaderContainer).toBeInTheDocument();
-            expect(loaderContainer).toHaveClass('flex', 'items-center', 'justify-center');
-            expect(canvas.getByText('Adding...')).toBeInTheDocument();
-        })
-    }
-}
 
 

@@ -35,7 +35,11 @@ const InventoryManagementTable = ({
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const itemRef = useRef<HTMLDivElement | null>(null);
-  
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchQuery]);
+
   useEffect(() => {
     if (highlightedItem && containerRef?.current) {
       const itemIndex = inventoryItems.findIndex(item => item.id === highlightedItem.id);
@@ -49,7 +53,7 @@ const InventoryManagementTable = ({
             const scrollPosition = containerRef.current.scrollTop +
               (itemRect.top - containerRect.top) -
               (containerRect.height / 2);
-            
+
             containerRef.current.scrollTo({
               top: scrollPosition,
               behavior: 'smooth'

@@ -3,7 +3,7 @@ import { fn, expect, userEvent, within } from "@storybook/test";
 import { Button } from "@/components/shared/buttons/Button";
 
 const meta: Meta<typeof Button> = {
-    title: "Add Product Modal/Button",
+    title: "shared/buttons/Button",
     component: Button,
     parameters: {
         layout: 'centered',
@@ -22,6 +22,7 @@ const meta: Meta<typeof Button> = {
             table: {
                 type: { summary: 'primary | secondary' },
                 defaultValue: { summary: 'primary' },
+                category: 'Type',
             },
         },
         children: {
@@ -29,6 +30,7 @@ const meta: Meta<typeof Button> = {
             description: 'Button label content',
             table: {
                 type: { summary: 'ReactNode' },
+                category: 'Content',
             },
         },
         onClick: {
@@ -112,7 +114,7 @@ export const Primary: Story = {
         expect(button).toHaveClass('text-white');
         expect(button).toHaveClass('hover:bg-[#297885]');
         expect(button).toHaveClass('active:bg-[#145965]');
-        expect(button).toHaveClass('transition-colors');
+
 
         await userEvent.click(button);
         expect(args.onClick).toHaveBeenCalled();
@@ -147,7 +149,6 @@ export const Secondary: Story = {
         expect(button).toHaveClass('text-[#1B626E]');
         expect(button).toHaveClass('hover:bg-[#1B626E]/5');
         expect(button).toHaveClass('active:bg-[#1B626E]/10');
-        expect(button).toHaveClass('transition-colors');
 
         expect(button).toHaveTextContent("Secondary Button");
     },

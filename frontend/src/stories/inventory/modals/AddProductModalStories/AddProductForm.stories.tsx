@@ -4,7 +4,7 @@ import AddProductForm from "@/components/inventory/modals/AddProductModal/AddPro
 import { fireEvent } from "@testing-library/react";
 
 const meta: Meta<typeof AddProductForm> = {
-    title: "Add Product Modal/AddProductForm",
+    title: "inventory/modals/AddProductModal/AddProductForm",
     component: AddProductForm,
     parameters: {
         layout: 'centered',
@@ -18,14 +18,14 @@ const meta: Meta<typeof AddProductForm> = {
             action: 'onSubmit',
             description: 'Callback when form is submitted with valid data',
             table: {
-                category: 'Form',
+                category: 'Events',
             }
         },
         onFormChange: {
             action: 'onFormChange',
             description: 'Triggered when form dirty state changes',
             table: {
-                category: 'Form',
+                category: 'Events',
             }
         },
         isAdding: {
