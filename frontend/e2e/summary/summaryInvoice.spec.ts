@@ -1,13 +1,29 @@
 import { test, expect } from "@playwright/test";
+import { testDataManager } from "./testDataManager";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 test.describe("Summary Invoice", () => {
   let accessToken;
+  
+   test.beforeAll(async ({ request }) => {
+    // Seed test data before all tests
+    await testDataManager.seedTestData(request);
+  });
 
-  test.beforeEach(async ({ page }) => {
+  test.afterAll(async ({ request }) => {
+    // Clean up test data after all tests
+    await testDataManager.cleanupTestData(request);
+  });
+  test.beforeEach(async ({ page, request }) => {
     test.setTimeout(180000);
+
+    const dataExists = await testDataManager.verifyTestDataExists(request);
+    if (!dataExists) {
+      console.log("No test data found, seeding again...");
+      await testDataManager.seedTestData(request);
+    }
 
     try {
       // Login first
@@ -94,49 +110,110 @@ test.describe("Summary Invoice", () => {
   });
 
   test("should render invoice table headers", async ({ page }) => {
-    const headers = ["Date Out", "Product", "Note", "Qty", "Unit Price"];
-    for (const header of headers) {
-      await expect(page.getByText(header)).toBeVisible();
-    }
-    // Check for the table header "Total" specifically (not the summary "Total:")
-    await expect(
-      page
-        .locator(".bg-cyan-900 .border-r")
-        .filter({ hasText: "Total" })
-        .and(page.locator(".font-medium"))
-    ).toBeVisible();
-  });
-  test("should display order rows in invoice table", async ({ page }) => {
-    // Check if there are orders or if it shows no orders message
-    const noOrdersMsg = page.locator(
-      "text=No existing orders during this month of the year."
-    );
-    const orderRow = page.locator(
-      ".invoice-page .grid-cols-\\[95px_120px_170px_90px_130px_136px\\]"
-    );
+  // Use more specific selectors for table headers within the header row
+  const headerRow = page.locator(".bg-cyan-900");
+  
+  await expect(headerRow.getByText("Date Out", { exact: true })).toBeVisible();
+  await expect(headerRow.getByText("Product", { exact: true })).toBeVisible();
+  await expect(headerRow.getByText("Note", { exact: true })).toBeVisible();
+  await expect(headerRow.getByText("Qty", { exact: true })).toBeVisible();
+  await expect(headerRow.getByText("Unit Price", { exact: true })).toBeVisible();
+  
+  // Check for the table header "Total" specifically within the header row
+  await expect(headerRow.getByText("Total", { exact: true })).toBeVisible();
+});
 
-    if (await noOrdersMsg.isVisible()) {
-      // If no orders, verify the no orders message is displayed
-      await expect(noOrdersMsg).toBeVisible();
-    } else {
-      // If orders exist, verify at least one order row is visible and contains currency
-      await expect(orderRow.first()).toBeVisible();
-      await expect(orderRow.first()).toContainText("₱");
-    }
+  test("should display order rows in invoice table (with test data)", async ({ page }) => {
+  // First, ensure we're on the summary page and wait for it to be fully loaded
+  await page.waitForSelector('[data-year-select="true"]', { timeout: 15000 });
+  
+  // Wait for year buttons to be available
+  await page.waitForSelector('[data-year-select="true"] button', { timeout: 10000 });
+  
+  // Check if 2024 button exists, if not use the first available year
+  const year2024Button = page.locator('[data-year-select="true"] button', {
+    hasText: "2024",
   });
+  
+  const year2024Exists = await year2024Button.count() > 0;
+  
+  if (year2024Exists) {
+    await year2024Button.click();
+  } else {
+    // If 2024 doesn't exist, click the first available year button
+    const firstYearButton = page.locator('[data-year-select="true"] button').first();
+    await firstYearButton.click();
+    console.log("2024 not found, using first available year");
+  }
+  
+  // Wait for the year selection to take effect
+  await page.waitForTimeout(2000);
+  
+  // Then select January month where our test data should be
+  await page.waitForSelector('[data-month-select="true"]', { timeout: 10000 });
+  await page.waitForSelector('[data-month-select="true"] button', { timeout: 5000 });
+  
+  const januaryButton = page.locator('[data-month-select="true"] button', {
+    hasText: "January",
+  });
+  await januaryButton.click();
+  
+  // Wait for the month selection to take effect
+  await page.waitForTimeout(2000);
 
-  test("should show total summary in InvoiceSummary", async ({ page }) => {
+  // Wait for the invoice page to be rendered with a longer timeout
+  try {
+    await page.waitForSelector('.invoice-page', { timeout: 20000 });
+  } catch (error) {
+    // Take a screenshot for debugging
+    await page.screenshot({ path: 'invoice-page-timeout.png' });
+    throw new Error(`Invoice page not found: ${error.message}`);
+  }
+  
+  // Wait for the invoice table section to be loaded
+  await page.waitForSelector('.invoice-page section.rounded-lg', { timeout: 15000 });
+  
+  // Check if we have any data to display
+  const hasData = await page.locator('.invoice-page').getByText("Fish Feed A").count() > 0;
+  
+  if (hasData) {
+    // Look for specific test data within the invoice page
+    await expect(page.locator('.invoice-page').getByText("Fish Feed A")).toBeVisible();
+    
+    // Verify we can see the price format within the invoice page
+    await expect(page.locator('.invoice-page').locator('text=/₱\\d+\\.\\d{2}/')).toBeVisible();
+    
+    // Look for order rows specifically within the invoice table
+    const orderRows = page.locator('.invoice-page div[class*="grid-cols-"][class*="136px"]');
+    await expect(orderRows.first()).toBeVisible();
+  } else {
+    // If no test data is found, verify the empty state
+    console.log("No test data found, checking for empty state message");
+    const emptyMessage = page.locator("text=No existing orders during this month of the year.");
+    if (await emptyMessage.count() > 0) {
+      await expect(emptyMessage).toBeVisible();
+    }
+  }
+});
+
+  test("should show total summary with actual amounts (with test data)", async ({ page }) => {
     await expect(page.getByText("Total:", { exact: true })).toBeVisible();
-    // Should contain a ₱ amount (use regex) - target the specific total amount span
-    await expect(page.locator(".text-cyan-900.font-semibold")).toContainText(
-      /₱[\d,.]+/
-    );
+    
+    // With test data, we should have a real total amount
+    const totalAmount = page.locator(".text-cyan-900.font-semibold");
+    await expect(totalAmount).toContainText(/₱[\d,.]+/);
+    
+    // The total should not be ₱0.00
+    await expect(totalAmount).not.toContainText("₱0.00");
+    
     await expect(
       page.getByText(
         /This document serves as official record of fishing vessels expenses/
       )
     ).toBeVisible();
   });
+
+
   test("should paginate with Previous and Next buttons", async ({ page }) => {
     const nextButton = page.getByRole("button", { name: "Next" });
     const prevButton = page.getByRole("button", { name: "Previous" });

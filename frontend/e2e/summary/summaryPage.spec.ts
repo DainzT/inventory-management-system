@@ -1,13 +1,31 @@
 import { test, expect } from "@playwright/test";
+import { testDataManager } from "./testDataManager";
 import dotenv from "dotenv";
 dotenv.config();
 
 test.describe("Summary Page", () => {
   let accessToken;
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeAll(async ({ request }) => {
+    // Seed test data before all tests
+    await testDataManager.seedTestData(request);
+  });
+
+  test.afterAll(async ({ request }) => {
+    // Clean up test data after all tests
+    await testDataManager.cleanupTestData(request);
+  });
+
+
+  test.beforeEach(async ({ page, request }) => {
     // Set a longer timeout for the entire test
     test.setTimeout(180000);
+
+    const dataExists = await testDataManager.verifyTestDataExists(request);
+    if (!dataExists) {
+      console.log("No test data found, seeding again...");
+      await testDataManager.seedTestData(request);
+    }
 
     try {
       // Login first
@@ -30,7 +48,7 @@ test.describe("Summary Page", () => {
           () => sessionStorage.getItem("access_token") !== null,
           { timeout: 30000 }
         );
-      } catch (error) {
+      } catch {
         console.log(
           "Waiting for token in sessionStorage timed out, checking alternative navigation indicators"
         );
@@ -67,7 +85,7 @@ test.describe("Summary Page", () => {
         } else {
           console.log("No access token found, but navigation succeeded");
         }
-      } catch (error) {
+      } catch {
         console.log("Could not retrieve access token, but continuing test");
       }
 
@@ -115,6 +133,8 @@ test.describe("Summary Page", () => {
       throw error;
     }
   });
+
+
   test("should display year selector", async ({ page }) => {
     // Wait for the year selector to be visible
     await expect(page.locator('[data-year-select="true"]')).toBeVisible();
@@ -138,31 +158,40 @@ test.describe("Summary Page", () => {
     await expect(monthButtons).toHaveCount(12);
   });
 
-  test("should filter data when selecting a year (if years are available)", async ({
+    test("should filter data when selecting a year (now with test data)", async ({
     page,
   }) => {
     // Wait for the year selector to be visible
     await expect(page.locator('[data-year-select="true"]')).toBeVisible();
 
-    // Check if there are any year buttons available
+    // Wait for year buttons to be available
+    await page.waitForSelector('[data-year-select="true"] button', { timeout: 10000 });
+
     const yearButtons = page.locator('[data-year-select="true"] button');
-    const yearButtonCount = await yearButtons.count();
-
-    if (yearButtonCount > 0) {
-      // Get the first available year button
-      const firstYearButton = yearButtons.first();
-
-      // Click the year button
-      await firstYearButton.click();
-
+    
+    // Should have at least one year
+    const yearCount = await yearButtons.count();
+    expect(yearCount).toBeGreaterThan(0);
+    
+    // Check if 2024 button exists, if not use the first available year
+    const year2024Button = page.locator('[data-year-select="true"] button', {
+      hasText: "2024",
+    });
+    
+    const year2024Exists = await year2024Button.count() > 0;
+    
+    if (year2024Exists) {
+      await year2024Button.click();
       // Verify the button is selected
-      await expect(firstYearButton).toHaveClass(/bg-cyan-900/);
+      await expect(year2024Button).toHaveClass(/bg-cyan-900/);
     } else {
-      // If no years are available, just verify the year selector structure exists
-      await expect(page.locator('[data-year-select="true"] h2')).toHaveText(
-        "Select Year"
-      );
-      console.log("No year data available in test environment");
+      // If 2024 doesn't exist, click the first available year button
+      const firstYearButton = page.locator('[data-year-select="true"] button').first();
+      await firstYearButton.click();
+      console.log("2024 not found, using first available year");
+      
+      // Verify the first button is selected
+      await expect(firstYearButton).toHaveClass(/bg-cyan-900/);
     }
   });
 
