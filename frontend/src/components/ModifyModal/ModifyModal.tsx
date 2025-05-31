@@ -327,6 +327,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
       transition-all duration-200
     `}
               disabled={isModifying || isDeleting}
+              data-testid ="fleet-selector"
             >
               <span className="text-base text-black inter-font">
                 {fixEncoding(fleet) || "Select a fleet"}
@@ -344,6 +345,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                         setFleetDropdownOpen(false);
                       }}
                       className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
+                      data-testid={`fleet-option-${fleetName}`}
                     >
                       {fleetName}
                     </li>
@@ -375,6 +377,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
       transition-all duration-200
     `}
               disabled={isModifying || isDeleting}
+              data-testid ="boat-selector"
             >
               <span className="text-base text-black inter-font">
                 {fixEncoding(boat) || "Select a boat"}
@@ -392,6 +395,7 @@ export const ModifyModal: React.FC<ModifyModalProps> = ({
                         setBoatDropdownOpen(false);
                       }}
                       className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
+                      data-testid={`boat-option-${boatName}`}
                     >
                       {boatName}
                     </li>

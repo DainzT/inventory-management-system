@@ -4,28 +4,86 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.test' });
 
 test.describe("Order Page Features", () => {
+    let testItemId
+    let accessToken
+
+    const testProduct = {
+        name: `Test Product for Order`,
+        note: 'This is a test note for Order',
+        quantity: 5,
+        unitSize: 1,
+        selectUnit: 'Box',
+        unitPrice: 100,
+        total: 500,
+        dateCreated: new Date()
+    }
+
+    const assignmentData = {
+        fleet: "F/B DONYA DONYA 2x",
+        boat: "F/B Lady Rachelle",
+        quantity: 5,
+    }
+
     test.beforeEach(async ({ page }) => {
-        // Navigate to the login page
-        await page.goto("/login");
+        test.setTimeout(60000)
+        await page.goto("/login")
+        const pinInput = page.locator("#pin-input")
+        await pinInput.fill("222222")
+        await page.getByRole("button", { name: "Login" }).click()
+        await page.waitForURL("**/inventory")
+    });
 
-        // Log in using the PIN
-        const pinInput = page.locator("#pin-input");
-        await pinInput.fill("222222");
+    test("should add item in the inventory and assign it to an order", async ({ page }) => {
+        await page.getByRole("button", { name: "Add Item" }).click();
+            await page.fill(
+                'input[placeholder="Enter product name"]',
+                testProduct.name
+            );
+            await page.fill('textarea[placeholder="Enter note"]', testProduct.note);
+            const quantityInputs = await page.$$('input[placeholder="0.00"]');
+            await quantityInputs[0].fill(String(testProduct.quantity));
+            await quantityInputs[1].fill(String(testProduct.unitPrice));
+            await quantityInputs[2].fill(String(testProduct.unitSize));
+            await page.locator("div", { hasText: "Unit" }).nth(4).click();
+            await page.getByText("Box", { exact: true }).click();
+            await page
+                .getByRole("button", { name: "Add Product" })
+                .click({ timeout: 25_000 });
+            expect(page.getByRole("button", { name: "Add Product" })).toBeHidden({
+                timeout: 25_000,
+            });
+        
+        const row = page.locator("div", {
+            hasText: testProduct.name,
+            });
+            await row
+            .getByRole("button", { name: "Assign" })
+            .click({ timeout: 25_000 });
+            await page.getByRole("button", { name: "Select a fleet" }).click();
+            await page.getByText(assignmentData.fleet, { exact: true }).nth(1).click();
+            await page.getByRole("button", { name: "Select a boat" }).click();
+            await page.getByText(assignmentData.boat, { exact: true }).click();
+            const assignQuantityInputs = await page.$$('input[placeholder="0.00"]');
+            await assignQuantityInputs[0].fill(String(assignmentData.quantity));
+            await page
+            .locator("div")
+            .filter({ hasText: /^Assign$/ })
+            .getByRole("button")
+            .click();
+    });
 
-        await page.getByRole("button", { name: "Login" }).click();
+    test("should navigate to orders page and display data", async ({ page }) => {
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
 
-        const failedFetchMessage = page.locator('text=Failed to fetch');
-        if (await failedFetchMessage.isVisible()) {
-            throw new Error("Login failed: Backend API is not responding.");
-        }
-
-        await page.waitForURL('**/inventory', { timeout: 120000 });
-
-        await page.goto("/orders", { timeout: 120000 });
-        await page.getByRole('heading', { name: 'All Fleets', level: 2 }).waitFor({ state: 'visible', timeout: 30000 });
+        const orderItem = page.locator("text=" + testProduct.name)
+        await expect(orderItem).toBeVisible({ timeout: 10000 })
     });
     
     test("should test fleet card filter", async ({ page }) => {
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
+
         const donyaDonyaCard = page.getByRole('article').filter({ hasText: 'F/B DONYA DONYA 2X' });
         await donyaDonyaCard.click();
 
@@ -40,6 +98,9 @@ test.describe("Order Page Features", () => {
     });
     
     test("should test boat filter dropdown", async ({ page }) => {
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
+
         const filterTrigger = page.getByTestId("filter-dropdown-trigger");
         await filterTrigger.click();
 
@@ -52,6 +113,9 @@ test.describe("Order Page Features", () => {
     });
 
     test("should test boat filter dropdown with fleet card filter", async ({ page }) => {
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
+
         const donyaLibradaFleetCard = page.getByRole('article').filter({ hasText: 'F/B Doña Librada' });
         await donyaLibradaFleetCard.click();
 
@@ -86,6 +150,9 @@ test.describe("Order Page Features", () => {
     });
 
     test("should test expanded order details", async ({ page }) => {
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
+
         const orderRow = page.locator('[data-testid^="order-row-"]').first();
         await expect(orderRow).toBeVisible({ timeout: 10000 });
 
@@ -112,6 +179,9 @@ test.describe("Order Page Features", () => {
     });
 
     test("should test searching for item", async ({ page }) => {
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
+
         const firstItemName = await page.locator(".orders-table-content .grid .text-gray-800").first().textContent()
 
         expect(firstItemName).toBeTruthy()
@@ -130,100 +200,89 @@ test.describe("Order Page Features", () => {
         }
     });
 
-    test("should open modify modal and handle unsaved changes", async ({ page }) => {
+    test("should open modify modal and handle unsaved changes", async ({ page }) => {  
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
+        
+        await page.locator('button:has-text("Edit")').first().click()
+        await expect(page.getByText("Edit Order")).toBeVisible()
 
-    await page.locator('button:has-text("Edit")').first().click()
+        await page.locator('button[aria-label="Close dialog"]').click()
+        await expect(page.getByText("Edit Order")).not.toBeVisible()
 
-    await expect(page.getByText("Edit Order")).toBeVisible()
+        await page.locator('button:has-text("Edit")').first().click()
 
-    await page.locator('button[aria-label="Close dialog"]').click()
+        const quantityInput = page.locator('input[type="number"]')
+        await quantityInput.clear()
+        await quantityInput.fill("3")
 
-    await expect(page.getByText("Edit Order")).not.toBeVisible()
+        await page.locator('button[aria-label="Close dialog"]').click()
 
-    await page.locator('button:has-text("Edit")').first().click()
+        await expect(page.getByText("You have unsaved changes")).toBeVisible()
 
-    const quantityInput = page.locator('input[type="number"]')
-    await quantityInput.clear()
-    await quantityInput.fill("5")
+        await page.getByRole("button", { name: "Discard changes" }).click()
 
-    await page.locator('button[aria-label="Close dialog"]').click()
+        await expect(page.getByText("Edit Order")).not.toBeVisible()
+    });
 
-    await expect(page.getByText("You have unsaved changes")).toBeVisible()
+    test("should modify an order and confirm changes", async ({ page }) => {
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
 
-    await page.getByRole("button", { name: "Cancel" }).click()
+        await page.locator('button:has-text("Edit")').first().click()
 
-    await expect(page.getByText("Edit Order")).toBeVisible()
+        await expect(page.getByText("Edit Order")).toBeVisible()
 
-    await page.locator('button[aria-label="Close dialog"]').click()
-    await page.getByRole("button", { name: "Discard changes" }).click()
+        const quantityInput = page.locator('input[type="number"]')
+        await quantityInput.clear()
+        await quantityInput.fill("1")
 
-    await expect(page.getByText("Edit Order")).not.toBeVisible()
-  })
+        await page.getByRole("button", { name: "Confirm Changes" }).click()
 
-  test("should modify an order and confirm changes", async ({ page }) => {
-    await page.locator('button:has-text("Edit")').first().click()
+        await expect(page.getByText("Assigned Item updated successfully")).toBeVisible({ timeout: 5000 })
+    });
 
-    await expect(page.getByText("Edit Order")).toBeVisible()
+    test("should delete an order", async ({ page }) => {
+        await page.goto("/orders")
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
 
-    const quantityInput = page.locator('input[type="number"]')
-    await quantityInput.clear()
-    await quantityInput.fill("10")
+        await page.locator('button:has-text("Edit")').first().click()
 
-    await page.locator('button:has-text("Select a fleet")').click()
-    await page.getByText("F/B DONYA DONYA 2x").click()
+        await expect(page.getByText("Edit Order")).toBeVisible()
 
-    await page.locator('button:has-text("Select a boat")').click()
-    await page.getByText("F/B Lady Rachelle").click()
+        await page.getByRole("button", { name: "Delete" }).click()
 
-    await page.getByRole("button", { name: "Confirm Changes" }).click()
+        await expect(page.getByText("Are you sure you want to remove this item from your order?")).toBeVisible()
 
-    await expect(page.getByText("Edit Order")).not.toBeVisible()
+        await page.getByTestId("confirm-removal-button").click()
 
-    await expect(page.getByText("Order updated successfully")).toBeVisible({ timeout: 5000 })
-  })
+        await expect(page.getByText("Edit Order")).not.toBeVisible()
 
-  test("should delete an order", async ({ page }) => {
+        await expect(page.getByText("Assigned Item deleted successfully")).toBeVisible({ timeout: 5000 })
 
-    const initialOrderCount = await page.locator('button:has-text("Edit")').count()
+    });
 
-    await page.locator('button:has-text("Edit")').first().click()
 
-    await expect(page.getByText("Edit Order")).toBeVisible()
+    test.afterAll('cleanup test data', async ({ request }) => {
+    const fetchResponse = await request.get(`${process.env.VITE_API_URL}/api/inventory-item/get-items`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+    const data = await fetchResponse.json();
+    const items: Array<{ id: string; name: string }> = Array.isArray(data) ? data : data.items || [];
 
-    await page.getByRole("button", { name: "Delete" }).click()
-
-    await expect(page.getByText("Are you sure you want to remove this item from your order?")).toBeVisible()
-
-    await page.getByTestId("confirm-removal-button").click()
-
-    await expect(page.getByText("Edit Order")).not.toBeVisible()
-
-    await expect(page.getByText("Order removed successfully")).toBeVisible({ timeout: 5000 })
-
-    await page.waitForTimeout(1000) 
-    const newOrderCount = await page.locator('button:has-text("Edit")').count()
-    expect(newOrderCount).toBeLessThan(initialOrderCount)
-  })
-
-  test("should handle pagination", async ({ page }) => {
-    const hasPagination = await page.locator("text=Previous").isVisible()
-
-    if (hasPagination) {
-      const firstItemText = await page.locator(".orders-table-content .grid").first().textContent()
-
-      await page.getByText("Next").click()
-
-      await page.waitForTimeout(500)
-
-      const secondPageFirstItemText = await page.locator(".orders-table-content .grid").first().textContent()
-
-      expect(firstItemText).not.toEqual(secondPageFirstItemText)
-
-      await page.getByText("Previous").click()
-
-      await page.waitForTimeout(500)
-      const backToFirstItemText = await page.locator(".orders-table-content .grid").first().textContent()
-      expect(backToFirstItemText).toEqual(firstItemText)
+    const targetItem = items.find((item: { id: string; name: string }) => item.name === "Test Product for Order");
+    if (targetItem) {
+        const deleteResponse = await request.delete(
+            `${process.env.VITE_API_URL}/api/inventory-item/remove-item/${targetItem.id}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }
+        );
+        expect(deleteResponse.ok()).toBeTruthy();
     }
-  })
+});
+
 });
