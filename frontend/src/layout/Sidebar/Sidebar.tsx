@@ -8,8 +8,8 @@ import LogoutButton from "./LogoutButton";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { BsBoxSeam } from "react-icons/bs";
 import { HiMenu, HiX } from "react-icons/hi";
-import ChangePinModal from "../../components/AuthComponents/ChangePin";
-import ChangeEmailModal from "../../components/AuthComponents/ChangeEmail";
+import ChangePinModal from "@/components/authentication/ChangePin";
+import ChangeEmailModal from "@/components/authentication/ChangeEmail";
 import { IoSettingsOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 

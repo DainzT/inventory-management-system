@@ -1,17 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import InventoryManagementTable from "@/components/InventoryManagementTable/InventoryManagementTable";
-import EditProductModal from "@/components/EditProductModal/EditProductModal";
-import AddProductModal from "@/components/AddProductModal/AddProductModal";
-import OutItemModal from "@/components/OutItemModal/OutItemModal";
-import { PageTitle } from "@/layout/PageTitle";
-
+import { useEffect, useRef, useState } from "react";
+import InventoryManagementTable from "@/components/inventory/InventoryManagementTable/InventoryManagementTable";
+import EditProductModal from "@/components/inventory/modals/EditProductModal/EditProductModal";
+import AddProductModal from "@/components/inventory/modals/AddProductModal/AddProductModal";
+import OutProductModal from "@/components/inventory/modals/OutProductModal/OutProductModal";
+import { PageTitle } from "@/layout";
 import { InventoryItem } from "@/types";
 import { useInventory } from "@/hooks/useInventory";
 import { roundTo } from "@/utils/RoundTo";
 import { pluralize } from "@/utils/Pluralize";
-import InventoryManagementTableSkeleton from "@/components/InventoryManagementTable/InventoryManagementTableSkeleton";
+import InventoryManagementTableSkeleton from "@/components/inventory/InventoryManagementTable/InventoryManagementTableSkeleton";
 
-const Inventory: React.FC = () => {
+const InventoryPage = () => {
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const inventoryContainerRef = useRef<HTMLDivElement>(null);
@@ -90,26 +89,25 @@ const Inventory: React.FC = () => {
       <PageTitle title="Main Inventory" />
 
       {isLoading ? (
-        <InventoryManagementTableSkeleton/>
-
+        <InventoryManagementTableSkeleton />
       ) : (
-      <InventoryManagementTable
-        setIsAddOpen={setIsAddOpen}
-        setIsEditOpen={(isOpen, item) => {
-          setSelectedItem(item || null);
-          setIsEditOpen(isOpen);
-        }}
-        setIsOutOpen={(isOpen, item) => {
-          setSelectedItem(item || null);
-          setIsOutOpen(isOpen);
-        }}
-        inventoryItems={filteredItems}
-        onSearch={handleSearch}
-        isLoading={isLoading}
-        searchQuery={searchQuery}
-        highlightedItem={highlightedItem}
-        containerRef={inventoryContainerRef}
-      />
+        <InventoryManagementTable
+          setIsAddOpen={setIsAddOpen}
+          setIsEditOpen={(isOpen, item) => {
+            setSelectedItem(item || null);
+            setIsEditOpen(isOpen);
+          }}
+          setIsOutOpen={(isOpen, item) => {
+            setSelectedItem(item || null);
+            setIsOutOpen(isOpen);
+          }}
+          inventoryItems={filteredItems}
+          onSearch={handleSearch}
+          isLoading={isLoading}
+          searchQuery={searchQuery}
+          highlightedItem={highlightedItem}
+          containerRef={inventoryContainerRef}
+        />
       )}
       <AddProductModal
         isOpen={isAddOpen}
@@ -117,7 +115,7 @@ const Inventory: React.FC = () => {
         onAddItem={handleAddProduct}
         isAdding={isAdding}
       />
-      <OutItemModal
+      <OutProductModal
         isOpen={isOutOpen}
         setIsOpen={setIsOutOpen}
         selectedItem={selectedItem}
@@ -137,4 +135,4 @@ const Inventory: React.FC = () => {
   );
 };
 
-export default Inventory;
+export default InventoryPage;
