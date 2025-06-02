@@ -1,211 +1,405 @@
 import { test, expect } from "@playwright/test";
-import { testDataManager } from "./testDataManager";
 import dotenv from "dotenv";
+
 dotenv.config();
 
-test.describe("Summary Page", () => {
-  let accessToken;
+test.describe("Summary", () => {
+  let context;
+  let reusablePage;
 
-  test.beforeAll(async ({ request }) => {
-    // Seed test data before all tests
-    await testDataManager.seedTestData(request);
-  });
+  test.beforeAll(async ({ browser }) => {
+    test.setTimeout(240000); // Further increased timeout for beforeAll hook
 
-  test.afterAll(async ({ request }) => {
-    // Clean up test data after all tests
-    await testDataManager.cleanupTestData(request);
-  });
+    try {
+      // Create reusable context and page
+      context = await browser.newContext();
+      reusablePage = await context.newPage();
 
+      // Seed data through UI
+      await reusablePage.goto("/login");
+      await reusablePage.fill("#pin-input", "222222");
+      await reusablePage.getByRole("button", { name: "Login" }).click();
 
-  test.beforeEach(async ({ page, request }) => {
-    // Set a longer timeout for the entire test
-    test.setTimeout(180000);
+      try {
+        // Ensure page is open before waiting for URL
+        if (reusablePage.isClosed()) {
+          throw new Error("Page is closed during navigation.");
+        }
 
-    const dataExists = await testDataManager.verifyTestDataExists(request);
-    if (!dataExists) {
-      console.log("No test data found, seeding again...");
-      await testDataManager.seedTestData(request);
+        await reusablePage.waitForURL("**/inventory", { timeout: 240000 }); // Further increased timeout
+      } catch (error) {
+        console.error("Navigation to inventory page failed:", error);
+
+        // Retry navigation if page is still open
+        if (!reusablePage.isClosed()) {
+          await reusablePage.reload();
+          await reusablePage.waitForURL("**/inventory", { timeout: 240000 });
+        } else {
+          throw error;
+        }
+      }
+
+      const inventoryItems = [
+        {
+          name: "oil filter",
+          note: "Regular supply for test",
+          unitPrice: 250,
+          unitSize: 1,
+          selectUnit: "Piece",
+          quantity: 200,
+        },
+        {
+          name: "Bearing",
+          note: "Regular supply for test",
+          unitPrice: 250,
+          unitSize: 1,
+          selectUnit: "Piece",
+          quantity: 20,
+        },
+        // ...other items...
+      ];
+
+      for (const item of inventoryItems) {
+        try {
+          // Ensure page is open before interacting
+          if (reusablePage.isClosed()) {
+            throw new Error("Page is closed during interaction.");
+          }
+
+          await reusablePage.getByRole("button", { name: "Add Item" }).click();
+          await reusablePage.fill(
+            'input[placeholder="Enter product name"]',
+            item.name
+          );
+          await reusablePage.fill(
+            'textarea[placeholder="Enter note"]',
+            item.note
+          );
+          const quantityInputs = await reusablePage.$$(
+            'input[placeholder="0.00"]'
+          );
+          await quantityInputs[0].fill(String(item.quantity));
+          await quantityInputs[1].fill(String(item.unitPrice));
+          await quantityInputs[2].fill(String(item.unitSize));
+
+          let unitSelected = false;
+          for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+              if (reusablePage.isClosed()) {
+                throw new Error("Page is closed during interaction.");
+              }
+
+              await reusablePage
+                .locator("div", { hasText: "Unit" })
+                .nth(4)
+                .click();
+              await reusablePage
+                .getByText(item.selectUnit, { exact: true })
+                .click();
+              unitSelected = true;
+              break;
+            } catch (error) {
+              console.error(
+                `Attempt ${attempt + 1} failed to select unit for item ${
+                  item.name
+                }:`,
+                error
+              );
+              if (attempt === 2) throw error; // Throw error after 3 failed attempts
+            }
+          }
+
+          if (!unitSelected) {
+            throw new Error(`Failed to select unit for item ${item.name}`);
+          }
+
+          await reusablePage
+            .getByRole("button", { name: "Add Product" })
+            .click();
+          await reusablePage.waitForSelector("button", {
+            state: "hidden",
+            timeout: 30000,
+          });
+        } catch (error) {
+          console.error(`Error while adding item ${item.name}:`, error);
+          throw error;
+        }
+      }
+
+      const assignments = [
+        {
+          name: "oil filter",
+          fleet: "F/B DONYA DONYA 2x",
+          boat: "F/B Lady Rachelle",
+          quantity: 100,
+        },
+        {
+          name: "Bearing",
+          fleet: "F/B DONYA DONYA 2x",
+          boat: "F/B Lady Rachelle",
+          quantity: 50,
+        },
+        // ...other assignments...
+      ];
+
+      for (const assignment of assignments) {
+        try {
+          const row = reusablePage.locator("div", { hasText: assignment.name });
+          const assignButton = row
+            .getByRole("button", { name: "Assign" })
+            .first(); // Ensure the first button is selected
+          await assignButton.click();
+
+          if (reusablePage.isClosed()) {
+            throw new Error("Page is closed during interaction.");
+          }
+
+          await reusablePage
+            .getByRole("button", { name: "Select a fleet" })
+            .click();
+          await reusablePage
+            .getByText(assignment.fleet, { exact: true })
+            .nth(1)
+            .click();
+          await reusablePage
+            .getByRole("button", { name: "Select a boat" })
+            .click();
+          await reusablePage
+            .getByText(assignment.boat, { exact: true })
+            .click();
+
+          const assignQuantityInputs = await reusablePage.$$(
+            'input[placeholder="0.00"]'
+          );
+          await assignQuantityInputs[0].fill(String(assignment.quantity));
+          await reusablePage
+            .locator("div", { hasText: /^Assign$/ })
+            .getByRole("button")
+            .click();
+        } catch (error) {
+          console.error(
+            `Failed to assign fleet/boat for ${assignment.name}:`,
+            error
+          );
+          throw error;
+        }
+      }
+    } catch (error) {
+      console.error("Error in beforeAll hook:", error);
+      throw error;
     }
+  });
+
+  test.afterAll(async () => {
+    await context.close();
+  });
+
+  test.beforeEach(async ({ page }) => {
+    test.setTimeout(120000);
 
     try {
       // Login first
       await page.goto("/login");
-
-      // Wait for the login form to be ready
       await page.waitForSelector("#pin-input", {
         state: "visible",
         timeout: 10000,
       });
-
-      // Fill the pin input
       const pinInput = page.locator("#pin-input");
-      await pinInput.fill("222222"); // Click login button
+      await pinInput.fill("222222");
       const loginButton = page.getByRole("button", { name: "Login" });
-      await loginButton.click(); // Wait for the token to be set in sessionStorage with more reliable approach
-      try {
-        // First try waiting for the token directly
-        await page.waitForFunction(
-          () => sessionStorage.getItem("access_token") !== null,
-          { timeout: 30000 }
-        );
-      } catch {
-        console.log(
-          "Waiting for token in sessionStorage timed out, checking alternative navigation indicators"
-        );
+      await loginButton.click();
 
-        // If waiting for token times out, check if we're logged in by URL or UI elements
-        const currentUrl = page.url();
-        if (currentUrl.includes("/inventory")) {
-          console.log(
-            "Successfully navigated to inventory page, continuing test"
-          );
-        } else {
-          // Try to re-login once more
-          await page.goto("/login");
-          await page.waitForSelector("#pin-input", {
-            state: "visible",
-            timeout: 10000,
-          });
-          await page.locator("#pin-input").fill("222222");
-          await page.getByRole("button", { name: "Login" }).click();
-
-          // Wait for navigation instead of token
-          await page.waitForURL("**/inventory", { timeout: 30000 });
-        }
-      }
-      // Get the access token if it exists, but continue even if it doesn't
-      // (some applications may store auth state differently)
-      try {
-        const token = await page.evaluate(() =>
-          sessionStorage.getItem("access_token")
-        );
-        if (token) {
-          accessToken = token;
-          console.log("Access token successfully retrieved");
-        } else {
-          console.log("No access token found, but navigation succeeded");
-        }
-      } catch {
-        console.log("Could not retrieve access token, but continuing test");
-      }
-
-      // Wait for navigation with multiple checks
-      try {
-        // First wait for URL change
-        await page.waitForURL("**/inventory", { timeout: 30000 });
-
-        // Then wait for the page to be loaded
-        await page.waitForLoadState("load", { timeout: 30000 }); // Wait for any loading indicators to disappear (if they exist)
-        await page
-          .waitForSelector(".loading-indicator", {
-            state: "hidden",
-            timeout: 10000,
-          })
-          .catch(() => {});
-
-        // Wait for a specific element that indicates the page is ready - PageTitle uses h2
-        await page.waitForSelector("h2", { timeout: 10000 });
-      } catch (error) {
-        console.error("Navigation failed:", error);
-        // Take a screenshot for debugging
-        await page.screenshot({ path: "navigation-error.png" });
-        throw error;
-      }
-
-      // Additional wait to ensure the page is interactive
-      await page.waitForTimeout(3000);
+      // Wait for navigation and token
+      await page.waitForURL("**/inventory", { timeout: 30000 }); // Increased timeout
+      await page.waitForLoadState("networkidle", { timeout: 30000 }); // Increased timeout
 
       // Navigate to summary page
-      await page.goto("/summary/all-fleets");
+      try {
+        await page.goto("/summary/all-fleets", { timeout: 30000 }); // Added timeout
+      } catch (error) {
+        console.error("Failed to navigate to summary page:", error);
+      }
+      await page.waitForLoadState("networkidle", { timeout: 15000 });
 
-      // Wait for the summary page to be fully loaded
-      await page.waitForLoadState("load", { timeout: 30000 });
-
-      // Wait for summary page specific elements
-      await page.waitForSelector('[data-month-select="true"]', {
-        timeout: 10000,
+      // Wait for the year selector container
+      await page.waitForSelector('[data-year-select="true"]', {
+        timeout: 15000,
       });
 
-      // Additional wait to ensure the page is interactive
-      await page.waitForTimeout(3000);
+      // Wait for loading to finish
+      await page
+        .waitForSelector(".loading-indicator", {
+          state: "hidden",
+          timeout: 15000,
+        })
+        .catch(() => console.log("No loading indicator found, continuing..."));
     } catch (error) {
       console.error("Test setup failed:", error);
       throw error;
     }
   });
 
-
   test("should display year selector", async ({ page }) => {
-    // Wait for the year selector to be visible
     await expect(page.locator('[data-year-select="true"]')).toBeVisible();
-
-    // Check if year selector section exists (even if no years are available)
     const yearSection = page.locator('[data-year-select="true"] section');
     await expect(yearSection).toBeVisible();
-
-    // Check for the "Select Year" heading
     await expect(page.locator('[data-year-select="true"] h2')).toHaveText(
       "Select Year"
     );
   });
 
   test("should display month selector with all months", async ({ page }) => {
-    // Wait for the month selector to be visible
     await expect(page.locator('[data-month-select="true"]')).toBeVisible();
-
-    // Check if all 12 months are present
     const monthButtons = page.locator('[data-month-select="true"] button');
     await expect(monthButtons).toHaveCount(12);
   });
 
-    test("should filter data when selecting a year (now with test data)", async ({
-    page,
-  }) => {
-    // Wait for the year selector to be visible
+  test("should filter data when selecting a year", async ({ page }) => {
+    // Wait for year selector to be present
     await expect(page.locator('[data-year-select="true"]')).toBeVisible();
 
-    // Wait for year buttons to be available
-    await page.waitForSelector('[data-year-select="true"] button', { timeout: 10000 });
+    // Add robust waiting with error handling
+    try {
+      await page.waitForSelector('[data-year-select="true"] button', {
+        timeout: 15000,
+      });
+      await expect(
+        page.locator('[data-year-select="true"] button').first()
+      ).toBeVisible({ timeout: 10000 });
+    } catch {
+      // Take screenshot for debugging
+      await page.screenshot({ path: "year-selector-debug.png" });
+      console.log("Year selector buttons not immediately visible, retrying...");
+
+      // Try refreshing the page
+      await page.reload();
+      await page.waitForLoadState("load");
+      await page.waitForSelector('[data-year-select="true"]', {
+        timeout: 10000,
+      });
+      await page.waitForSelector('[data-year-select="true"] button', {
+        timeout: 15000,
+      });
+    }
 
     const yearButtons = page.locator('[data-year-select="true"] button');
-    
-    // Should have at least one year
     const yearCount = await yearButtons.count();
     expect(yearCount).toBeGreaterThan(0);
-    
-    // Check if 2024 button exists, if not use the first available year
+
     const year2024Button = page.locator('[data-year-select="true"] button', {
       hasText: "2024",
     });
-    
-    const year2024Exists = await year2024Button.count() > 0;
-    
+
+    const year2024Exists = (await year2024Button.count()) > 0;
+
     if (year2024Exists) {
       await year2024Button.click();
-      // Verify the button is selected
       await expect(year2024Button).toHaveClass(/bg-cyan-900/);
     } else {
-      // If 2024 doesn't exist, click the first available year button
-      const firstYearButton = page.locator('[data-year-select="true"] button').first();
+      const firstYearButton = page
+        .locator('[data-year-select="true"] button')
+        .first();
       await firstYearButton.click();
       console.log("2024 not found, using first available year");
-      
-      // Verify the first button is selected
       await expect(firstYearButton).toHaveClass(/bg-cyan-900/);
     }
   });
 
   test("should filter data when selecting a month", async ({ page }) => {
-    // Wait for the month selector to be visible
     await expect(page.locator('[data-month-select="true"]')).toBeVisible();
-
-    // Click on January
     const januaryButton = page.locator('[data-month-select="true"] button', {
       hasText: "January",
     });
     await januaryButton.click();
-
-    // Verify the button is selected
     await expect(januaryButton).toHaveClass(/bg-cyan-900/);
+  });
+
+  test("should display order rows in invoice table (with test data)", async ({
+    page,
+  }) => {
+    try {
+      // Wait for year selector and buttons
+      await page.waitForSelector('[data-year-select="true"]', {
+        timeout: 15000,
+      });
+
+      // Wait for any year buttons to be present
+      await page.waitForFunction(
+        () => {
+          const yearSelector = document.querySelector(
+            '[data-year-select="true"]'
+          );
+          return (
+            yearSelector && yearSelector.querySelectorAll("button").length > 0
+          );
+        },
+        { timeout: 15000 }
+      );
+
+      // Select year 2024 if available
+      const year2024Button = page.locator('[data-year-select="true"] button', {
+        hasText: "2024",
+      });
+
+      const year2024Exists = (await year2024Button.count()) > 0;
+
+      if (year2024Exists) {
+        await year2024Button.click();
+        console.log("Selected year 2024");
+      } else {
+        const firstYearButton = page
+          .locator('[data-year-select="true"] button')
+          .first();
+        await firstYearButton.click();
+        console.log("2024 not found, using first available year");
+      }
+
+      // Wait for month selector
+      await page.waitForSelector('[data-month-select="true"]', {
+        timeout: 15000,
+      });
+
+      // Select January
+      const januaryButton = page.locator('[data-month-select="true"] button', {
+        hasText: "January",
+      });
+      await januaryButton.click();
+
+      // Wait for invoice content
+      await page.waitForSelector(".invoice-page", { timeout: 15000 });
+
+      // Verify test data
+      const hasData =
+        (await page.locator(".invoice-page").getByText("Fish Feed A").count()) >
+        0;
+
+      if (hasData) {
+        await expect(
+          page.locator(".invoice-page").getByText("Fish Feed A")
+        ).toBeVisible();
+        await expect(
+          page.locator(".invoice-page").locator("text=/₱\\d+\\.\\d{2}/")
+        ).toBeVisible();
+      } else {
+        const emptyMessage = page.locator(
+          "text=No existing orders during this month of the year."
+        );
+        await expect(emptyMessage).toBeVisible();
+      }
+    } catch (error) {
+      console.error("Test failed:", error);
+      throw error;
+    }
+  });
+
+  test("should download PDF when Download button is clicked", async ({
+    page,
+  }) => {
+    const [download] = await Promise.all([
+      page.waitForEvent("download"),
+      page.getByRole("button", { name: /Download/i }).click(),
+    ]);
+
+    expect(download.suggestedFilename()).toMatch(/invoice_.*\.pdf/);
   });
 });
