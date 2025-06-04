@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import { YearSelector } from "@/components/Summary/YearSelector";
-import { MonthSelector } from "@/components/Summary/MonthSelector";
-import { Invoice } from "@/components/Summary/Invoice";
+import { YearSelector } from "@/components/summary/YearSelector";
+import { MonthSelector } from "@/components/summary/MonthSelector";
+import { Invoice } from "@/components/summary/Invoice";
 import { OrderItem } from "@/types";
-import SummaryDesignSkeleton from "@/components/Summary/SummaryDesignSkeleton";
+import SummaryDesignSkeleton from "@/components/summary/SummaryDesignSkeleton";
 
 interface SummaryDesignProps {
   orders: OrderItem[];

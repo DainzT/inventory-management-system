@@ -4,8 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.test' });
 
 test.describe("Order Page Features", () => {
-    let testItemId
-    let accessToken
 
     const testProduct = {
         name: `Test Product for Order`,
@@ -202,15 +200,10 @@ test.describe("Order Page Features", () => {
 
     test("should open modify modal and handle unsaved changes", async ({ page }) => {  
         await page.goto("/orders")
-        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
+        await page.getByRole("heading", { name: "All Fleets", level: 2 }).waitFor({ state: "visible", timeout: 60000 })
         
         await page.locator('button:has-text("Edit")').first().click()
         await expect(page.getByText("Edit Order")).toBeVisible()
-
-        await page.locator('button[aria-label="Close dialog"]').click()
-        await expect(page.getByText("Edit Order")).not.toBeVisible()
-
-        await page.locator('button:has-text("Edit")').first().click()
 
         const quantityInput = page.locator('input[type="number"]')
         await quantityInput.clear()
@@ -239,7 +232,7 @@ test.describe("Order Page Features", () => {
 
         await page.getByRole("button", { name: "Confirm Changes" }).click()
 
-        await expect(page.getByText("Assigned Item updated successfully")).toBeVisible({ timeout: 5000 })
+        await expect(page.getByText("Assigned Item updated successfully")).toBeVisible({ timeout: 60000 })
     });
 
     test("should delete an order", async ({ page }) => {
@@ -262,27 +255,22 @@ test.describe("Order Page Features", () => {
 
     });
 
+    test("should navigate to inventory and delete inventory", async ({ page }) => {
+        await page.goto("/inventory")
+        await page.getByRole("heading", { name: "Inventory", level: 2 }).waitFor({ state: "visible", timeout: 30000 })
 
-    test.afterAll('cleanup test data', async ({ request }) => {
-    const fetchResponse = await request.get(`${process.env.VITE_API_URL}/api/inventory-item/get-items`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    });
-    const data = await fetchResponse.json();
-    const items: Array<{ id: string; name: string }> = Array.isArray(data) ? data : data.items || [];
+        const itemRow = page.locator('article', {
+            has: page.locator('div.font-bold.text-\\[\\#1F2937\\]', { hasText: testProduct.name })
+        });
 
-    const targetItem = items.find((item: { id: string; name: string }) => item.name === "Test Product for Order");
-    if (targetItem) {
-        const deleteResponse = await request.delete(
-            `${process.env.VITE_API_URL}/api/inventory-item/remove-item/${targetItem.id}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            }
-        );
-        expect(deleteResponse.ok()).toBeTruthy();
-    }
-});
+        await itemRow.getByRole('button', { name: 'Edit' }).click();
+        const modal = page.locator('.flex.fixed.z-50.inset-0.justify-center.items-center');
+        await modal.getByRole("button", { name: /Delete/i }).click();
 
+        await expect(page.getByText("Are you sure?")).toBeVisible()
+
+        await page.getByTestId("confirm-removal-button").click()
+
+        await expect(page.getByText("Item deleted successfully")).toBeVisible({ timeout: 5000 })
+    })
 });

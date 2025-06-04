@@ -1,11 +1,12 @@
 import { GroupedOrders, OrderItem } from "@/types";
+import { InvoiceHeader } from "./InvoiceHeader";
+import { InvoiceTable } from "./InvoiceTable";
+import { InvoiceSummary } from "./InvoiceSummary";
+import { DownloadButton } from "./DownloadButton";
 import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { InvoiceHeader } from "@/components/Summary/InvoiceHeader";
-import { InvoiceTable } from "@/components/Summary/InvoiceTable";
-import { InvoiceSummary } from "@/components/Summary/InvoiceSummary";
-import { DownloadButton } from "@/components/Summary/DownloadButton";
+
 export interface InvoiceProps {
   orders: OrderItem[];
   selectedMonth: string;
