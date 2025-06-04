@@ -1,6 +1,6 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../../routes/authRouter";
+import userRoutes from "../../../routes/authentication/userRouter";
 import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 import cookieParser from "cookie-parser";
@@ -8,11 +8,11 @@ import cookieParser from "cookie-parser";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 jest.setTimeout(90000);
 
-describe("GET /api/auth/check-user", () => {
+describe("GET /api/user/check-user", () => {
   beforeEach(async () => {
     await prisma.otp.deleteMany();
     await prisma.user.deleteMany();
@@ -25,7 +25,7 @@ describe("GET /api/auth/check-user", () => {
   });
 
   it("should return isPinSet: false when no user exists", async () => {
-    const response = await request(app).get("/api/auth/check-user");
+    const response = await request(app).get("/api/user/check-user");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
@@ -42,7 +42,7 @@ describe("GET /api/auth/check-user", () => {
       },
     });
 
-    const response = await request(app).get("/api/auth/check-user");
+    const response = await request(app).get("/api/user/check-user");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
@@ -60,7 +60,7 @@ describe("GET /api/auth/check-user", () => {
     });
 
     const response = await request(app)
-      .get("/api/auth/check-user")
+      .get("/api/user/check-user")
       .set("Cookie", ["refresh_token=mocked-refresh-token"]);
 
     expect(response.status).toBe(200);
@@ -71,7 +71,7 @@ describe("GET /api/auth/check-user", () => {
   });
 });
 
-describe("GET /api/auth/check-user (Negative Cases)", () => {
+describe("GET /api/user/check-user (Negative Cases)", () => {
   beforeEach(async () => {
     await prisma.otp.deleteMany();
     await prisma.user.deleteMany();
@@ -85,7 +85,7 @@ describe("GET /api/auth/check-user (Negative Cases)", () => {
     const mockError = new Error("Database connection error");
     jest.spyOn(prisma.user, "findFirst").mockRejectedValue(mockError);
 
-    const response = await request(app).get("/api/auth/check-user");
+    const response = await request(app).get("/api/user/check-user");
 
     expect(response.status).toBe(500);
     expect(response.body).toHaveProperty("message", "Internal server error");
@@ -101,7 +101,7 @@ describe("GET /api/auth/check-user (Negative Cases)", () => {
       ],
     });
 
-    const response = await request(app).get("/api/auth/check-user");
+    const response = await request(app).get("/api/user/check-user");
 
     expect(response.status).toBe(200);
     expect(response.body.isPinSet).toBe(true);
@@ -116,7 +116,7 @@ describe("GET /api/auth/check-user (Negative Cases)", () => {
     });
 
     const response = await request(app)
-      .get("/api/auth/check-user")
+      .get("/api/user/check-user")
       .set("Cookie", ["invalid-cookie-format"]);
 
     expect(response.status).toBe(200);
@@ -132,7 +132,7 @@ describe("GET /api/auth/check-user (Negative Cases)", () => {
     });
 
     const response = await request(app)
-      .get("/api/auth/check-user")
+      .get("/api/user/check-user")
       .set("Cookie", [""]);
 
     expect(response.status).toBe(200);
