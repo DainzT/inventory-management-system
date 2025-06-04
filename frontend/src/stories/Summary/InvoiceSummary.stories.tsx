@@ -1,5 +1,5 @@
 import {Meta, StoryFn} from "@storybook/react";
-import { InvoiceSummary, InvoiceSummaryProps } from "@/components/summary/InvoiceSummary";
+import { InvoiceSummary, InvoiceSummaryProps } from "@/components/Summary/InvoiceSummary";
 
 export default {
     title: "Summary Components/InvoiceSummary",

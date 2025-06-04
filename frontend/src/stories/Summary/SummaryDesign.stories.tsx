@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from "@storybook/react";
-import SummaryDesign from "@/components/summary/SummaryDesign";
+import SummaryDesign from "@/components/Summary/SummaryDesign";
 import { OrderItem } from "@/types";
 export default {
   title: "Summary Components/SummaryDesign",
