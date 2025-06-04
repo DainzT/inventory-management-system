@@ -1,16 +1,16 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../../routes/authRouter";
+import userRoutes from "../../../routes/authentication/userRouter";
 
 const app = express();
 app.use(express.json());
-app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 jest.setTimeout(30000);
 
-describe("POST /api/auth/logout", () => {
+describe("POST /api/user/logout", () => {
   it("should clear refresh token cookie", async () => {
-    const response = await request(app).post("/api/auth/logout");
+    const response = await request(app).post("/api/user/logout");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ message: "Logged out successfully" });
@@ -26,17 +26,17 @@ describe("POST /api/auth/logout", () => {
   });
 });
 
-describe("POST /api/auth/logout (Negative Cases)", () => {
+describe("POST /api/user/logout (Negative Cases)", () => {
   it("should succeed even without existing session", async () => {
-    const response = await request(app).post("/api/auth/logout");
+    const response = await request(app).post("/api/user/logout");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ message: "Logged out successfully" });
   });
 
   it("should handle multiple logout requests", async () => {
-    const response1 = await request(app).post("/api/auth/logout");
-    const response2 = await request(app).post("/api/auth/logout");
+    const response1 = await request(app).post("/api/user/logout");
+    const response2 = await request(app).post("/api/user/logout");
 
     expect(response1.status).toBe(200);
     expect(response2.status).toBe(200);

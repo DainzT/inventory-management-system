@@ -1,6 +1,6 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../../routes/authRouter";
+import tokenRoutes from "../../../routes/authentication/tokenRouter";
 import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -9,11 +9,11 @@ import cookieParser from "cookie-parser";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/auth", authRoutes);
+app.use("/api/token", tokenRoutes);
 
 jest.setTimeout(90000);
 
-describe("POST /api/auth/refresh-token", () => {
+describe("POST /api/token/refresh-token", () => {
   let user: any;
 
   beforeAll(async () => {
@@ -44,7 +44,7 @@ describe("POST /api/auth/refresh-token", () => {
     jest.spyOn(jwt, "sign").mockReturnValue("new-access-token" as any);
 
     const response = await request(app)
-      .post("/api/auth/refresh-token")
+      .post("/api/token/refresh-token")
       .set("Cookie", [`refresh_token=${refreshToken}`]);
 
     expect(response.status).toBe(200);
@@ -54,7 +54,7 @@ describe("POST /api/auth/refresh-token", () => {
   });
 
   it("should return 401 without refresh token", async () => {
-    const response = await request(app).post("/api/auth/refresh-token");
+    const response = await request(app).post("/api/token/refresh-token");
 
     expect(response.status).toBe(401);
   });
@@ -65,7 +65,7 @@ describe("POST /api/auth/refresh-token", () => {
     });
 
     const response = await request(app)
-      .post("/api/auth/refresh-token")
+      .post("/api/token/refresh-token")
       .set("Cookie", ["refresh_token=invalid-token"]);
 
     expect(response.status).toBe(403);
@@ -74,7 +74,7 @@ describe("POST /api/auth/refresh-token", () => {
   });
 });
 
-describe("POST /api/auth/refresh-token (Negative Cases)", () => {
+describe("POST /api/token/refresh-token (Negative Cases)", () => {
   let user: any;
   let validRefreshToken: string;
 
@@ -104,7 +104,7 @@ describe("POST /api/auth/refresh-token (Negative Cases)", () => {
     });
 
     const response = await request(app)
-      .post("/api/auth/refresh-token")
+      .post("/api/token/refresh-token")
       .set("Cookie", [`refresh_token=${tamperedToken}`]);
 
     expect(response.status).toBe(403);
@@ -116,7 +116,7 @@ describe("POST /api/auth/refresh-token (Negative Cases)", () => {
     });
 
     const response = await request(app)
-      .post("/api/auth/refresh-token")
+      .post("/api/token/refresh-token")
       .set("Cookie", ["refresh_token=expired-token"]);
 
     expect(response.status).toBe(403);
@@ -125,7 +125,7 @@ describe("POST /api/auth/refresh-token (Negative Cases)", () => {
 
   it("should handle non-existent user scenario", async () => {
     const validResponse = await request(app)
-      .post("/api/auth/refresh-token")
+      .post("/api/token/refresh-token")
       .set("Cookie", [`refresh_token=${validRefreshToken}`]);
     expect(validResponse.status).toBe(200);
 
@@ -137,7 +137,7 @@ describe("POST /api/auth/refresh-token (Negative Cases)", () => {
     );
 
     const response = await request(app)
-      .post("/api/auth/refresh-token")
+      .post("/api/token/refresh-token")
       .set("Cookie", [`refresh_token=${refreshToken}`]);
 
     expect([200, 403]).toContain(response.status);

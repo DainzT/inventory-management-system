@@ -1,15 +1,15 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../../routes/authRouter";
+import userRoutes from "../../../routes/authentication/userRouter";
 import prisma from "../../../lib/prisma";
 
 const app = express();
 app.use(express.json());
-app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 jest.setTimeout(90000);
 
-describe("POST /api/auth/create-admin", () => {
+describe("POST /api/user/create-admin", () => {
   beforeEach(async () => {
     await prisma.otp.deleteMany();
     await prisma.user.deleteMany();
@@ -31,7 +31,7 @@ describe("POST /api/auth/create-admin", () => {
       },
     });
     const response = await request(app)
-      .post("/api/auth/create-admin")
+      .post("/api/user/create-admin")
       .send({ email: "test@example.com", pin: "123456" });
 
     expect(response.status).toBe(200);
@@ -46,14 +46,14 @@ describe("POST /api/auth/create-admin", () => {
   });
 });
 
-describe("POST /api/auth/create-admin (Negative Cases)", () => {
+describe("POST /api/user/create-admin (Negative Cases)", () => {
   it("should return 500 when database connection fails", async () => {
     jest
       .spyOn(prisma.user, "findFirst")
       .mockRejectedValue(new Error("DB Connection Error"));
 
     const response = await request(app)
-      .post("/api/auth/create-admin")
+      .post("/api/user/create-admin")
       .send({ email: "admin@example.com", pin: "123456" });
 
     expect(response.status).toBe(500);
@@ -66,7 +66,7 @@ describe("POST /api/auth/create-admin (Negative Cases)", () => {
   });
 
   it("should return 401 when request body is empty", async () => {
-    const response = await request(app).post("/api/auth/create-admin").send({});
+    const response = await request(app).post("/api/user/create-admin").send({});
 
     expect(response.status).toBe(401);
     expect(response.body.message).toContain("Fill in the requirements.");
