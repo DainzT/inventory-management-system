@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ExpandedOrderDetails } from "../../components/OrderFleetDisplay/ExpandedOrderDetails";
+import { ExpandedOrderDetails } from "../../components/orders/OrdersManagementTable/ExpandedOrderDetails";
 import { OrderItem } from "@/types/order-item";
 
 const mockOrder: OrderItem = {

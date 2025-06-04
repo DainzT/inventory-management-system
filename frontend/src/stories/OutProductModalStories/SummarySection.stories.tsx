@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import SummarySection from "@/components/OutItemModal/SummarySection";
+import SummarySection from "@/components/shared/contents/SummarySection";
 
 const meta: Meta<typeof SummarySection> = {
   title: "Out Product Modal/SummarySection",

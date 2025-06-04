@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
-import ChangePin from "@/components/AuthComponents/ChangePin";
+import ChangePin from "@/components/authentication/ChangePin";
 import { IoSettingsOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { within, userEvent } from "@storybook/test";

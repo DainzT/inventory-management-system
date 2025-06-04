@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import ItemDetails from "@/components/OutItemModal/ItemDetails";
+import ItemDetails from "@/components/inventory/modals/OutProductModal/ItemDetails";
 
 const meta: Meta<typeof ItemDetails> = {
   title: "Out Product Modal/ItemDetails",
