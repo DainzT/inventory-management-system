@@ -2,10 +2,10 @@ import { GroupedOrders, OrderItem } from "@/types";
 import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { InvoiceHeader } from "@/components/Summary/InvoiceHeader";
-import { InvoiceTable } from "@/components/Summary/InvoiceTable";
-import { InvoiceSummary } from "@/components/Summary/InvoiceSummary";
-import { DownloadButton } from "@/components/Summary/DownloadButton";
+import { InvoiceHeader } from "@/components/summary/InvoiceHeader";
+import { InvoiceTable } from "@/components/summary/InvoiceTable";
+import { InvoiceSummary } from "@/components/summary/InvoiceSummary";
+import { DownloadButton } from "@/components/summary/DownloadButton";
 export interface InvoiceProps {
   orders: OrderItem[];
   selectedMonth: string;
