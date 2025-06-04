@@ -78,6 +78,7 @@ const QuantitySelector = ({
           <Minus size={20} />
         </button>
         <input
+          id="quantity"
           type="number"
           value={value !== "" ? roundTo(value, 2) : ""}
           onChange={handleInputChange}

@@ -172,13 +172,15 @@ const OrdersManagementTable: React.FC<OrdersManagementTableProps> = ({
                       ? 'bg-amber-50/30 border-l-6 border-amber-400'
                       : 'border-[#E5E7EB] bg-white border'
                     : ''
-                  }
-                  
-                `}>
+                  }                  
+                `}
+                data-testid={`order-row-${order.id}`}
+                >
                   <div className="
                     text-[16px] text-gray-600 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
                   "
+                  data-testid={`order-date-${order.id}`}
                   >
                     {!isSameDateAsPrevious &&
                       highlightText(
@@ -191,6 +193,7 @@ const OrdersManagementTable: React.FC<OrdersManagementTableProps> = ({
                     text-[16px] font-bold text-gray-800 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
                   "
+                  data-testid={`order-product-${order.id}`}
                   >
                     {highlightText(order.name, searchQuery)}
                   </div>
@@ -199,6 +202,7 @@ const OrdersManagementTable: React.FC<OrdersManagementTableProps> = ({
                     text-sm text-gray-600 px-3
                     shrink-0 break-all hyphens-auto flex-1
                   "
+                  data-testid={`order-note-${order.id}`}
                   >
                     {order.note &&
                       (order.note.length > maxNoteLength ? (
@@ -248,6 +252,7 @@ const OrdersManagementTable: React.FC<OrdersManagementTableProps> = ({
                     text-[16px] text-gray-600 px-3
                     shrink-0 break-all overflow-hidden hyphens-auto flex-1
                   "
+                  data-testid="order-boat-name"
                   >
 
                     {highlightText(fixEncoding(order.boat.boat_name), searchQuery)}
@@ -264,6 +269,7 @@ const OrdersManagementTable: React.FC<OrdersManagementTableProps> = ({
                           cursor-pointer hover:bg-[#2563EB] transition-colors duration-200
                           flex items-center justify-center gap-2
                       "
+                      data-testid={`modify-order-btn-${order.id}`}
                       onClick={() => handleModifyItemClick(order)}
 
                     >
@@ -282,8 +288,10 @@ const OrdersManagementTable: React.FC<OrdersManagementTableProps> = ({
                   <div
                     className=" ml-3 mr-1 scale-80 cursor-pointer rounded-full transition-all hover:scale-90 hover:shadow-md hover:shadow-gray-600/50"
                     onClick={() => toggleExpand(order.id)}
+                    data-testid={`expand-order-${order.id}`}
+                    role="button"
                   >
-                    <ChevronIcon isExpanded={expandedOrderId === order.id} />
+                    <ChevronIcon isExpanded={expandedOrderId === order.id}/>
                   </div>
                 </div>
                 <div

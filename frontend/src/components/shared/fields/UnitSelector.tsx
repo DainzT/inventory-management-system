@@ -169,6 +169,7 @@ export const UnitSelector = ({
           <div className="max-h-[200px] overflow-y-auto">
             {filteredUnits.map((unit) => (
               <div
+                data-testid="unit-dropdown"
                 key={unit}
                 onClick={() => selectUnit(unit)}
                 className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"

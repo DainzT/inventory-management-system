@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from "@storybook/react";
-import { DownloadButton } from "@/components/summary/DownloadButton";
+import { DownloadButton } from "@/components/Summary/DownloadButton";
 
 export default {
   title: "Summary Components/DownloadButton",

@@ -19,6 +19,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
     <div className="relative ml-3 -mr-15 w-60">
       <div
         className="block h-[50px] rounded-[12px] border-[2px] border-[#E5E7EB] bg-[#F8FAFA] px-[14px] appearance-none w-full text-gray-700 py-3 pr-10 leading-tight focus:outline-none focus:border-teal-500 cursor-pointer text-md"
+        data-testid="filter-dropdown-trigger"
         onClick={() => setIsOpen(!isOpen)}
       >
         {label}
@@ -37,6 +38,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
         <ul
           className="absolute z-50 mt-1 w-full bg-white border-[1px] border-[#E5E7EB] 
             shadow-[0px_4px_6px_0px_rgba(0,0,0,0.05)] rounded-lg max-h-60 overflow-auto"
+          data-testid="filter-dropdown-list"
           role="listbox"
         >
           {options.map((option) => (
@@ -46,6 +48,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
               onClick={() => handleSelect(option)}
               role="option"
               aria-selected={selectedOption === option}
+              data-testid={`filter-option-${option.replace(/\s+/g, "-").toLowerCase()}`}
             >
               {option}
             </li>

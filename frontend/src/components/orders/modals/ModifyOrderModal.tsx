@@ -228,6 +228,7 @@ const ModifyOrderModal: React.FC<ModifyOrderModalProps> = ({
             } hover:bg-black/5 rounded-full transition-colors `}
             aria-label="Close dialog"
             disabled={isModifying || isDeleting}
+            data-testid="close-button"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
@@ -321,6 +322,7 @@ const ModifyOrderModal: React.FC<ModifyOrderModalProps> = ({
       transition-all duration-200
     `}
               disabled={isModifying || isDeleting}
+              data-testid ="fleet-selector"
             >
               <span className="text-base text-black inter-font">
                 {fixEncoding(fleet) || "Select a fleet"}
@@ -338,6 +340,7 @@ const ModifyOrderModal: React.FC<ModifyOrderModalProps> = ({
                         setFleetDropdownOpen(false);
                       }}
                       className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
+                      data-testid={`fleet-option-${fleetName}`}
                     >
                       {fleetName}
                     </li>
@@ -369,6 +372,7 @@ const ModifyOrderModal: React.FC<ModifyOrderModalProps> = ({
       transition-all duration-200
     `}
               disabled={isModifying || isDeleting}
+              data-testid ="boat-selector"
             >
               <span className="text-base text-black inter-font">
                 {fixEncoding(boat) || "Select a boat"}
@@ -386,6 +390,7 @@ const ModifyOrderModal: React.FC<ModifyOrderModalProps> = ({
                         setBoatDropdownOpen(false);
                       }}
                       className="px-4 py-2 hover:bg-blue-100 cursor-pointer inter-font"
+                      data-testid={`boat-option-${boatName}`}
                     >
                       {boatName}
                     </li>

@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from "@storybook/react";
-import { Invoice, InvoiceProps } from "@/components/summary/Invoice";
+import { Invoice, InvoiceProps } from "@/components/Summary/Invoice";
 import { OrderItem } from "@/types/order-item";
 
 

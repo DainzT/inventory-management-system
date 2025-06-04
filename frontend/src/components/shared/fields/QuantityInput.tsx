@@ -81,6 +81,7 @@ export const QuantityInput = ({
               : "border-accent-light"
           }`}
           disabled={disabled}
+          data-testid ="quantity-input"
         />
         <button
           type="button"
@@ -93,6 +94,7 @@ export const QuantityInput = ({
               : "border-accent-light cursor-pointer"
           }`}
           disabled={disabled}
+          data-testid="increment-quantity-button"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path

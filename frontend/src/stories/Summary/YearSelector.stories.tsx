@@ -1,5 +1,5 @@
 import {Meta, StoryFn} from "@storybook/react";
-import {YearSelector, YearSelectorProps} from "@/components/summary/YearSelector";
+import {YearSelector, YearSelectorProps} from "@/components/Summary/YearSelector";
 import {useState} from "react";
 
 export default {

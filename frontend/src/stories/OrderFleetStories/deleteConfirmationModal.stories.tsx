@@ -4,7 +4,7 @@ import { userEvent, within, waitFor, expect, fn } from "@storybook/test";
 
 
 const meta: Meta<typeof DeleteConfirmationModal> = {
-  title: "Components/DeleteConfirmationModal",
+  title: "Order Components/DeleteConfirmationModal",
   component: DeleteConfirmationModal,
   tags: ["autodocs"],
   args: {

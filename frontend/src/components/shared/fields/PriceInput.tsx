@@ -115,6 +115,7 @@ export const PriceInput = ({
                 : "border-accent-light"
             }`}
           disabled={disabled}
+          data-testid= "item-price-input"
         />
         {required && (
           <>
@@ -141,6 +142,7 @@ export const PriceInput = ({
                 unitSize > quantity
               }
               disabled={disabled}
+              data-testid="per-item-unit-input"
             />
             {error && (
               <span className="absolute text-red-600 text-sm -translate-19 translate-y-10 w-35">
