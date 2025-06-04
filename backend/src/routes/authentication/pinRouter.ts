@@ -1,6 +1,5 @@
 import express, { Request, Response, Router } from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import prisma from "../../lib/prisma";
 

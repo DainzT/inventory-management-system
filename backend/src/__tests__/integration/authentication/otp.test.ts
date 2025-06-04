@@ -38,7 +38,7 @@ jest.mock("nodemailer", () => ({
 
 jest.mock("../../../lib/otpService", () => ({
   generateOtp: jest.fn(() => "123456"),
-  saveOtpToDatabase: jest.fn().mockResolvedValue(true), // Simplified mock
+  saveOtpToDatabase: jest.fn().mockResolvedValue(true),
 }));
 
 describe("OTP Related Routes", () => {
