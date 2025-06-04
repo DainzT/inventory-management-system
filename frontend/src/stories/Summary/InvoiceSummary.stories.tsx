@@ -22,6 +22,11 @@ Default.args = {
     total: 5000,
 }
 
+export const WithLargeAmount: StoryFn<InvoiceSummaryProps> = Template.bind({});
+WithLargeAmount.args = {
+    total: 1000000,
+}
+
 export const NoData: StoryFn<InvoiceSummaryProps> = Template.bind({});
 NoData.args = {
     total: 0,

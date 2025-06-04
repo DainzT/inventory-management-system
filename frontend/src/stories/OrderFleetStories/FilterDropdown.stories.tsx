@@ -2,6 +2,21 @@ import { Meta, StoryObj } from "@storybook/react";
 import { FilterDropdown } from "../../components/orders/OrdersManagementTable/FilterDropdown";
 import userEvent from "@testing-library/user-event";
 import {within} from "@storybook/testing-library";
+import { Decorator } from "@storybook/react";
+
+
+const CenterDecorator: Decorator = (Story) => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+    }}
+  >
+    <Story />
+  </div>
+);
 
 const meta: Meta<typeof FilterDropdown> = {
   title: "Order Components/FilterDropdown",
@@ -9,7 +24,8 @@ const meta: Meta<typeof FilterDropdown> = {
   tags: ['autodocs'],
   argTypes: {
     onSelect: { action: 'selected' }
-  }
+  },
+  decorators: [CenterDecorator],
 } satisfies Meta<typeof FilterDropdown>;
 
 export default meta;

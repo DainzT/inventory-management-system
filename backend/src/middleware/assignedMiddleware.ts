@@ -21,7 +21,8 @@ export const updateArchivedItems = async (
       const outDate = new Date(item.outDate);
       return (
         outDate.getFullYear() < currentYear ||
-        (outDate.getFullYear() === currentYear && outDate.getMonth() < currentMonth)
+        (outDate.getFullYear() === currentYear &&
+          outDate.getMonth() < currentMonth)
       );
     });
 

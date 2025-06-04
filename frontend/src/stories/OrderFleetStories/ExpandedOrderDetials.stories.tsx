@@ -39,14 +39,6 @@ export const Default: Story = {
   },
 };
 
-export const UnassignedFleet: Story = {
-  args: {
-    order: {
-      ...mockOrder,
-      fleet: { id: 0, fleet_name: "Unassigned" },
-    },
-  },
-};
 
 export const NoLastUpdated: Story = {
   args: {
