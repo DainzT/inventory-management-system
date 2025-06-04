@@ -3,6 +3,8 @@ import express from "express";
 import prisma from "../../../lib/prisma";
 import modifyItemRouter from "../../../routes/modifyItemRouter"
 
+jest.setTimeout(30000);
+
 jest.mock("../../../middleware/authMiddleware", () => {
     return {
         authenticateToken: (req: any, res: any, next: any) => next()
@@ -36,41 +38,111 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await prisma.assignedItem.deleteMany();
+    await prisma.inventoryItem.deleteMany();
     await prisma.$disconnect();
 });
 
 describe("PUT /modify-item/update/:id", () => {
-    it("should update assigned item with valid data", async () => {
-        const res = await request(app)
-        .put(`/api/modify-item/update/${testItemId}`) 
-        .send({
-            quantity: 5,
-            note: "Updated item",
-            fleet_id: 1,
-            boat_id: 1,
-            archived: false,
+    describe("Happy Path", () => {
+        it("should return 200 and update assigned item with valid data", async () => {
+            const res = await request(app)
+                .put(`/api/modify-item/update/${testItemId}`) 
+                .send({
+                    quantity: 5,
+                    note: "Initial",
+                    fleet_id: 1,
+                    boat_id: 1,
+                    archived: false,
+                });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.quantity).toBe(5);
+        }, 10000);
+
+        it("should return 200 and update lastUpdated timestamp when modifying item", async () => {
+            const beforeUpdate = new Date();
+            
+            const res = await request(app)
+                .put(`/api/modify-item/update/${testItemId}`)
+                .send({
+                    quantity: 3,
+                });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            
+            const lastUpdated = new Date(res.body.data.lastUpdated);
+            expect(lastUpdated).toBeInstanceOf(Date);
+            expect(lastUpdated.getTime()).toBeGreaterThanOrEqual(beforeUpdate.getTime());
+        }, 10000);
+
+        it("should return 200 and recalculate total when quantity changes", async () => {
+            const newQuantity = 4;
+            const res = await request(app)
+                .put(`/api/modify-item/update/${testItemId}`)
+                .send({
+                    quantity: newQuantity,
+                    note: "Updated with new quantity"
+                });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.total).toBe(newQuantity * 100);
+        }, 15000);
+    });
+
+    describe("Sad Path", () => {
+        it("should return 400 for negative quantity", async () => {
+            const res = await request(app)
+                .put(`/api/modify-item/update/${testItemId}`) 
+                .send({ quantity: -10 });
+                
+            expect(res.status).toBe(400);
+            expect(res.body.error).toMatch(/valid quantity/i);
         });
 
-        expect(res.status).toBe(200);
-        expect(res.body.success).toBe(true);
-        expect(res.body.data.quantity).toBe(5);
-    });
+        it("should return 400 when quantity exceeds available inventory", async () => {
+            const res = await request(app)
+                .put(`/api/modify-item/update/${testItemId}`)
+                .send({
+                    quantity: 1000,
+                    fleet_id: 1,
+                    boat_id: 1,
+                });
 
-    it("should return 400 for invalid quantity", async () => {
-        const res = await request(app)
-        .put(`/api/modify-item/update/${testItemId}`) 
-        .send({ quantity: -10 });
+            expect(res.status).toBe(400);
+            expect(res.body).toEqual({
+                success: false,
+                error: "Insufficient inventory quantity"
+            });
+        });
 
-        expect(res.status).toBe(400);
-        expect(res.body.error).toMatch(/valid quantity/i);
-    });
+        it("should return 400 when quantity is not a number", async () => {
+            const res = await request(app)
+                .put(`/api/modify-item/update/${testItemId}`)
+                .send({ quantity: "abc" });
 
-    it("should return 404 if assigned item not found", async () => {
-        const res = await request(app)
-        .put(`/api/modify-item/update/999999`)  
-        .send({ quantity: 5 });
+            expect(res.status).toBe(400);
+            expect(res.body.error).toMatch("Valid quantity (number >= 0) is required");
+        });
 
-        expect(res.status).toBe(404);
-        expect(res.body.error).toMatch(/not found/i); 
+        it("should return 400 when quantity field is missing", async () => {
+            const res = await request(app)
+                .put(`/api/modify-item/update/${testItemId}`)
+                .send({});
+
+            expect(res.status).toBe(400);
+            expect(res.body.error).toMatch("Valid quantity (number >= 0) is required");
+        });
+
+        it("should return 404 if assigned item not found", async () => {
+            const res = await request(app)
+                .put(`/api/modify-item/update/999999`)  
+                .send({ quantity: 5 });
+
+            expect(res.status).toBe(404);
+            expect(res.body.error).toMatch(/not found/i);
+        });
     });
 });
