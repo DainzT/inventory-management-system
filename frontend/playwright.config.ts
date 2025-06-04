@@ -70,8 +70,14 @@ export default defineConfig({
 
     /* Test against branded browsers. */
     {
-      name: "Microsoft Edge",
-      use: { ...devices["Desktop Edge"], channel: "msedge" },
+      name: 'Microsoft Edge',
+      use: {
+        ...devices['Desktop Edge'],
+        launchOptions: {
+          args: ['--disable-extensions', '--no-sandbox']
+        }
+      },
+      timeout: 120000
     },
     {
       name: "Google Chrome",
