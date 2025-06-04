@@ -2,7 +2,7 @@ import { Meta, StoryFn } from "@storybook/react";
 import {
   InvoiceHeader,
   InvoiceHeaderProps,
-} from "@/components/Summary/InvoiceHeader";
+} from "@/components/summary/InvoiceHeader";
 
 
 export default {

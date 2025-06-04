@@ -33,6 +33,7 @@ const sampleOrder: ModifyOrderItem = {
     quantity: 100,
     total: 12575,
     dateCreated: new Date(),
+    lastUpdated: new Date(),
   },
   selectUnit: "meter",
   unitSize: 1,
@@ -106,6 +107,35 @@ export const FleetAndBoatAssignment: Story = {
   },
 };
 
+export const LongNoteTruncation: Story = {
+  args: {
+    selectedOrder: {
+      ...sampleOrder,
+      note: "This is a very very very very very very very long long long long note rawr rawr rawr meow meow meow"
+    }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText(/\.\.\./)).toBeInTheDocument();
+    await expect(canvas.getByText(/↗/)).toBeInTheDocument();
+  }
+};
+
+export const OutOfStockItem: Story = {
+  args: {
+    selectedOrder: {
+      ...sampleOrder,
+      inventory: null  
+    }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      canvas.getByText("This item no longer exists in inventory")
+    ).toBeInTheDocument();
+  }
+};
+
 export const UnsavedChangesWarning: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -158,6 +188,39 @@ export const ValidationErrors: Story = {
   },
 };
 
+export const DeleteConfirmation: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const deleteButton = canvas.getByRole('button', { name: /delete/i });
+    await userEvent.click(deleteButton);
+
+    await waitFor(async () => {
+      expect(
+        canvas.getByRole('heading', { name: /Remove Item/i })
+      ).toBeInTheDocument();
+
+      expect(
+        canvas.getByText(/Are you sure you want to remove this item from your order\?/i)
+      ).toBeInTheDocument();
+    });
+
+    const confirmButton = canvas.getByRole('button', { name: /remove item/i });
+    const cancelButton = canvas.getByRole('button', { name: /cancel/i });
+
+    expect(confirmButton).toBeInTheDocument();
+    expect(cancelButton).toBeInTheDocument();
+
+    await userEvent.click(cancelButton);
+
+    await waitFor(() => {
+      expect(
+        canvas.queryByText(/Are you sure you want to remove this item from your order\?/i)
+      ).not.toBeInTheDocument();
+    });
+  },
+};
+
 export const LoadingStates: Story = {
   args: {
     isModifying: true,
@@ -168,13 +231,4 @@ export const LoadingStates: Story = {
   },
 };
 
-export const DeletingState: Story = {
-  args: {
-    isDeleting: true,
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const deleteButton = canvas.getByRole("button", { name: /Delete/i });
-    await expect(deleteButton).toBeDisabled();
-  },
-};
+
