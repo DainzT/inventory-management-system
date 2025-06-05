@@ -13,15 +13,24 @@ const SummaryPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { showLoadingToast, showSuccessToast, showErrorToast } = useToast();
 
-  // Memoize the toast functions to prevent unnecessary re-renders
   const memoizedShowLoadingToast = useCallback(showLoadingToast, []);
   const memoizedShowSuccessToast = useCallback(showSuccessToast, []);
   const memoizedShowErrorToast = useCallback(showErrorToast, []);
 
-  const modifiedName =
-    fleetName === "f/b-dona-librada"
-      ? fleetName.replace(/n/g, "ñ")?.replaceAll("-", " ").toUpperCase()
-      : fleetName?.replaceAll("-", " ").toUpperCase();
+  let pageTitle = "ALL FLEETS";
+  if (fleetName && fleetName !== "all-fleets") {
+    pageTitle =
+      fleetName === "f/b-dona-librada"
+        ? fleetName.replace(/n/g, "ñ")?.replaceAll("-", " ").toUpperCase()
+        : fleetName.replaceAll("-", " ").toUpperCase();
+  }
+
+  const filteredOrders =
+    !fleetName || fleetName === "all-fleets"
+      ? orders
+      : orders.filter(
+          (order) => order.fleet?.fleet_name.toUpperCase() === pageTitle
+        );
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -48,16 +57,9 @@ const SummaryPage = () => {
     memoizedShowErrorToast,
   ]);
 
-  const filteredOrders =
-    !fleetName || fleetName === "all-fleets"
-      ? orders
-      : orders.filter(
-        (order) => order.fleet?.fleet_name.toUpperCase() === modifiedName
-      );
-
   return (
     <div className="flex-1 p-0">
-      <PageTitle title={String(modifiedName)} />
+      <PageTitle title={pageTitle} />
       <SummaryDesign
         fleetName={String(fleetName)}
         orders={filteredOrders}
