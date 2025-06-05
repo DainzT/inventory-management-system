@@ -15,8 +15,6 @@ const ASSIGN = {
   quantity: 4,
 };
 
-const API_URL = process.env.VITE_API_URL || "http://localhost:3000";
-
 test.describe("Out/Assign Item to Orders E2E", () => {
   let accessToken;
   let createdItemId: number;
