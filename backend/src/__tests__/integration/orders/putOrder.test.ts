@@ -58,6 +58,20 @@ describe("PUT /modify-item/update/:id", () => {
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
             expect(res.body.data.quantity).toBe(5);
+        }, 15000);
+
+        it("should return 200 and accept decimal numbers for quantity", async () => {
+            const res = await request(app)
+                .put(`/api/modify-item/update/${testItemId}`)
+                .send({
+                    quantity: 5.5,
+                    note: "Decimal quantity test"
+                });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.quantity).toBe(5.5);
+            expect(res.body.data.total).toBe(5.5 * 100); 
         }, 10000);
 
         it("should return 200 and update lastUpdated timestamp when modifying item", async () => {
@@ -89,6 +103,53 @@ describe("PUT /modify-item/update/:id", () => {
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
             expect(res.body.data.total).toBe(newQuantity * 100);
+        }, 15000);
+
+        it("should handle return to inventory with inventory item creation", async () => {
+            const assignedItem = await prisma.assignedItem.create({
+                data: {
+                    name: "New Return Item",
+                    unitSize: 1,
+                    unitPrice: 100,
+                    selectUnit: "kg",
+                    quantity: 5,
+                    note: "Test automatic inventory creation",
+                    fleet_id: 1,
+                    boat_id: 1,
+                    archived: false,
+                    total: 500
+                }
+            });
+            const res = await request(app)
+                .put(`/api/modify-item/update/${assignedItem.id}`)
+                .send({ quantity: 0 });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.deleted).toBe(true);
+            expect(res.body.message).toMatch(/returned to inventory/i);
+
+            const newInventoryItem = await prisma.inventoryItem.findFirst({
+                where: {
+                    name: "New Return Item",
+                    unitPrice: 100,
+                    unitSize: 1,
+                    selectUnit: "kg"
+                }
+            });
+
+            expect(newInventoryItem).toBeTruthy();
+            expect(newInventoryItem?.quantity).toBe(5);
+            expect(newInventoryItem?.total).toBe(500);
+
+            const deletedAssignment = await prisma.assignedItem.findUnique({
+                where: { id: assignedItem.id }
+            });
+            expect(deletedAssignment).toBeNull();
+
+            await prisma.inventoryItem.delete({
+                where: { id: newInventoryItem!.id }
+            });
         }, 15000);
     });
 
