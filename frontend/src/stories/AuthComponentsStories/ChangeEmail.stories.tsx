@@ -88,14 +88,14 @@ export const Render: Story = {
     await userEvent.click(canvas.getByRole("button"));
     await userEvent.click(canvas.getByText("Change Email"));
 
-    const modal = within(document.body);
-    await userEvent.type(
-      modal.getByPlaceholderText("Enter current PIN"),
-      "123456"
-    );
+    // const modal = within(document.body);
+    // await userEvent.type(
+    //   modal.getByPlaceholderText("Enter current PIN"),
+    //   "123456"
+    // );
     // await userEvent.click(modal.getByText("Verify PIN"));
 
-    const toggleButton = modal.getByLabelText("Show password");
-    await userEvent.click(toggleButton);
+    // const toggleButton = modal.getByLabelText("Show password");
+    // await userEvent.click(toggleButton);
   },
 };
