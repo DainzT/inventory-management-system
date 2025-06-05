@@ -3,16 +3,18 @@ import type { Request, Response } from "express";
 import dotenv from "dotenv";
 import prisma from "../lib/prisma";
 import { authenticateToken } from "../middleware/authMiddleware";
-import { updateArchivedItems } from "../middleware/assignedMiddleware";
 
 dotenv.config();
 const router: Router = express.Router();
 
 router.use(authenticateToken);
 
-router.get("/assign-item", updateArchivedItems, async (req: Request, res: Response) => {
+router.get("/assign-item", async (req: Request, res: Response) => {
   try {
     const orders = await prisma.assignedItem.findMany({
+      where: {
+        archived: false,
+      },
       include: {
         fleet: true,
         boat: true,
@@ -49,10 +51,8 @@ router.post("/update-archive", async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Archived status updated successfully" });
   } catch (error) {
-    console.error("Error updating archived status:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
 export default router;
-

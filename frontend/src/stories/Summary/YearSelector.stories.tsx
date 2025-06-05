@@ -7,6 +7,7 @@ export default {
   component: YearSelector,
 } as Meta;
 
+
 const Template: StoryFn<YearSelectorProps> = (args: YearSelectorProps) => (
   <YearSelector {...args} />
 );
