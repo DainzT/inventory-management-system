@@ -1,6 +1,6 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../../routes/authRouter";
+import pinRoutes from "../../../routes/authentication/pinRouter";
 import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 
@@ -13,11 +13,11 @@ jest.mock("../../../middleware/authMiddleware", () => ({
 
 const app = express();
 app.use(express.json());
-app.use("/api/auth", authRoutes);
+app.use("/api/pin", pinRoutes);
 
 jest.setTimeout(90000);
 
-describe("PUT /api/auth/change-pin", () => {
+describe("PUT /api/pin/change-pin", () => {
   let user: any;
 
   beforeAll(async () => {
@@ -40,7 +40,7 @@ describe("PUT /api/auth/change-pin", () => {
 
   it("should successfully change PIN with valid credentials", async () => {
     const response = await request(app)
-      .put("/api/auth/change-pin")
+      .put("/api/pin/change-pin")
       .send({ oldPin: "123456", newPin: "654321" });
 
     expect(response.status).toBe(200);
@@ -63,7 +63,7 @@ describe("PUT /api/auth/change-pin", () => {
 
     for (const testCase of testCases) {
       const response = await request(app)
-        .put("/api/auth/change-pin")
+        .put("/api/pin/change-pin")
         .send({ oldPin: "123456", newPin: testCase.pin });
 
       expect(response.status).toBe(400);
@@ -73,14 +73,14 @@ describe("PUT /api/auth/change-pin", () => {
 
   it("should return 400 without authentication", async () => {
     const response = await request(app)
-      .put("/api/auth/change-pin")
+      .put("/api/pin/change-pin")
       .send({ oldPin: "", newPin: "" });
 
     expect(response.status).toBe(400);
   });
 });
 
-describe("PUT /api/auth/change-pin (Negative Cases)", () => {
+describe("PUT /api/pin/change-pin (Negative Cases)", () => {
   it("should return 404 with invalid authentication", async () => {
     jest.mock("../../../middleware/authMiddleware", () => ({
       authenticateToken: (req: any, res: any) =>
@@ -88,7 +88,7 @@ describe("PUT /api/auth/change-pin (Negative Cases)", () => {
     }));
 
     const response = await request(app)
-      .put("/api/auth/change-pin")
+      .put("/api/pin/change-pin")
       .send({ oldPin: "123456", newPin: "654321" });
 
     expect(response.status).toBe(404);
@@ -99,7 +99,7 @@ describe("PUT /api/auth/change-pin (Negative Cases)", () => {
     await prisma.user.deleteMany();
 
     const response = await request(app)
-      .put("/api/auth/change-pin")
+      .put("/api/pin/change-pin")
       .send({ oldPin: "123456", newPin: "654321" });
 
     expect(response.status).toBe(404);
@@ -107,7 +107,7 @@ describe("PUT /api/auth/change-pin (Negative Cases)", () => {
 
   it("should return 404 when oldPin is missing", async () => {
     const response = await request(app)
-      .put("/api/auth/change-pin")
+      .put("/api/pin/change-pin")
       .send({ newPin: "654321" });
 
     expect(response.status).toBe(404);
@@ -119,7 +119,7 @@ describe("PUT /api/auth/change-pin (Negative Cases)", () => {
 
   it("should return 400 when newPin is missing", async () => {
     const response = await request(app)
-      .put("/api/auth/change-pin")
+      .put("/api/pin/change-pin")
       .send({ oldPin: "123456" });
 
     expect(response.status).toBe(400);
@@ -137,7 +137,7 @@ describe("PUT /api/auth/change-pin (Negative Cases)", () => {
     }));
 
     const response = await request(app)
-      .put("/api/auth/change-pin")
+      .put("/api/pin/change-pin")
       .send({ oldPin: "123456", newPin: "654321" });
 
     expect(response.status).toBe(404);

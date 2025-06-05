@@ -1,6 +1,4 @@
 import { test, expect } from '@playwright/test';
-import dotenv from 'dotenv';
-dotenv.config();
 
 test.describe("Inventory Page - Edit Item", () => {
     let testProductId: number;

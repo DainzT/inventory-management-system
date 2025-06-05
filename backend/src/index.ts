@@ -6,10 +6,15 @@ import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
 // Routes
-import authRoutes from "./routes/authRouter.js";
+// import authRoutes from "./routes/authRouter.js";
 import inventoryItemRoutes from "./routes/inventoryItemRouter.js";
 import modifyItemRoutes from "./routes/modifyItemRouter.js";
 import assignedItemRoutes from "./routes/assignedItemRouter.js";
+import emailRoutes from "./routes/authentication/emailRouter.js";
+import tokenRoutes from "./routes/authentication/tokenRouter.js";
+import otpRoutes from "./routes/authentication/otpRouter.js";
+import pinRoutes from "./routes/authentication/pinRouter.js";
+import userRoutes from "./routes/authentication/userRouter.js";
 
 dotenv.config();
 
@@ -27,7 +32,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes
-app.use("/api/auth", authRoutes);
+app.use("/api/email", emailRoutes);
+app.use("/api/pin", pinRoutes);
+app.use("/api/token", tokenRoutes);
+app.use("/api/otp", otpRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/inventory-item", inventoryItemRoutes);
 app.use("/api/modify-item", modifyItemRoutes);
 app.use("/api/assigned-item", assignedItemRoutes);

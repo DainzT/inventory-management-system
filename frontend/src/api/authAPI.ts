@@ -8,7 +8,7 @@ interface AuthResponse {
 }
 
 export const checkUserAPI = async (): Promise<AuthResponse> => {
-  const res = await fetch(`${API_URL}/auth/check-user`, {
+  const res = await fetch(`${API_URL}/user/check-user`, {
     method: "GET",
     credentials: "include",
   });
@@ -16,7 +16,7 @@ export const checkUserAPI = async (): Promise<AuthResponse> => {
 };
 
 export const loginAPI = async (pin: string): Promise<AuthResponse> => {
-  const res = await fetch(`${API_URL}/auth/login`, {
+  const res = await fetch(`${API_URL}/user/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ pin }),
@@ -32,7 +32,7 @@ export const loginAPI = async (pin: string): Promise<AuthResponse> => {
 };
 
 export const logoutAPI = async (): Promise<void> => {
-  const res = await fetch(`${API_URL}/auth/logout`, {
+  const res = await fetch(`${API_URL}/user/logout`, {
     method: "POST",
     credentials: "include",
   });
@@ -47,7 +47,7 @@ export const changePinAPI = async (
   newPin: string,
   accessToken: string
 ): Promise<AuthResponse> => {
-  const res = await fetch(`${API_URL}/auth/change-pin`, {
+  const res = await fetch(`${API_URL}/pin/change-pin`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -61,12 +61,12 @@ export const changePinAPI = async (
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.message || "Failed to change pin");
   }
-  
+
   return res.json();
 };
 
 export const refreshTokenAPI = async () => {
-  const res = await fetch(`${API_URL}/auth/refresh-token`, {
+  const res = await fetch(`${API_URL}/token/refresh-token`, {
     method: "POST",
     credentials: "include",
   });
@@ -84,7 +84,7 @@ export const createAdminAPI = async (payload: {
   pin: string;
   confirmPin: string;
 }) => {
-  const res = await fetch(`${API_URL}/auth/create-admin`, {
+  const res = await fetch(`${API_URL}/user/create-admin`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -98,8 +98,12 @@ export const createAdminAPI = async (payload: {
   return res.json();
 };
 
-export const sendOtpEmailAPI = async (email: string, pin: string, confirmPin: string): Promise<void> => {
-  const res = await fetch(`${API_URL}/auth/send-otp-email`, {
+export const sendOtpEmailAPI = async (
+  email: string,
+  pin: string,
+  confirmPin: string
+): Promise<void> => {
+  const res = await fetch(`${API_URL}/otp/send-otp-email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -118,7 +122,7 @@ export const sendOtpEmailAPI = async (email: string, pin: string, confirmPin: st
 export const verifyPinAPI = async (
   pin: string
 ): Promise<{ message: string }> => {
-  const res = await fetch(`${API_URL}/auth/verify-pin`, {
+  const res = await fetch(`${API_URL}/pin/verify-pin`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -138,7 +142,7 @@ export const verifyPinAPI = async (
 export const verifyEmailAPI = async (
   email: string
 ): Promise<{ message: string }> => {
-  const res = await fetch(`${API_URL}/auth/verify-email`, {
+  const res = await fetch(`${API_URL}/email/verify-email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -155,8 +159,10 @@ export const verifyEmailAPI = async (
   return res.json();
 };
 
-export const verifyOtpAPI = async (otp: string): Promise<{ message: string }> => {
-  const res = await fetch(`${API_URL}/auth/verify-otp`, {
+export const verifyOtpAPI = async (
+  otp: string
+): Promise<{ message: string }> => {
+  const res = await fetch(`${API_URL}/otp/verify-otp`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -177,7 +183,7 @@ export const resetPinAPI = async (
   email: string,
   newPin: string
 ): Promise<{ message: string }> => {
-  const res = await fetch(`${API_URL}/auth/reset-pin`, {
+  const res = await fetch(`${API_URL}/pin/reset-pin`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -199,7 +205,7 @@ export const changeEmailAPI = async (
   newEmail: string,
   accessToken: string
 ): Promise<{ message: string }> => {
-  const res = await fetch(`${API_URL}/auth/change-email`, {
+  const res = await fetch(`${API_URL}/email/change-email`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

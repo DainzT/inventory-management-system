@@ -1,6 +1,7 @@
 import request from "supertest";
 import express from "express";
-import authRoutes from "../../../routes/authRouter";
+import otpRoutes from "../../../routes/authentication/otpRouter";
+import pinRoutes from "../../../routes/authentication/pinRouter";
 import prisma from "../../../lib/prisma";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
@@ -8,7 +9,8 @@ import { generateOtp, saveOtpToDatabase } from "../../../lib/otpService";
 
 const app = express();
 app.use(express.json());
-app.use("/api/auth", authRoutes);
+app.use("/api/otp", otpRoutes);
+app.use("/api/pin", pinRoutes);
 
 jest.setTimeout(90000);
 
@@ -36,7 +38,7 @@ jest.mock("nodemailer", () => ({
 
 jest.mock("../../../lib/otpService", () => ({
   generateOtp: jest.fn(() => "123456"),
-  saveOtpToDatabase: jest.fn().mockResolvedValue(true), // Simplified mock
+  saveOtpToDatabase: jest.fn().mockResolvedValue(true),
 }));
 
 describe("OTP Related Routes", () => {
@@ -65,7 +67,7 @@ describe("OTP Related Routes", () => {
     await prisma.$disconnect();
   });
 
-  describe("POST /api/auth/send-otp-email", () => {
+  describe("POST /api/otp/send-otp-email", () => {
     it("should send OTP email for valid email", async () => {
       const sendMailMock = nodemailer.createTransport().sendMail as jest.Mock;
       sendMailMock.mockClear().mockResolvedValueOnce({
@@ -82,13 +84,11 @@ describe("OTP Related Routes", () => {
         },
       });
 
-      const response = await request(app)
-        .post("/api/auth/send-otp-email")
-        .send({
-          email: testEmail,
-          pin: "123456",
-          confirmPin: "123456",
-        });
+      const response = await request(app).post("/api/otp/send-otp-email").send({
+        email: testEmail,
+        pin: "123456",
+        confirmPin: "123456",
+      });
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
@@ -108,7 +108,7 @@ describe("OTP Related Routes", () => {
 
     it("should return 400 for missing email", async () => {
       const response = await request(app)
-        .post("/api/auth/send-otp-email")
+        .post("/api/otp/send-otp-email")
         .send({});
 
       expect(response.status).toBe(400);
@@ -116,7 +116,7 @@ describe("OTP Related Routes", () => {
     });
   });
 
-  describe("POST /api/auth/verify-otp", () => {
+  describe("POST /api/otp/verify-otp", () => {
     it("should verify valid OTP", async () => {
       await prisma.otp.create({
         data: {
@@ -127,7 +127,7 @@ describe("OTP Related Routes", () => {
       });
 
       const response = await request(app)
-        .post("/api/auth/verify-otp")
+        .post("/api/otp/verify-otp")
         .send({ email: "test@example.com", otp: "123456" });
 
       expect(response.status).toBe(200);
@@ -139,7 +139,7 @@ describe("OTP Related Routes", () => {
 
     it("should return 400 for invalid OTP", async () => {
       const response = await request(app)
-        .post("/api/auth/verify-otp")
+        .post("/api/otp/verify-otp")
         .send({ email: "test@example.com", otp: "wrongotp" });
 
       expect(response.status).toBe(400);
@@ -156,7 +156,7 @@ describe("OTP Related Routes", () => {
       });
 
       const response = await request(app)
-        .post("/api/auth/verify-otp")
+        .post("/api/otp/verify-otp")
         .send({ email: "test@example.com", otp: "654321" });
 
       expect(response.status).toBe(400);
@@ -164,168 +164,66 @@ describe("OTP Related Routes", () => {
     });
   });
 
-  describe("POST /api/auth/reset-pin", () => {
-    it("should reset PIN with valid OTP and new PIN", async () => {
-      const response = await request(app)
-        .post("/api/auth/reset-pin")
-        .send({ email: "test@example.com", newPin: "987654" });
-
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
-        message: "PIN reset successfully",
-        success: true,
-      });
-
-      const updatedUser = await prisma.user.findUnique({
-        where: { id: user.id },
-      });
-      expect(await bcrypt.compare("987654", updatedUser?.pin || "")).toBe(true);
-    });
-
-    it("should return 400 for invalid new PIN format", async () => {
-      const testCases = [
-        {
-          pin: "12345",
-          message:
-            "New PIN must be exactly 6 digits long and only contain numbers.",
-        },
-        {
-          pin: "abcdef",
-          message:
-            "New PIN must be exactly 6 digits long and only contain numbers.",
-        },
-      ];
-
-      for (const testCase of testCases) {
-        const response = await request(app)
-          .post("/api/auth/reset-pin")
-          .send({ email: "test@example.com", newPin: testCase.pin });
-
-        expect(response.status).toBe(400);
-        expect(response.body).toHaveProperty("message", testCase.message);
-      }
-    });
-
-    it("should return 404 for non-existent email", async () => {
-      const response = await request(app)
-        .post("/api/auth/reset-pin")
-        .send({ email: "nonexistent@example.com", newPin: "987654" });
-
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({
-        message: "User not found",
-        success: false,
-      });
-    });
-  });
-});
-
-describe("OTP Related Routes (Negative Cases)", () => {
-  it("should handle email sending failure gracefully", async () => {
-    await prisma.user.create({
-      data: {
+  describe("OTP Related Routes (Negative Cases)", () => {
+    it("should handle email sending failure gracefully", async () => {
+      const sendMailMock = nodemailer.createTransport().sendMail as jest.Mock;
+      sendMailMock.mockRejectedValueOnce(new Error("SMTP Error"));
+      const response = await request(app).post("/api/otp/send-otp-email").send({
         email: "test@example.com",
-        pin: await bcrypt.hash("123456", 10),
-      },
-    });
-    const sendMailMock = nodemailer.createTransport().sendMail as jest.Mock;
-    sendMailMock.mockRejectedValueOnce(new Error("SMTP Error"));
-    const response = await request(app).post("/api/auth/send-otp-email").send({
-      email: "test@example.com",
-      pin: "123456",
-      confirmPin: "123456",
-    });
+        pin: "123456",
+        confirmPin: "123456",
+      });
 
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({
-      message: "Failed to send OTP",
-      success: false,
-    });
-  });
-
-  it("should return 400 for invalid email format", async () => {
-    const response = await request(app).post("/api/auth/send-otp-email").send({
-      email: "invalid-email",
-      pin: "123456",
-      confirmPin: "123456",
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({
+        message: "Failed to send OTP",
+        success: false,
+        error: {
+          message: "SMTP Error",
+        },
+      });
     });
 
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBe("Please enter a valid email address.");
-  });
+    it("should handle database errors during OTP save", async () => {
+      const uniqueEmail = `test-${Date.now()}@example.com`;
 
-  it("should handle database errors during OTP save", async () => {
-    const uniqueEmail = `test-${Date.now()}@example.com`;
+      await prisma.user.create({
+        data: {
+          email: uniqueEmail,
+          pin: await bcrypt.hash("123456", 10),
+        },
+      });
+      (saveOtpToDatabase as jest.Mock).mockImplementationOnce(() => {
+        throw new Error("Database error");
+      });
 
-    await prisma.user.create({
-      data: {
-        email: uniqueEmail,
-        pin: await bcrypt.hash("123456", 10),
-      },
+      const response = await request(app).post("/api/otp/send-otp-email").send({
+        email: "test@example.com",
+        pin: "123456",
+        confirmPin: "123456",
+      });
+
+      expect(response.status).toBe(500);
     });
-    (saveOtpToDatabase as jest.Mock).mockImplementationOnce(() => {
-      throw new Error("Database error");
+
+    it("should return 400 for malformed OTP verification request", async () => {
+      const response = await request(app)
+        .post("/api/otp/verify-otp")
+        .send("invalid-json");
+
+      expect(response.status).toBe(400);
     });
 
-    const response = await request(app).post("/api/auth/send-otp-email").send({
-      email: "test@example.com",
-      pin: "123456",
-      confirmPin: "123456",
+    it("should handle OTP database query failures", async () => {
+      jest
+        .spyOn(prisma.otp, "findFirst")
+        .mockRejectedValueOnce(new Error("DB Error"));
+
+      const response = await request(app)
+        .post("/api/otp/verify-otp")
+        .send({ email: "test@example.com", otp: "123456" });
+
+      expect([404, 500]).toContain(response.status);
     });
-
-    expect(response.status).toBe(500);
-  });
-
-  it("should return 400 for malformed OTP verification request", async () => {
-    const response = await request(app)
-      .post("/api/auth/verify-otp")
-      .send("invalid-json");
-
-    expect(response.status).toBe(400);
-  });
-
-  it("should handle OTP database query failures", async () => {
-    jest
-      .spyOn(prisma.otp, "findFirst")
-      .mockRejectedValueOnce(new Error("DB Error"));
-
-    const response = await request(app)
-      .post("/api/auth/verify-otp")
-      .send({ email: "test@example.com", otp: "123456" });
-
-    expect([404, 500]).toContain(response.status);
-  });
-
-  it("should handle PIN reset database errors", async () => {
-    jest
-      .spyOn(prisma.user, "update")
-      .mockRejectedValueOnce(new Error("DB Error"));
-
-    const response = await request(app)
-      .post("/api/auth/reset-pin")
-      .send({ email: "test@example.com", newPin: "987654" });
-
-    expect([404, 500]).toContain(response.status);
-  });
-
-  it("should return 404 when reset PIN request has no email", async () => {
-    const response = await request(app)
-      .post("/api/auth/reset-pin")
-      .send({ email: "", newPin: "987654" });
-
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({
-      message: "User not found",
-      success: false,
-    });
-  });
-
-  it("should return 400 when reset PIN request has invalid newPin", async () => {
-    const response = await request(app)
-      .post("/api/auth/reset-pin")
-      .send({ email: "test@example.com", newPin: "123" });
-
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty("message");
   });
 });

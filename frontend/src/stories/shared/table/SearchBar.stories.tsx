@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { fn, userEvent, within } from "@storybook/test";
+import { fn, userEvent, within, expect } from "@storybook/test";
 import { SearchBar } from "@/components/shared/table/SearchBar";
 
 const meta: Meta<typeof SearchBar> = {
