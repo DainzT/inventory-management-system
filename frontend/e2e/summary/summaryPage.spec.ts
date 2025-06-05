@@ -432,7 +432,6 @@ test.describe("Summary", () => {
               .getByRole("button", { name: "Edit" })
               .first();
             await orderRow.click();
-
             const modal = reusablePage.locator(
               ".flex.fixed.z-50.inset-0.justify-center.items-center"
             );

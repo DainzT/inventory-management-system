@@ -51,7 +51,6 @@ router.post("/update-archive", async (req: Request, res: Response) => {
       .status(200)
       .json({ success: true, message: "Archived status updated successfully" });
   } catch (error) {
-    console.error("Error updating archived status:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
