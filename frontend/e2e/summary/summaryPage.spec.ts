@@ -7,6 +7,22 @@ test.describe("Summary", () => {
   let context;
   let reusablePage;
 
+  let inventoryItems: Array<{
+    name: string;
+    note: string;
+    unitPrice: number;
+    unitSize: number;
+    selectUnit: string;
+    quantity: number;
+  }> = [];
+
+  let assignments: Array<{
+    name: string;
+    fleet: string;
+    boat: string;
+    quantity: number;
+  }> = [];
+
   test.beforeAll(async ({ browser }) => {
     test.setTimeout(240000); // Further increased timeout for beforeAll hook
 
@@ -39,10 +55,10 @@ test.describe("Summary", () => {
         }
       }
 
-      const inventoryItems = [
+      inventoryItems = [
         {
           name: "oil filter",
-          note: "Regular supply for test",
+          note: "Regular supply para sa summary test",
           unitPrice: 250,
           unitSize: 1,
           selectUnit: "Piece",
@@ -50,18 +66,16 @@ test.describe("Summary", () => {
         },
         {
           name: "Bearing",
-          note: "Regular supply for test",
+          note: "Regular supply para sa summary test",
           unitPrice: 250,
           unitSize: 1,
           selectUnit: "Piece",
           quantity: 20,
         },
-        // ...other items...
       ];
 
       for (const item of inventoryItems) {
         try {
-          // Ensure page is open before interacting
           if (reusablePage.isClosed()) {
             throw new Error("Page is closed during interaction.");
           }
@@ -126,7 +140,7 @@ test.describe("Summary", () => {
         }
       }
 
-      const assignments = [
+      assignments = [
         {
           name: "oil filter",
           fleet: "F/B DONYA DONYA 2x",
@@ -139,7 +153,6 @@ test.describe("Summary", () => {
           boat: "F/B Lady Rachelle",
           quantity: 50,
         },
-        // ...other assignments...
       ];
 
       for (const assignment of assignments) {
@@ -147,7 +160,7 @@ test.describe("Summary", () => {
           const row = reusablePage.locator("div", { hasText: assignment.name });
           const assignButton = row
             .getByRole("button", { name: "Assign" })
-            .first(); // Ensure the first button is selected
+            .first();
           await assignButton.click();
 
           if (reusablePage.isClosed()) {
@@ -188,10 +201,6 @@ test.describe("Summary", () => {
       console.error("Error in beforeAll hook:", error);
       throw error;
     }
-  });
-
-  test.afterAll(async () => {
-    await context.close();
   });
 
   test.beforeEach(async ({ page }) => {
@@ -286,21 +295,22 @@ test.describe("Summary", () => {
     const yearCount = await yearButtons.count();
     expect(yearCount).toBeGreaterThan(0);
 
-    const year2024Button = page.locator('[data-year-select="true"] button', {
-      hasText: "2024",
+    const currentYear = new Date().getFullYear();
+    const yearButton = page.locator('[data-year-select="true"] button', {
+      hasText: String(currentYear),
     });
 
-    const year2024Exists = (await year2024Button.count()) > 0;
+    const yearExists = (await yearButton.count()) > 0;
 
-    if (year2024Exists) {
-      await year2024Button.click();
-      await expect(year2024Button).toHaveClass(/bg-cyan-900/);
+    if (yearExists) {
+      await yearButton.click();
+      await expect(yearButton).toHaveClass(/bg-cyan-900/);
     } else {
       const firstYearButton = page
         .locator('[data-year-select="true"] button')
         .first();
       await firstYearButton.click();
-      console.log("2024 not found, using first available year");
+      console.log(`${currentYear} not found, using first available year`);
       await expect(firstYearButton).toHaveClass(/bg-cyan-900/);
     }
   });
@@ -336,22 +346,23 @@ test.describe("Summary", () => {
         { timeout: 15000 }
       );
 
-      // Select year 2024 if available
-      const year2024Button = page.locator('[data-year-select="true"] button', {
-        hasText: "2024",
+      // Select current year if available
+      const currentYear = new Date().getFullYear();
+      const yearButton = page.locator('[data-year-select="true"] button', {
+        hasText: String(currentYear),
       });
 
-      const year2024Exists = (await year2024Button.count()) > 0;
+      const yearExists = (await yearButton.count()) > 0;
 
-      if (year2024Exists) {
-        await year2024Button.click();
-        console.log("Selected year 2024");
+      if (yearExists) {
+        await yearButton.click();
+        console.log(`Selected year ${currentYear}`);
       } else {
         const firstYearButton = page
           .locator('[data-year-select="true"] button')
           .first();
         await firstYearButton.click();
-        console.log("2024 not found, using first available year");
+        console.log(`${currentYear} not found, using first available year`);
       }
 
       // Wait for month selector
@@ -401,5 +412,110 @@ test.describe("Summary", () => {
     ]);
 
     expect(download.suggestedFilename()).toMatch(/invoice_.*\.pdf/);
+  });
+
+  test.afterAll(async () => {
+    test.setTimeout(240000);
+
+    try {
+      // 1. Enhanced orders cleanup
+      await reusablePage.goto("/orders");
+      await reusablePage.waitForLoadState("networkidle");
+      await reusablePage.waitForTimeout(3000);
+      for (const assignment of assignments) {
+        try {
+          const roworder = reusablePage.locator("div", {
+            hasText: assignment.name,
+          });
+          if ((await roworder.count()) > 0) {
+            const orderRow = roworder
+              .getByRole("button", { name: "Edit" })
+              .first();
+            await orderRow.click();
+
+            const modal = reusablePage.locator(
+              ".flex.fixed.z-50.inset-0.justify-center.items-center"
+            );
+            await modal.getByRole("button", { name: /Delete/i }).click();
+
+            await expect(reusablePage.getByText("Are you sure?")).toBeVisible();
+            await reusablePage.waitForSelector(
+              '[data-testid="confirm-removal-button"]',
+              { state: "visible" }
+            );
+            await reusablePage.getByTestId("confirm-removal-button").click();
+
+            await expect(
+              reusablePage.getByText("Order deleted successfully")
+            ).toBeVisible({
+              timeout: 5000,
+            });
+
+            await reusablePage.waitForTimeout(1000);
+          }
+        } catch (error) {
+          console.error(
+            `Failed to delete assignment ${assignment.name}:`,
+            error
+          );
+        }
+      }
+
+      // Clean up inventory items
+      await reusablePage.goto("/inventory");
+      await reusablePage.waitForLoadState("networkidle");
+
+      // Delete all test inventory items
+      for (const item of inventoryItems) {
+        try {
+          const itemRow = reusablePage
+            .locator("article")
+            .filter({
+              has: reusablePage.locator(
+                `div.font-bold:has-text("${item.name}")`
+              ),
+            })
+            .filter({ hasText: item.note });
+
+          if ((await itemRow.count()) > 0) {
+            await itemRow.getByRole("button", { name: "Edit" }).first().click();
+
+            const modal = reusablePage.locator(
+              ".flex.fixed.z-50.inset-0.justify-center.items-center"
+            );
+            await modal.getByRole("button", { name: /Delete/i }).click();
+
+            await expect(reusablePage.getByText("Are you sure?")).toBeVisible();
+            // Wait for the confirm button to be ready and clickable
+            await reusablePage.waitForSelector(
+              '[data-testid="confirm-removal-button"]',
+              { state: "visible" }
+            );
+            await reusablePage.getByTestId("confirm-removal-button").click();
+
+            await expect(
+              reusablePage.getByText("Item deleted successfully")
+            ).toBeVisible({
+              timeout: 5000,
+            });
+
+            await reusablePage.waitForTimeout(1000);
+          } else {
+            console.log(`Inventory item not found: ${item.name}`);
+          }
+        } catch (error) {
+          console.error(`Failed to delete item ${item.name}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error("Error during cleanup:", error);
+    } finally {
+      if (reusablePage && !reusablePage.isClosed()) {
+        await reusablePage.close();
+      }
+      if (context) {
+        await context.close();
+      }
+    }
   });
 });
